@@ -1,6 +1,6 @@
 # Aerospike Monitoring
 
-1. Edit `docker/prometheus/prometheus.yml` and change the target IPs and ports to aerospike-prometheus-exporter installations.
+
 1. Run `docker-compose up` to download, build and run the docker images. To stop the containers, run `docker-compose down`
 1. Go to your browser and use the URL: `http://localhost:3000`. User/Pass is `admin/pass`
 1. Prometheus dashboard is at: `http://localhost:9090`
