@@ -1,7 +1,7 @@
 groups:
   - name: aerospike.rules
     rules:
-    - alert: NodeDown
+    - alert: ExporterAgentDown
       expr: up{job="aerospike"} == 0
       for: 30s
       labels:
@@ -9,7 +9,7 @@ groups:
       annotations:
         description: '{{ $labels.instance }} has been down for more than 30 seconds.'
         summary: Node {{ $labels.instance }} down
-    - alert: NodeDown
+    - alert: AerospikeNodeDown
       expr: aerospike_node_up{job="aerospike"} == 0
       for: 30s
       labels:
@@ -17,14 +17,6 @@ groups:
       annotations:
         description: '{{ $labels.instance }} node is down.'
         summary: Node {{ $labels.instance }} down
-    - alert: TransactionQueueTooFull
-      expr: aerospike_node_stats_tsvc_queue{job="aerospike"} > 10000
-      for: 30s
-      labels:
-        severity: "1"
-      annotations:
-        description: 'Transaction queue for node {{ $labels.instance }} is longer than 10000.'
-        summary: Transaction queue too full for node {{ $labels.instance }}
     - alert: NamespaceStopWrites
       expr: aerospike_namespace_stop_writes{job="aerospike"} == 1
       for: 30s
