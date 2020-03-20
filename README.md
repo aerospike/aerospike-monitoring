@@ -73,7 +73,7 @@ Aerospike Prometheus Exporter can be compiled and built from the source [aerospi
     ```
 
 - Create a systemd unit file for `aerospike-prometheus-exporter.service`,
-    ```toml
+    ```
     # cat /usr/lib/systemd/system/aerospike-prometheus-exporter.service
 
     [Unit]
@@ -176,7 +176,7 @@ Create a Prometheus configuration file `/etc/prometheus/prometheus.yaml`,
   OR,
 
 - (Optional) Create a systemd unit file for `prometheus.service`,
-    ```toml
+    ```
     # cat /usr/lib/systemd/system/prometheus.service
 
     [Unit]
