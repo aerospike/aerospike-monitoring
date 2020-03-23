@@ -262,19 +262,19 @@ https://grafana.com/docs/grafana/latest/installation/
     apiVersion: 1
 
     datasources:
-      - name: "Aerospike Prometheus Alertmanager"
-        type: camptocamp-prometheus-alertmanager-datasource
-        access: proxy
-        url: http://alertmanager:9093
-        editable: true
-        isDefault: false
+    - name: "Aerospike Prometheus Alertmanager"
+      type: camptocamp-prometheus-alertmanager-datasource
+      access: proxy
+      url: http://alertmanager:9093
+      editable: true
+      isDefault: false
 
-      - name: "Aerospike Prometheus"
-        type: prometheus
-        access: proxy
-        url: http://prometheus:9090
-        editable: true
-        isDefault: false
+    - name: "Aerospike Prometheus"
+      type: prometheus
+      access: proxy
+      url: http://prometheus:9090
+      editable: true
+      isDefault: false
 
     ```
 
