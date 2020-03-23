@@ -111,7 +111,7 @@ https://prometheus.io/docs/prometheus/latest/installation/
 
 ### Configuration
 
-Create a Prometheus configuration file `/etc/prometheus/prometheus.yaml`,
+Create a Prometheus configuration file `/etc/prometheus/prometheus.yml`,
 - Add `scrape_configs` with `targets` pointing to each instance of `aerospike-prometheus-exporter`.
     ```yaml
     scrape_configs:
@@ -134,7 +134,7 @@ Create a Prometheus configuration file `/etc/prometheus/prometheus.yaml`,
     ```
 
     ```yaml
-    # /etc/prometheus/prometheus.yaml
+    # /etc/prometheus/prometheus.yml
 
     # Global Configuration
     global:
@@ -172,7 +172,7 @@ Create a Prometheus configuration file `/etc/prometheus/prometheus.yaml`,
 
 - Start Prometheus server.
     ```sh
-    /usr/local/bin/prometheus --config.file /etc/prometheus/prometheus.yaml \
+    /usr/local/bin/prometheus --config.file /etc/prometheus/prometheus.yml \
                               --storage.tsdb.path /var/lib/prometheus/
     ```
   OR,
@@ -188,7 +188,7 @@ Create a Prometheus configuration file `/etc/prometheus/prometheus.yaml`,
     After=network.target
 
     [Service]
-    ExecStart=/usr/local/bin/prometheus --config.file /etc/prometheus/prometheus.yaml --storage.tsdb.path /var/lib/prometheus/
+    ExecStart=/usr/local/bin/prometheus --config.file /etc/prometheus/prometheus.yml --storage.tsdb.path /var/lib/prometheus/
 
     [Install]
     WantedBy=multi-user.target
