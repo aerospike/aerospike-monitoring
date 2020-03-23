@@ -219,8 +219,8 @@ https://grafana.com/docs/grafana/latest/installation/
 
 - Create two directories `dashboards` and `datasources` under `provisioning` path.
     ```
-    mkdir /etc/grafana/provisioning/datasources
-    mkdir /etc/grafana/provisioning/dashboards
+    mkdir -p /etc/grafana/provisioning/datasources
+    mkdir -p /etc/grafana/provisioning/dashboards
     ```
 
 - Create a file `all.yaml` in `/etc/grafana/provisioning/dashboards/` directory to add a dashboard provider that will load dashboards into Grafana from the local filesystem. Here, the path to dashboard files is configured as `/var/lib/grafana/dashboards`.
@@ -253,7 +253,6 @@ https://grafana.com/docs/grafana/latest/installation/
         options:
         # <string, required> path to dashboard files on disk. Required
           path: /var/lib/grafana/dashboards
-
     ```
 
 - Create a file `all.yaml` in `/etc/grafana/provisioning/datasources/` directory to define datasources.
