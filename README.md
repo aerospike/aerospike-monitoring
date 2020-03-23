@@ -138,15 +138,15 @@ Create a Prometheus configuration file `/etc/prometheus/prometheus.yaml`,
 
     # Global Configuration
     global:
-    scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
-    evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+      scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+      evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
 
     # Alertmanager Configuration
     alerting:
-    alertmanagers:
-    - static_configs:
-        - targets:
-        - "alertmanager:9093"
+      alertmanagers:
+        - static_configs:
+          - targets:
+            - "alertmanager:9093"
 
     # Add Aerospike Rules YAML File
     rule_files:
@@ -252,7 +252,7 @@ https://grafana.com/docs/grafana/latest/installation/
 
         options:
         # <string, required> path to dashboard files on disk. Required
-        path: /var/lib/grafana/dashboards
+          path: /var/lib/grafana/dashboards
 
     ```
 
@@ -263,14 +263,14 @@ https://grafana.com/docs/grafana/latest/installation/
     apiVersion: 1
 
     datasources:
-    - name: "Aerospike Prometheus Alertmanager"
+      - name: "Aerospike Prometheus Alertmanager"
         type: camptocamp-prometheus-alertmanager-datasource
         access: proxy
         url: http://alertmanager:9093
         editable: true
         isDefault: false
 
-    - name: "Aerospike Prometheus"
+      - name: "Aerospike Prometheus"
         type: prometheus
         access: proxy
         url: http://prometheus:9090
