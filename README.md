@@ -111,7 +111,7 @@ https://prometheus.io/docs/prometheus/latest/installation/
 
 ### Configuration
 
-Create a Prometheus configuration file `/etc/prometheus/prometheus.yaml`,
+Create a Prometheus configuration file `/etc/prometheus/prometheus.yml`,
 - Add `scrape_configs` with `targets` pointing to each instance of `aerospike-prometheus-exporter`.
     ```yaml
     scrape_configs:
@@ -134,19 +134,19 @@ Create a Prometheus configuration file `/etc/prometheus/prometheus.yaml`,
     ```
 
     ```yaml
-    # /etc/prometheus/prometheus.yaml
+    # /etc/prometheus/prometheus.yml
 
     # Global Configuration
     global:
-    scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
-    evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+      scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+      evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
 
     # Alertmanager Configuration
     alerting:
-    alertmanagers:
-    - static_configs:
+      alertmanagers:
+      - static_configs:
         - targets:
-        - "alertmanager:9093"
+          - "alertmanager:9093"
 
     # Add Aerospike Rules YAML File
     rule_files:
@@ -159,8 +159,8 @@ Create a Prometheus configuration file `/etc/prometheus/prometheus.yaml`,
 
         # metrics_path defaults to '/metrics'
         # scheme defaults to 'http'.
-        static_configs:
-            - targets: ['172.20.0.2:9145', '172.20.0.3:9145']
+      static_configs:
+        - targets: ['172.20.0.2:9145', '172.20.0.3:9145']
     ```
 
 - Create a data directory for Prometheus to store the metrics data,
@@ -172,7 +172,7 @@ Create a Prometheus configuration file `/etc/prometheus/prometheus.yaml`,
 
 - Start Prometheus server.
     ```sh
-    /usr/local/bin/prometheus --config.file /etc/prometheus/prometheus.yaml \
+    /usr/local/bin/prometheus --config.file /etc/prometheus/prometheus.yml \
                               --storage.tsdb.path /var/lib/prometheus/
     ```
   OR,
@@ -188,7 +188,7 @@ Create a Prometheus configuration file `/etc/prometheus/prometheus.yaml`,
     After=network.target
 
     [Service]
-    ExecStart=/usr/local/bin/prometheus --config.file /etc/prometheus/prometheus.yaml --storage.tsdb.path /var/lib/prometheus/
+    ExecStart=/usr/local/bin/prometheus --config.file /etc/prometheus/prometheus.yml --storage.tsdb.path /var/lib/prometheus/
 
     [Install]
     WantedBy=multi-user.target
@@ -219,8 +219,8 @@ https://grafana.com/docs/grafana/latest/installation/
 
 - Create two directories `dashboards` and `datasources` under `provisioning` path.
     ```
-    mkdir /etc/grafana/provisioning/datasources
-    mkdir /etc/grafana/provisioning/dashboards
+    mkdir -p /etc/grafana/provisioning/datasources
+    mkdir -p /etc/grafana/provisioning/dashboards
     ```
 
 - Create a file `all.yaml` in `/etc/grafana/provisioning/dashboards/` directory to add a dashboard provider that will load dashboards into Grafana from the local filesystem. Here, the path to dashboard files is configured as `/var/lib/grafana/dashboards`.
@@ -252,8 +252,7 @@ https://grafana.com/docs/grafana/latest/installation/
 
         options:
         # <string, required> path to dashboard files on disk. Required
-        path: /var/lib/grafana/dashboards
-
+          path: /var/lib/grafana/dashboards
     ```
 
 - Create a file `all.yaml` in `/etc/grafana/provisioning/datasources/` directory to define datasources.
@@ -264,18 +263,18 @@ https://grafana.com/docs/grafana/latest/installation/
 
     datasources:
     - name: "Aerospike Prometheus Alertmanager"
-        type: camptocamp-prometheus-alertmanager-datasource
-        access: proxy
-        url: http://alertmanager:9093
-        editable: true
-        isDefault: false
+      type: camptocamp-prometheus-alertmanager-datasource
+      access: proxy
+      url: http://alertmanager:9093
+      editable: true
+      isDefault: false
 
     - name: "Aerospike Prometheus"
-        type: prometheus
-        access: proxy
-        url: http://prometheus:9090
-        editable: true
-        isDefault: false
+      type: prometheus
+      access: proxy
+      url: http://prometheus:9090
+      editable: true
+      isDefault: false
 
     ```
 
