@@ -144,9 +144,9 @@ Create a Prometheus configuration file `/etc/prometheus/prometheus.yml`,
     # Alertmanager Configuration
     alerting:
       alertmanagers:
-        - static_configs:
-          - targets:
-            - "alertmanager:9093"
+      - static_configs:
+        - targets:
+          - "alertmanager:9093"
 
     # Add Aerospike Rules YAML File
     rule_files:
@@ -159,8 +159,8 @@ Create a Prometheus configuration file `/etc/prometheus/prometheus.yml`,
 
         # metrics_path defaults to '/metrics'
         # scheme defaults to 'http'.
-        static_configs:
-            - targets: ['172.20.0.2:9145', '172.20.0.3:9145']
+      static_configs:
+        - targets: ['172.20.0.2:9145', '172.20.0.3:9145']
     ```
 
 - Create a data directory for Prometheus to store the metrics data,
