@@ -203,7 +203,7 @@ Create a Prometheus configuration file `/etc/prometheus/prometheus.yml`,
 
 ## Grafana Configuration
 
-This section covers the configuration of Grafana server to add Prometheus datasource, Alermanager datasource and Aerospike dashboards.
+This section covers the configuration of Grafana server to add Prometheus datasource, Alertmanager datasource and Aerospike dashboards.
 
 ### Install Grafana
 
@@ -211,7 +211,8 @@ https://grafana.com/docs/grafana/latest/installation/
 
 ### Configuration
 
-- Add `provisioning` config directory path in `/etc/grafana/grafana.ini`
+- Add `provisioning` config directory path in `/etc/grafana/grafana.ini`.  If installing on an Aerospike cluster node change the default Grafana HTTP port in addition to changes listed below.
+
     ```ini
     [paths]
     provisioning = /etc/grafana/provisioning/
