@@ -2,10 +2,43 @@
 This is now in **beta**. If you're an enterprise customer feel free to reach out to support with any questions.
 We appreciate feedback from community members on the [issues](https://github.com/aerospike/aerospike-monitoring/issues).
 
-<!-- 1. Run `docker-compose up` to download, build and run the docker images. To stop the containers, run `docker-compose down`
-1. Go to your browser and use the URL: `http://localhost:3000`. User/Pass is `admin/pass`
-1. Prometheus dashboard is at: `http://localhost:9090`
-    1. To make a dashboard your default, first choose that dashboard, and then star it on the toolbar on top right of the screen. After that, you can go to grafana preferences and choose that starred dashboard as default. -->
+
+## Aerospike Monitoring Stack On Kubernetes
+
+[Aerospike Helm Chart](https://hub.helm.sh/charts/aerospike/aerospike-enterprise) provides Aerospike Monitoring Stack which includes an Aerospike prometheus exporter (sidecar), Prometheus statefulset, Grafana statefulset and an Alertmanager statefulset.
+
+Aerospike Helm Chart automatically configures the entire monitoring stack including dynamic discovery of prometheus exporters.
+
+### Quick Start Guide
+
+- Add Aerospike repository,
+    ```sh
+    helm repo add aerospike https://aerospike.github.io/aerospike-kubernetes-enterprise
+    ```
+
+- Deploy Aerospike Cluster with Monitoring Stack,
+    ```sh
+    helm install aerospike-release aerospike/aerospike-enterprise \
+                --set-file featureKeyFilePath=/secrets/aerospike/features.conf \
+                --set rbac.create=true \
+                --set enableAerospikeMonitoring=true
+    ```
+    For Helm v2,
+    ```sh
+    helm install --name aerospike-release aerospike/aerospike-enterprise \
+                --set-file featureKeyFilePath=/secrets/aerospike/features.conf \
+                --set rbac.create=true \
+                --set enableAerospikeMonitoring=true
+    ```
+
+- Aerospike Helm Chart comes with a basic set of alert rules configured, which can trigger and send alerts to the Alertmanager Pods.
+
+    To apply a custom rules configuration, use option `--set-file prometheus.aerospikeAlertRulesFilePath=<FILE_PATH>` with `helm install`.
+
+    To add an alertmanager configuration file, use option `--set-file alertmanager.alertmanagerConfFilePath=<FILE_PATH>` with `helm install`.
+
+
+- [Aerospike Helm Chart Configuration Section](https://github.com/aerospike/aerospike-kubernetes-enterprise/tree/master/helm#configuration) contains a list of other configurable options that can be used with `helm install`.
 
 
 ## Installing Aerospike Prometheus Exporter
@@ -127,7 +160,7 @@ Create a Prometheus configuration file `/etc/prometheus/prometheus.yml`,
         - targets:
           - "alertmanager:9093"
     ```
-- Add [aerospike rules configuration file](config/prometheus/aerospike_rules.yaml) to path `/etc/prometheus/aerospike_rules.yaml` and configure `rule_files` to point to the same.
+- Add [aerospike rules configuration file](config/prometheus/aerospike_rules.yml) to path `/etc/prometheus/aerospike_rules.yaml` and configure `rule_files` to point to the same.
     ```yaml
     rule_files:
       - "/etc/prometheus/aerospike_rules.yaml"
@@ -318,40 +351,11 @@ receivers:
 
 For more details, check [Alertmanager Documentation](https://prometheus.io/docs/alerting/configuration/#configuration).
 
+## Deploy Prometheus, Grafana and Alertmanager using `docker-compose`
 
-## Aerospike Monitoring Stack On Kubernetes
-
-[Aerospike Helm Chart](https://hub.helm.sh/charts/aerospike/aerospike-enterprise) provides Aerospike Monitoring Stack which includes an Aerospike prometheus exporter (sidecar), Prometheus statefulset, Grafana statefulset and an Alertmanager statefulset.
-
-Aerospike Helm Chart automatically configures the entire monitoring stack including dynamic discovery of prometheus exporters.
-
-### Quick Start Guide
-
-- Add Aerospike repository,
-    ```sh
-    helm repo add aerospike https://aerospike.github.io/aerospike-kubernetes-enterprise
-    ```
-
-- Deploy Aerospike Cluster with Monitoring Stack,
-    ```sh
-    helm install aerospike-release aerospike/aerospike-enterprise \
-                --set-file featureKeyFilePath=/secrets/aerospike/features.conf \
-                --set rbac.create=true \
-                --set enableAerospikeMonitoring=true
-    ```
-    For Helm v2,
-    ```sh
-    helm install --name aerospike-release aerospike/aerospike-enterprise \
-                --set-file featureKeyFilePath=/secrets/aerospike/features.conf \
-                --set rbac.create=true \
-                --set enableAerospikeMonitoring=true
-    ```
-
-- Aerospike Helm Chart comes with a basic set of alert rules configured, which can trigger and send alerts to the Alertmanager Pods.
-
-    To apply a custom rules configuration, use option `--set-file prometheus.aerospikeAlertRulesFilePath=<FILE_PATH>` with `helm install`.
-
-    To add an alertmanager configuration file, use option `--set-file alertmanager.alertmanagerConfFilePath=<FILE_PATH>` with `helm install`.
+An example [docker-compose.yml](docker-compose.yml) file is included in this repository which deploys Prometheus, Grafana and Alertmanager and uses dashboards, alert rules and other configurations defined in [config](config/) directory.
 
 
-- [Aerospike Helm Chart Configuration Section](https://github.com/aerospike/aerospike-kubernetes-enterprise/tree/master/helm#configuration) contains a list of other configurable options that can be used with `helm install`.
+## Other Examples
+
+For other quick examples, check [examples/](examples/) directory.

@@ -1,44 +1,75 @@
 # docker-compose.yml
-version: '2'
+version: '3.7'
+
 services:
-    prometheus:
-        image: prom/prometheus:v2.11.1
-        volumes:
-            - prometheus_data:/prometheus
-            - ./config/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-            - ./config/prometheus/aerospike_rules.yml:/etc/prometheus/aerospike_rules.yml
-        command:
-            - '--config.file=/etc/prometheus/prometheus.yml'
-        ports:
-            - '9090:9090'
+  prometheus:
+    image: prom/prometheus:v2.11.1
+    networks:
+    - aerospike
+    container_name: prometheus
+    volumes:
+    - source: prometheus_data
+      target: /var/lib/prometheus/
+      type: volume
+    - source: ./config/prometheus/prometheus.yml
+      target: /etc/prometheus/prometheus.yml
+      type: bind
+    - source: ./config/prometheus/aerospike_rules.yml
+      target: /etc/prometheus/aerospike_rules.yml
+      type: bind
+    command:
+    - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+    - '9090:9090'
 
-    alertmanager:
-        image: prom/alertmanager
-        volumes:
-            - alertmanager_data:/alertmanager
-            - ./config/prometheus/alertmanager.yml:/etc/prometheus/alertmanager.yml
-        command:
-            - '--config.file=/etc/prometheus/alertmanager.yml'
-            - '--storage.path=/alertmanager'
-        ports:
-            - 9093:9093
+  alertmanager:
+    image: prom/alertmanager
+    networks:
+    - aerospike
+    container_name: alertmanager
+    volumes:
+    - source: alertmanager_data
+      target: /alertmanager
+      type: volume
+    - source: ./config/prometheus/alertmanager.yml
+      target: /etc/prometheus/alertmanager.yml
+      type: bind
+    command:
+    - '--config.file=/etc/prometheus/alertmanager.yml'
+    - '--storage.path=/alertmanager'
+    ports:
+    - 9093:9093
 
-    grafana:
-            image: grafana/grafana:6.3.2
-            volumes:
-                - grafana_data:/var/lib/grafana
-                - ./config/grafana/plugins:/grafana_plugins
-                - ./config/grafana/dashboards/:/var/lib/grafana/dashboards/
-                - ./config/grafana/provisioning/:/etc/grafana/provisioning/
-            environment:
-                - GF_SECURITY_ADMIN_PASSWORD=pass
-                - GF_PATHS_PLUGINS=/grafana_plugins
-            depends_on:
-                - prometheus
-            ports:
-                - "3000:3000"
+  grafana:
+    image: grafana/grafana:6.3.2
+    networks:
+    - aerospike
+    container_name: grafana
+    volumes:
+    - source: grafana_data
+      target: /var/lib/grafana
+      type: volume
+    - source: ./config/grafana/dashboards/
+      target: /var/lib/grafana/dashboards/
+      type: bind
+    - source: ./config/grafana/provisioning/
+      target: /etc/grafana/provisioning/
+      type: bind
+    environment:
+    - GF_SECURITY_ADMIN_PASSWORD=admin
+    - GF_INSTALL_PLUGINS=camptocamp-prometheus-alertmanager-datasource
+    depends_on:
+    - prometheus
+    ports:
+    - "3000:3000"
+
 volumes:
-        prometheus_data: {}
-        alertmanager_data: {}
-        grafana_data: {}
-        grafana_plugins: {}
+  prometheus_data: {}
+  alertmanager_data: {}
+  grafana_data: {}
+
+networks:
+  aerospike:
+    driver: bridge
+    # name: aerospike
+    # external: true
