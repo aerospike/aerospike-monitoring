@@ -16,7 +16,7 @@ Aerospike Helm Chart automatically configures the entire monitoring stack includ
     helm repo add aerospike https://aerospike.github.io/aerospike-kubernetes-enterprise
     ```
 
-- Deploy Aerospike Cluster with Monitoring Stack,
+- Deploy an Aerospike cluster with complete monitoring stack which includes Aerospike Prometheus Exporter (sidecar), Prometheus, Grafana and Alertmanager,
     ```sh
     helm install aerospike-release aerospike/aerospike-enterprise \
                 --set-file featureKeyFilePath=/secrets/aerospike/features.conf \
@@ -31,15 +31,57 @@ Aerospike Helm Chart automatically configures the entire monitoring stack includ
                 --set enableAerospikeMonitoring=true
     ```
 
+    To deploy an Aerospike cluster with Aerospike Prometheus Exporter (only) (without Prometheus/Grafana/Alertmanager statefulsets),
+
+    ```sh
+    helm install aerospike-release aerospike/aerospike-enterprise \
+                --set-file featureKeyFilePath=/secrets/aerospike/features.conf \
+                --set enableAerospikePrometheusExporter=true
+    ```
+    For Helm v2,
+    ```sh
+    helm install --name aerospike-release aerospike/aerospike-enterprise \
+                --set-file featureKeyFilePath=/secrets/aerospike/features.conf \
+                --set enableAerospikePrometheusExporter=true
+    ```
+
+- To check the status of all created resources,
+  ```sh
+  kubectl get all,configmap --namespace default -l "release=aerospike-release, chart=aerospike-enterprise-4.8.0"
+  ```
+
 - Aerospike Helm Chart comes with a basic set of alert rules configured, which can trigger and send alerts to the Alertmanager Pods.
 
     To apply a custom rules configuration, use option `--set-file prometheus.aerospikeAlertRulesFilePath=<FILE_PATH>` with `helm install`.
 
     To add an alertmanager configuration file, use option `--set-file alertmanager.alertmanagerConfFilePath=<FILE_PATH>` with `helm install`.
 
+- Prometheus and Grafana dashboards can be viewed on localhost using `kubectl port-forward`,
+  ```sh
+  # To view Prometheus dashboard at http://localhost:9090
+  kubectl port-forward service/aerospike-release-prometheus 9090:9090
+
+  # To view Grafana dashboard at http://localhost:8080
+  kubectl port-forward service/aerospike-release-grafana 8080:80
+  ```
+
+- To uninstall or delete the release (cleanup all resources associated with the release),
+  ```sh
+  helm uninstall aerospike-release
+  ```
+  For Helm v2,
+
+  ```sh
+  helm delete aerospike-release --purge
+  ```
 
 - [Aerospike Helm Chart Configuration Section](https://github.com/aerospike/aerospike-kubernetes-enterprise/tree/master/helm#configuration) contains a list of other configurable options that can be used with `helm install`.
 
+- Additional references
+
+  - Aerospike Helm Chart : https://hub.helm.sh/charts/aerospike/aerospike-enterprise
+  - Install Helm : https://helm.sh/docs/intro/install/
+  - `kubectl` usage : https://kubernetes.io/docs/reference/kubectl/cheatsheet/
 
 ## Installing Aerospike Prometheus Exporter
 
@@ -233,6 +275,28 @@ Create a Prometheus configuration file `/etc/prometheus/prometheus.yml`,
     systemctl start prometheus.service
     ```
 
+### Prometheus Dashboard
+
+An example query to compute and view Read TPS is shown below,
+
+```sh
+rate(aerospike_namespace_client_read_success{job="aerospike", cluster_name="aerospike-release-aerospike-enterprise"}[1m])+
+rate(aerospike_namespace_client_read_not_found{job="aerospike", cluster_name="aerospike-release-aerospike-enterprise"}[1m])
+```
+
+![Prometheus Dashboard Example Console](resources/prometheus_query_console.png)
+
+![Prometheus Dashboard Example Graph](resources/prometheus_query_graph.png)
+
+Other than querying data, there are few additional things that can also be checked on the dashboard like status of scrape targets, alert rules, configuration etc.
+
+![Prometheus Dashboard Example](resources/prometheus_dashboard.png)
+
+References:
+
+  - https://prometheus.io/docs/prometheus/latest/querying/basics/
+  - https://prometheus.io/docs/prometheus/latest/querying/examples/
+
 
 ## Grafana Configuration
 
@@ -325,6 +389,26 @@ https://grafana.com/docs/grafana/latest/installation/
     ```sh
     systemctl start grafana-server
     ```
+
+### Grafana Dashboards
+
+To view [Aerospike Dashboards](config/grafana/dashboards/),
+
+- Once logged into grafana, click on dashboards icon on left top corner (which also says "Home" with a drop-down)
+
+  ![Navigate to dashboards](resources/navigate_to_dashboards.png)
+
+- Select Aerospike folder, and select any one of the dashboard to view.
+
+  ![Select Aerospike dashboards](resources/select_aerospike_dashboards.png)
+
+- Screenshot - Cluster overview dashboard
+
+  ![Cluster overview](resources/cluster_overview_dashboard.png)
+
+- Screenshot - Node overview dashboard
+
+  ![Node overview](resources/node_overview_dashboard.png)
 
 
 ## Alertmanager Configuration
