@@ -95,9 +95,9 @@ Aerospike Prometheus Exporter can be compiled and built from the source [aerospi
     docker-compose -f build/docker-compose.yaml up
     ```
 
-- Aerospike Prometheus Exporter requires a configuration file to run. Here's a [sample configuration file](https://raw.githubusercontent.com/aerospike/aerospike-prometheus-exporter/v1.0.0/aeroprom.conf.dev).
+- Aerospike Prometheus Exporter requires a configuration file to run. Here's a [sample configuration file](https://raw.githubusercontent.com/aerospike/aerospike-prometheus-exporter/master/aeroprom.conf.dev).
     ```
-    curl https://raw.githubusercontent.com/aerospike/aerospike-prometheus-exporter/v1.0.0/aeroprom.conf.dev -o ./build/ape.toml
+    curl https://raw.githubusercontent.com/aerospike/aerospike-prometheus-exporter/master/aeroprom.conf.dev -o ./build/ape.toml
     ```
 
 ### Aerospike Prometheus Exporter Configuration
@@ -111,6 +111,8 @@ Aerospike Prometheus Exporter can be compiled and built from the source [aerospi
     ```
 - Update Aerospike security and TLS configurations (if applicable),
     ```toml
+    [Aerospike]
+
     # certificate file
     cert_file=""
 
@@ -135,10 +137,63 @@ Aerospike Prometheus Exporter can be compiled and built from the source [aerospi
 
 - Update exporter's bind address and port (default: `0.0.0.0:9145`), and add tags.
     ```toml
+    [Agent]
+
     bind=":9145"
 
     tags=['agent', 'aerospike']
     ```
+
+- Use metrics whitelist to filter out required metrics (optional). The whitelist supports standard wildcards (globbing patterns which include - `? (question mark)`, `* (asterisk)`, `[ ] (square brackets)`, `{ } (curly brackets)`, `[!]` and `\ (backslash)`) for bulk whitelisting. For example,
+    ```toml
+    [Aerospike]
+
+    # Metrics Whitelist - If specified, only these metrics will be scraped. An empty list will exclude all metrics.
+    # Commenting out the below whitelist configs will disable whitelisting (all metrics will be scraped).
+
+    # Namespace metrics whitelist
+    namespace_metrics_whitelist=[
+    "client_read_[a-z]*",
+    "stop_writes",
+    "storage-engine.file.defrag_q",
+    "client_write_success",
+    "memory_*_bytes",
+    "objects",
+    "*_available_pct"
+    ]
+
+    # Set metrics whitelist
+    set_metrics_whitelist=[
+    "objects",
+    "tombstones"
+    ]
+
+    # Node metrics whitelist
+    node_metrics_whitelist=[
+    "uptime",
+    "cluster_size",
+    "batch_index_*",
+    "xdr_ship_*"
+    ]
+    ```
+
+- To enable basic HTTP authentication and/or enable HTTPS between the Prometheus server and the exporter, use the below configurations keys (optional),
+
+  ```toml
+  [Agent]
+
+  # File paths should be double quoted.
+
+  # Certificate file for the metric servers for prometheus
+  cert_file = ""
+
+  # Key file for the metric servers for prometheus
+  key_file = ""
+
+  # Basic HTTP authentication for '/metrics'.
+  basic_auth_username=""
+  basic_auth_password=""
+  ```
 
 ### Installation
 
@@ -277,7 +332,9 @@ Create a Prometheus configuration file `/etc/prometheus/prometheus.yml`,
 
 ### Prometheus Dashboard
 
-An example query to compute and view Read TPS is shown below,
+An example query to compute and view Read TPS is shown below.
+
+The query selects data with `aerospike_namespace_client_read_success` metric name that has `job` label as `aerospike` and `cluster_name` as `aerospike-release-aerospike-enterprise` and passes it into `rate()` function which returns per second average rate of increase.
 
 ```sh
 rate(aerospike_namespace_client_read_success{job="aerospike", cluster_name="aerospike-release-aerospike-enterprise"}[1m])+
