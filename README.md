@@ -16,7 +16,7 @@ Aerospike Helm Chart automatically configures the entire monitoring stack includ
     helm repo add aerospike https://aerospike.github.io/aerospike-kubernetes-enterprise
     ```
 
-- Deploy Aerospike Cluster with Monitoring Stack,
+- Deploy an Aerospike cluster with complete monitoring stack which includes Aerospike Prometheus Exporter (sidecar), Prometheus, Grafana and Alertmanager,
     ```sh
     helm install aerospike-release aerospike/aerospike-enterprise \
                 --set-file featureKeyFilePath=/secrets/aerospike/features.conf \
@@ -29,6 +29,20 @@ Aerospike Helm Chart automatically configures the entire monitoring stack includ
                 --set-file featureKeyFilePath=/secrets/aerospike/features.conf \
                 --set rbac.create=true \
                 --set enableAerospikeMonitoring=true
+    ```
+
+    To deploy an Aerospike cluster with Aerospike Prometheus Exporter (only) (without Prometheus/Grafana/Alertmanager statefulsets),
+
+    ```sh
+    helm install aerospike-release aerospike/aerospike-enterprise \
+                --set-file featureKeyFilePath=/secrets/aerospike/features.conf \
+                --set enableAerospikePrometheusExporter=true
+    ```
+    For Helm v2,
+    ```sh
+    helm install --name aerospike-release aerospike/aerospike-enterprise \
+                --set-file featureKeyFilePath=/secrets/aerospike/features.conf \
+                --set enableAerospikePrometheusExporter=true
     ```
 
 - To check the status of all created resources,
