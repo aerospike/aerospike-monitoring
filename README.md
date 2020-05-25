@@ -141,13 +141,13 @@ Aerospike Prometheus Exporter can be compiled and built from the source [aerospi
     password=""
     ```
 
-- Update exporter's bind address and port (default: `0.0.0.0:9145`), and add tags.
+- Update exporter's bind address and port (default: `0.0.0.0:9145`), and add any metric labels.
     ```toml
     [Agent]
 
     bind=":9145"
 
-    tags=['agent', 'aerospike']
+    labels={zone="asia-south1-a", platform="google compute engine"}
     ```
 
 - Use metrics whitelist to filter out required metrics (optional). The whitelist supports standard wildcards (globbing patterns which include - `? (question mark)`, `* (asterisk)`, `[ ] (square brackets)`, `{ } (curly brackets)`, `[!]` and `\ (backslash)`) for bulk whitelisting. For example,
