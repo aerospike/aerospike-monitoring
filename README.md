@@ -1,5 +1,5 @@
 # Aerospike Monitoring Stack
-This is now in **beta**. If you're an enterprise customer feel free to reach out to support with any questions.
+The Aerospike Monitoring Stack is now **generally available** (GA). If you're an enterprise customer feel free to reach out to support with any questions.
 We appreciate feedback from community members on the [issues](https://github.com/aerospike/aerospike-monitoring/issues).
 
 
