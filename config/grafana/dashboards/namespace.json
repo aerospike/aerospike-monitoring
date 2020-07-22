@@ -38,6 +38,7 @@
       "dashes": false,
       "datasource": "Aerospike Prometheus",
       "decimals": 0,
+      "description": "Shows per-second average rate of increase in\n\n1. Total reads = client_read_success + client_read_error + client_read_timeout + client_read_not_found\n2. Successful reads = client_read_success\n3. Errored reads = clean_read_error\n4. Timedout reads = client_read_timeout\n5. Not found = client_read_not_found",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -169,6 +170,7 @@
       "dashes": false,
       "datasource": "Aerospike Prometheus",
       "decimals": 0,
+      "description": "Shows per-second average rate of increase in\n\n1. Total writes = client_write_success + client_write_error + client_write_timeout\n2. Successful writes = client_write_success\n3. Errored writes = clean_write_error\n4. Timedout writes = client_write_timeout",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -297,6 +299,7 @@
       "dashes": false,
       "datasource": "Aerospike Prometheus",
       "decimals": 0,
+      "description": "Shows per-second average rate of increase in batch_sub_read_success, batch_sub_read_not_found, batch_sub_read_error and batch_sub_read_timeout",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -417,6 +420,7 @@
       "dashes": false,
       "datasource": "Aerospike Prometheus",
       "decimals": 0,
+      "description": "Shows per-second average rate of increase in\n\n1. Total (_complete + _error) scans\n2. Successful (_complete) scans\n3. Errored (_error) scans\n4. Aborted (_abort) scans\n\nIt includes all 4 types of scans -  scan_basic, scan_aggr, scan_udf_bg, and scan_ops_bg and rate is computed over the last minute.",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -539,6 +543,7 @@
       "dashes": false,
       "datasource": "Aerospike Prometheus",
       "decimals": 0,
+      "description": "Shows per-second average rate of increase in\n\n1. Total (query_reqs),\n2. Successful (query_reqs - query_fail),\n3. Error (query_fail)",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -652,6 +657,7 @@
       "dashes": false,
       "datasource": "Aerospike Prometheus",
       "decimals": 0,
+      "description": "Shows per-second average rate of increase in \n\n1. Total = client_udf_complete + client_udf_timeout + client_udf_error\n2. Successful = client_udf_complete\n3. Error = client_udf_error\n4. Timeout = client_udf_timeout",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -697,23 +703,32 @@
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{service}}/{{ns}}: Total",
-          "refId": "B"
-        },
-        {
-          "expr": "rate(aerospike_namespace_client_udf_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+\nrate(aerospike_namespace_scan_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+\nrate(aerospike_namespace_scan_udf_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "{{service}}/{{ns}}: Successful",
           "refId": "A"
         },
         {
-          "expr": "rate(aerospike_namespace_client_udf_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+\nrate(aerospike_namespace_client_udf_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])\n",
+          "expr": "rate(aerospike_namespace_client_udf_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "{{service}}/{{ns}}: Successful",
+          "refId": "B"
+        },
+        {
+          "expr": "rate(aerospike_namespace_client_udf_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
           "format": "time_series",
           "instant": false,
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "{{service}}/{{ns}}: Error",
           "refId": "C"
+        },
+        {
+          "expr": "rate(aerospike_namespace_client_udf_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{service}}/{{ns}}: Timeout",
+          "refId": "D"
         }
       ],
       "thresholds": [],
@@ -778,6 +793,7 @@
       "dashes": false,
       "datasource": "Aerospike Prometheus",
       "decimals": 0,
+      "description": "Namespace master objects",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -875,6 +891,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Aerospike Prometheus",
+      "description": "Namespace replica objects",
       "decimals": 0,
       "fill": 1,
       "fillGradient": 0,
@@ -974,6 +991,7 @@
       "dashes": false,
       "datasource": "Aerospike Prometheus",
       "decimals": 0,
+      "description": "Namespace non-replica objects",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1072,6 +1090,7 @@
       "dashes": false,
       "datasource": "Aerospike Prometheus",
       "decimals": 0,
+      "description": "Namespace master tombstones",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1170,6 +1189,7 @@
       "dashes": false,
       "datasource": "Aerospike Prometheus",
       "decimals": 0,
+      "description": "Namespace replica tombstones",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1268,6 +1288,7 @@
       "dashes": false,
       "datasource": "Aerospike Prometheus",
       "decimals": 0,
+      "description": "Namespace non-replica tombstones",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1366,6 +1387,7 @@
       "dashes": false,
       "datasource": "Aerospike Prometheus",
       "decimals": 0,
+      "description": "Namespace evicted objects",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1465,6 +1487,7 @@
       "dashes": false,
       "datasource": "Aerospike Prometheus",
       "decimals": 0,
+      "description": "Namespace expired objects",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1563,6 +1586,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Aerospike Prometheus",
+      "description": "Namespace migrate_tx_partitions_remaining (transmit) and migrate_rx_partitions_remaining (receive)",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1683,6 +1707,7 @@
       "dashes": false,
       "datasource": "Aerospike Prometheus",
       "decimals": 0,
+      "description": "Namespace memory_used_index_bytes (Primary Index)",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1781,6 +1806,7 @@
       "dashes": false,
       "datasource": "Aerospike Prometheus",
       "decimals": 0,
+      "description": "Namespace memory_used_sindex_bytes (Secondary Index)",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1879,6 +1905,7 @@
       "dashes": false,
       "datasource": "Aerospike Prometheus",
       "decimals": 0,
+      "description": "Namespace fail_generation (Errors due to generation mismatch), fail_key_busy (Hotkey errors), fail_record_too_big (Errors due to record being more that write block size), fail_xdr_forbidden (Forbidden errors due to XDR configs for incoming XDR traffic)",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2003,6 +2030,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Aerospike Prometheus",
+      "description": "Namespace memory_free_pct (available namespace memory percentage), high_water_memory_pct (memory high water mark), stop_writes_pct (stop writes threshold)",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2126,6 +2154,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Aerospike Prometheus",
+      "description": "Namespace memory_used_bytes (memory_used_data_bytes (Data) + memory_used_index_bytes (Primary Index) + memory_used_sindex_bytes (Secondary Index))",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2223,6 +2252,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Aerospike Prometheus",
+      "description": "Namespace free memory = memory_size - memory_used_bytes",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2319,6 +2349,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Aerospike Prometheus",
+      "description": "Namespace device free percentage (device_free_pct)",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2371,7 +2402,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Disk Info%",
+      "title": "Disk Free %",
       "tooltip": {
         "shared": true,
         "sort": 1,
@@ -2416,6 +2447,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Aerospike Prometheus",
+      "description": "Namespace device usage in bytes (device_used_bytes)",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2513,6 +2545,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Aerospike Prometheus",
+      "description": "Namespace device free bytes (device_total_bytes - device_used_bytes)",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2627,6 +2660,7 @@
       ],
       "datasource": "Aerospike Prometheus",
       "decimals": 0,
+      "description": "Namespace stop_writes flag",
       "format": "short",
       "gauge": {
         "maxValue": 100,
@@ -2637,7 +2671,7 @@
       },
       "gridPos": {
         "h": 2,
-        "w": 4,
+        "w": 2,
         "x": 0,
         "y": 82
       },
@@ -2724,6 +2758,112 @@
     {
       "cacheTimeout": null,
       "colorBackground": false,
+      "colorValue": true,
+      "colors": [
+        "#299c46",
+        "#E02F44",
+        "#E02F44"
+      ],
+      "datasource": "Aerospike Prometheus",
+      "decimals": 0,
+      "description": "Namespace clock_skew_stop_writes flag",
+      "format": "short",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 2,
+        "w": 2,
+        "x": 2,
+        "y": 82
+      },
+      "id": 114,
+      "interval": null,
+      "links": [],
+      "mappingType": 2,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "options": {},
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        },
+        {
+          "from": "0",
+          "text": "OK",
+          "to": "0"
+        },
+        {
+          "from": "1",
+          "text": "CRITICAL",
+          "to": "1000"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "sum(aerospike_namespace_clock_skew_stop_writes{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "1",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Clock Skew Stop Writes",
+      "type": "singlestat",
+      "valueFontSize": "50%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        },
+        {
+          "op": "=",
+          "text": "TRUE",
+          "value": "1"
+        },
+        {
+          "op": "=",
+          "text": "FALSE",
+          "value": "0"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
       "colorValue": false,
       "colors": [
         "#299c46",
@@ -2732,7 +2872,7 @@
       ],
       "datasource": "Aerospike Prometheus",
       "decimals": 1,
-      "description": "Available Memory",
+      "description": "Namespace available memory ((memory_free_pct / 100) * memory_size)",
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -2818,7 +2958,7 @@
       ],
       "datasource": "Aerospike Prometheus",
       "decimals": 1,
-      "description": "Available Disk Space\n",
+      "description": "Namespace available disk space ((device_free_pct / 100) * device_total_bytes)",
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -2904,6 +3044,7 @@
       "dashes": false,
       "datasource": "Aerospike Prometheus",
       "fill": 0,
+      "description": "Namespace memory trend (Used % vs HWM %)",
       "fillGradient": 0,
       "gridPos": {
         "h": 7,
@@ -2941,14 +3082,14 @@
           "expr": "avg(100-aerospike_namespace_memory_free_pct{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "Used %",
+          "legendFormat": "Memory Used %",
           "refId": "A"
         },
         {
           "expr": "avg(aerospike_namespace_high_water_memory_pct{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "High Water Mark",
+          "legendFormat": "Memory High Water Mark %",
           "refId": "B"
         }
       ],
@@ -3003,7 +3144,7 @@
         "#FF9830"
       ],
       "datasource": "Aerospike Prometheus",
-      "description": "Migrations Remaining",
+      "description": "Total migrations remaining (migrate_rx_partitions_remaining (transmit) + migrate_tx_partitions_remaining (receive))",
       "format": "none",
       "gauge": {
         "maxValue": 100,
@@ -3056,7 +3197,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(aerospike_namespace_migrate_rx_partitions_remaining{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+          "expr": "sum(aerospike_namespace_migrate_rx_partitions_remaining{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}) + sum(aerospike_namespace_migrate_tx_partitions_remaining{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
@@ -3088,7 +3229,7 @@
       ],
       "datasource": "Aerospike Prometheus",
       "decimals": 1,
-      "description": "Total Memory Configured",
+      "description": "Namespace total memory (memory_size)",
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -3174,7 +3315,7 @@
       ],
       "datasource": "Aerospike Prometheus",
       "decimals": 1,
-      "description": "Total Disk Space Configured\n\n",
+      "description": "Namespace total device space (device_total_bytes)",
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -3251,6 +3392,7 @@
     },
     {
       "datasource": "Aerospike Prometheus",
+      "description": "Namespace device usage in bytes",
       "gridPos": {
         "h": 5,
         "w": 4,
@@ -3304,7 +3446,7 @@
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "% Device",
+      "title": "% Device Used",
       "type": "gauge"
     },
     {
@@ -3327,6 +3469,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Aerospike Prometheus",
+      "description": "Namespace device usage trend",
       "fill": 0,
       "fillGradient": 0,
       "gridPos": {
@@ -3374,14 +3517,14 @@
           "format": "time_series",
           "instant": false,
           "intervalFactor": 1,
-          "legendFormat": "Used % (Free)",
+          "legendFormat": "Used % (100 - device_free_pct)",
           "refId": "A"
         },
         {
           "expr": "avg(100-aerospike_namespace_device_available_pct{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "Used % (Available)",
+          "legendFormat": "Used % (100 - device_available_pct)",
           "refId": "D"
         },
         {
@@ -3389,7 +3532,7 @@
           "format": "time_series",
           "instant": false,
           "intervalFactor": 1,
-          "legendFormat": "High Water Mark",
+          "legendFormat": "Device High Water Mark %",
           "refId": "B"
         }
       ],
@@ -3445,6 +3588,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Aerospike Prometheus",
+      "description": "Namespace migration partitions remaining",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -3483,14 +3627,14 @@
           "expr": "sum(aerospike_namespace_migrate_tx_partitions_remaining{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "Incoming",
+          "legendFormat": "Transmit remaining",
           "refId": "A"
         },
         {
           "expr": "sum(aerospike_namespace_migrate_rx_partitions_remaining{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "Outgoing",
+          "legendFormat": "Receive remaining",
           "refId": "B"
         }
       ],
@@ -3545,6 +3689,7 @@
         "#d44a3a"
       ],
       "datasource": "Aerospike Prometheus",
+      "description": "Namespace device total size in bytes",
       "decimals": 1,
       "format": "bytes",
       "gauge": {
@@ -3630,6 +3775,7 @@
         "#d44a3a"
       ],
       "datasource": "Aerospike Prometheus",
+      "description": "Namespace device available space in bytes ((device_available_pct/100) * device_total_bytes)",
       "decimals": 1,
       "format": "bytes",
       "gauge": {
@@ -3716,6 +3862,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Aerospike Prometheus",
+      "description": "Namespace objects (tombstones, master_objects, prole_objects, evicted_objects)",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -3777,6 +3924,13 @@
           "intervalFactor": 1,
           "legendFormat": "Master objects",
           "refId": "A"
+        },
+        {
+          "expr": "sum(aerospike_namespace_expired_objects{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Expired objects",
+          "refId": "E"
         }
       ],
       "thresholds": [],
@@ -3821,7 +3975,7 @@
       }
     }
   ],
-  "refresh": "30s",
+  "refresh": "1m",
   "schemaVersion": 19,
   "style": "dark",
   "tags": [],
