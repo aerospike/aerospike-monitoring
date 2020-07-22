@@ -1707,7 +1707,7 @@
       "dashes": false,
       "datasource": "Aerospike Prometheus",
       "decimals": 0,
-      "description": "Namespace memory_used_index_bytes (Primary Index)",
+      "description": "Namespace Index Usage (Primary Index)",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1752,8 +1752,26 @@
           "instant": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{service}}/{{ns}}",
+          "legendFormat": "shmem {{service}}/{{ns}}",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(aerospike_namespace_index_flash_used_bytes{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}) by (service, ns)",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "flash {{service}}/{{ns}}",
           "refId": "B"
+        },
+        {
+          "expr": "sum(aerospike_namespace_index_pmem_used_bytes{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}) by (service, ns)",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "pmem {{service}}/{{ns}}",
+          "refId": "C"
         }
       ],
       "thresholds": [],
@@ -2671,7 +2689,7 @@
       },
       "gridPos": {
         "h": 2,
-        "w": 2,
+        "w": 3,
         "x": 0,
         "y": 82
       },
@@ -2777,8 +2795,8 @@
       },
       "gridPos": {
         "h": 2,
-        "w": 2,
-        "x": 2,
+        "w": 3,
+        "x": 3,
         "y": 82
       },
       "id": 114,
@@ -2872,7 +2890,7 @@
       ],
       "datasource": "Aerospike Prometheus",
       "decimals": 1,
-      "description": "Namespace available memory ((memory_free_pct / 100) * memory_size)",
+      "description": "Namespace free memory ((memory_free_pct / 100) * memory_size)",
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -2883,8 +2901,8 @@
       },
       "gridPos": {
         "h": 2,
-        "w": 4,
-        "x": 4,
+        "w": 3,
+        "x": 6,
         "y": 82
       },
       "id": 68,
@@ -2935,7 +2953,7 @@
       "thresholds": "",
       "timeFrom": null,
       "timeShift": null,
-      "title": "Mem Available",
+      "title": "Mem Free",
       "type": "singlestat",
       "valueFontSize": "50%",
       "valueMaps": [
@@ -2958,7 +2976,7 @@
       ],
       "datasource": "Aerospike Prometheus",
       "decimals": 1,
-      "description": "Namespace available disk space ((device_free_pct / 100) * device_total_bytes)",
+      "description": "Namespace total memory (memory_size)",
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -2969,11 +2987,11 @@
       },
       "gridPos": {
         "h": 2,
-        "w": 4,
-        "x": 8,
+        "w": 3,
+        "x": 9,
         "y": 82
       },
-      "id": 288,
+      "id": 66,
       "interval": null,
       "links": [],
       "mappingType": 1,
@@ -3011,7 +3029,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "avg(aerospike_namespace_device_total_bytes{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})*(avg(aerospike_namespace_device_free_pct{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})/100)",
+          "expr": "avg(aerospike_namespace_memory_size{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -3021,7 +3039,7 @@
       "thresholds": "",
       "timeFrom": null,
       "timeShift": null,
-      "title": "Disk Available",
+      "title": "Mem Total",
       "type": "singlestat",
       "valueFontSize": "50%",
       "valueMaps": [
@@ -3043,11 +3061,11 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Aerospike Prometheus",
-      "fill": 0,
       "description": "Namespace memory trend (Used % vs HWM %)",
+      "fill": 0,
       "fillGradient": 0,
       "gridPos": {
-        "h": 7,
+        "h": 6,
         "w": 12,
         "x": 12,
         "y": 82
@@ -3155,7 +3173,7 @@
       },
       "gridPos": {
         "h": 2,
-        "w": 4,
+        "w": 6,
         "x": 0,
         "y": 84
       },
@@ -3229,7 +3247,7 @@
       ],
       "datasource": "Aerospike Prometheus",
       "decimals": 1,
-      "description": "Namespace total memory (memory_size)",
+      "description": "Namespace free disk space ((device_free_pct / 100) * device_total_bytes)",
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -3240,11 +3258,11 @@
       },
       "gridPos": {
         "h": 2,
-        "w": 4,
-        "x": 4,
+        "w": 3,
+        "x": 6,
         "y": 84
       },
-      "id": 66,
+      "id": 288,
       "interval": null,
       "links": [],
       "mappingType": 1,
@@ -3282,7 +3300,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "avg(aerospike_namespace_memory_size{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+          "expr": "avg(aerospike_namespace_device_total_bytes{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})*(avg(aerospike_namespace_device_free_pct{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})/100)",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -3292,7 +3310,7 @@
       "thresholds": "",
       "timeFrom": null,
       "timeShift": null,
-      "title": "Mem Total",
+      "title": "Disk Free",
       "type": "singlestat",
       "valueFontSize": "50%",
       "valueMaps": [
@@ -3326,8 +3344,8 @@
       },
       "gridPos": {
         "h": 2,
-        "w": 4,
-        "x": 8,
+        "w": 3,
+        "x": 9,
         "y": 84
       },
       "id": 289,
@@ -3395,7 +3413,7 @@
       "description": "Namespace device usage in bytes",
       "gridPos": {
         "h": 5,
-        "w": 4,
+        "w": 6,
         "x": 0,
         "y": 86
       },
@@ -3450,132 +3468,73 @@
       "type": "gauge"
     },
     {
-      "aliasColors": {
-        "% Disk Used": "blue",
-        "% High Water Mark": "semi-dark-orange",
-        "% Stop Writes": "dark-red",
-        "Available Used %": "purple",
-        "Free Used %": "blue",
-        "High Water Mark": "semi-dark-orange",
-        "High Water Mark %": "semi-dark-orange",
-        "Stop Writes": "dark-red",
-        "Stop Writes %": "dark-red",
-        "Used %": "blue",
-        "Used % (Available)": "blue",
-        "Used % (Free)": "purple"
-      },
-      "bars": false,
       "cacheTimeout": null,
-      "dashLength": 10,
-      "dashes": false,
       "datasource": "Aerospike Prometheus",
-      "description": "Namespace device usage trend",
-      "fill": 0,
-      "fillGradient": 0,
+      "description": "Percentage of device space used by primary index (for flash and PMEM)",
       "gridPos": {
-        "h": 7,
-        "w": 8,
-        "x": 4,
+        "h": 5,
+        "w": 6,
+        "x": 6,
         "y": 86
       },
-      "id": 27,
-      "legend": {
-        "alignAsTable": false,
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 2,
+      "id": 305,
       "links": [
-        {}
-      ],
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [
         {
-          "alias": "",
-          "yaxis": 1
+          "url": "/dashboard/db/clus"
         }
       ],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
+      "options": {
+        "fieldOptions": {
+          "calcs": [
+            "last"
+          ],
+          "defaults": {
+            "decimals": 0,
+            "mappings": [],
+            "max": 100,
+            "min": 0,
+            "thresholds": [
+              {
+                "color": "super-light-blue",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ],
+            "unit": "percent"
+          },
+          "override": {},
+          "values": false
+        },
+        "orientation": "horizontal",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "6.3.2",
       "targets": [
         {
-          "expr": "avg(100-aerospike_namespace_device_free_pct{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+          "expr": "avg(aerospike_namespace_index_flash_used_pct{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "format": "time_series",
-          "instant": false,
+          "instant": true,
           "intervalFactor": 1,
-          "legendFormat": "Used % (100 - device_free_pct)",
+          "legendFormat": "Flash",
           "refId": "A"
         },
         {
-          "expr": "avg(100-aerospike_namespace_device_available_pct{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+          "expr": "avg(aerospike_namespace_index_pmem_used_pct{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "format": "time_series",
+          "instant": true,
           "intervalFactor": 1,
-          "legendFormat": "Used % (100 - device_available_pct)",
-          "refId": "D"
-        },
-        {
-          "expr": "avg(aerospike_namespace_high_water_disk_pct{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
-          "format": "time_series",
-          "instant": false,
-          "intervalFactor": 1,
-          "legendFormat": "Device High Water Mark %",
+          "legendFormat": "PMEM",
           "refId": "B"
         }
       ],
-      "thresholds": [],
       "timeFrom": null,
-      "timeRegions": [],
       "timeShift": null,
-      "title": "% Device Trend",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": "0",
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": "0",
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
+      "title": "% Primary Index Device Used (Flash/PMEM)",
+      "type": "gauge"
     },
     {
       "aliasColors": {
@@ -3595,7 +3554,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 89
+        "y": 88
       },
       "id": 141,
       "legend": {
@@ -3689,8 +3648,8 @@
         "#d44a3a"
       ],
       "datasource": "Aerospike Prometheus",
-      "description": "Namespace device total size in bytes",
       "decimals": 1,
+      "description": "Namespace device total size in bytes",
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -3701,7 +3660,7 @@
       },
       "gridPos": {
         "h": 2,
-        "w": 2,
+        "w": 3,
         "x": 0,
         "y": 91
       },
@@ -3775,8 +3734,8 @@
         "#d44a3a"
       ],
       "datasource": "Aerospike Prometheus",
-      "description": "Namespace device available space in bytes ((device_available_pct/100) * device_total_bytes)",
       "decimals": 1,
+      "description": "Namespace device available space in bytes ((device_available_pct/100) * device_total_bytes)",
       "format": "bytes",
       "gauge": {
         "maxValue": 100,
@@ -3787,8 +3746,8 @@
       },
       "gridPos": {
         "h": 2,
-        "w": 2,
-        "x": 2,
+        "w": 3,
+        "x": 3,
         "y": 91
       },
       "id": 78,
@@ -3866,7 +3825,7 @@
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 6,
+        "h": 7,
         "w": 12,
         "x": 0,
         "y": 93
@@ -3938,6 +3897,134 @@
       "timeRegions": [],
       "timeShift": null,
       "title": "Objects",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {
+        "% Disk Used": "blue",
+        "% High Water Mark": "semi-dark-orange",
+        "% Stop Writes": "dark-red",
+        "Available Used %": "purple",
+        "Free Used %": "blue",
+        "High Water Mark": "semi-dark-orange",
+        "High Water Mark %": "semi-dark-orange",
+        "Stop Writes": "dark-red",
+        "Stop Writes %": "dark-red",
+        "Used %": "blue",
+        "Used % (Available)": "blue",
+        "Used % (Free)": "purple"
+      },
+      "bars": false,
+      "cacheTimeout": null,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Aerospike Prometheus",
+      "description": "Namespace device usage trend",
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 94
+      },
+      "id": 27,
+      "legend": {
+        "alignAsTable": false,
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [
+        {}
+      ],
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "",
+          "yaxis": 1
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "avg(100-aerospike_namespace_device_free_pct{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+          "format": "time_series",
+          "instant": false,
+          "intervalFactor": 1,
+          "legendFormat": "Used % (100 - device_free_pct)",
+          "refId": "A"
+        },
+        {
+          "expr": "avg(100-aerospike_namespace_device_available_pct{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Used % (100 - device_available_pct)",
+          "refId": "D"
+        },
+        {
+          "expr": "avg(aerospike_namespace_high_water_disk_pct{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+          "format": "time_series",
+          "instant": false,
+          "intervalFactor": 1,
+          "legendFormat": "Device High Water Mark %",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "% Device Trend",
       "tooltip": {
         "shared": true,
         "sort": 0,
