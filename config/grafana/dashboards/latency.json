@@ -15,7 +15,8 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "iteration": 1565113879723,
+  "id": 4,
+  "iteration": 1595275514565,
   "links": [],
   "panels": [
     {
@@ -26,53 +27,50 @@
         "x": 0,
         "y": 0
       },
-      "id": 6,
+      "id": 2,
       "panels": [],
-      "repeat": "quartile",
-      "title": "$quartile (ms)",
+      "repeat": "operation",
+      "title": "$operation",
       "type": "row"
     },
     {
       "aliasColors": {},
       "bars": false,
-      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
       "datasource": "Aerospike Prometheus",
+      "description": "$operation latency",
       "fill": 1,
+      "fillGradient": 0,
       "gridPos": {
-        "h": 7,
+        "h": 9,
         "w": 12,
         "x": 0,
         "y": 1
       },
-      "id": 83,
+      "id": 5,
       "legend": {
         "alignAsTable": true,
         "avg": true,
         "current": true,
-        "hideEmpty": false,
-        "hideZero": false,
         "max": false,
         "min": false,
         "rightSide": true,
         "show": true,
-        "sort": null,
-        "sortDesc": null,
         "total": false,
         "values": true
       },
       "lines": true,
       "linewidth": 1,
-      "links": [],
-      "maxPerRow": 2,
       "nullPointMode": "null",
-      "options": {},
+      "options": {
+        "dataLinks": []
+      },
       "percentage": false,
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
-      "repeat": "op_type",
+      "repeat": null,
       "repeatDirection": "h",
       "seriesOverrides": [],
       "spaceLength": 10,
@@ -80,20 +78,25 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg({__name__=~\"aerospike_latencies_.*\", job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", op_type=\"$op_type\", quartile_sorted=\"$quartile\"}) by (service)",
-          "format": "time_series",
+          "expr": "avg(aerospike_latencies_${operation}_ms_bucket{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", le=~\"[0-9]*\"}) by (le,ns,service)",
+          "hide": false,
           "instant": false,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{service}}",
+          "legendFormat": "{{service}}/{{ns}} : <= {{le}}ms",
           "refId": "A"
+        },
+        {
+          "expr": "avg(aerospike_latencies_${operation}_ms_count{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}) by (le,ns,service)",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "{{service}}/{{ns}} : ops/sec",
+          "refId": "B"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "$op_type: $quartile ms",
+      "title": "Latency $operation",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -109,21 +112,108 @@
       },
       "yaxes": [
         {
-          "decimals": 0,
           "format": "short",
-          "label": "Count",
+          "label": "Ops/sec",
           "logBase": 1,
           "max": null,
-          "min": "0",
+          "min": null,
           "show": true
         },
         {
-          "decimals": 0,
           "format": "short",
-          "label": "Count",
+          "label": "Ops/sec",
           "logBase": 1,
           "max": null,
-          "min": "0",
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Aerospike Prometheus",
+      "description": "90th percentile of $operation request durations over the last 1m",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 1
+      },
+      "id": 9,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": false,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.9,rate(aerospike_latencies_${operation}_ms_bucket{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
+          "legendFormat": "{{service}}/{{ns}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Histogram Quantile 90% $operation",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "ms",
+          "label": "Milliseconds",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": "Milliseconds",
+          "logBase": 1,
+          "max": null,
+          "min": null,
           "show": true
         }
       ],
@@ -133,8 +223,8 @@
       }
     }
   ],
-  "refresh": "30s",
-  "schemaVersion": 18,
+  "refresh": "1m",
+  "schemaVersion": 19,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -168,7 +258,9 @@
         "allValue": null,
         "current": {
           "text": "All",
-          "value": "$__all"
+          "value": [
+            "$__all"
+          ]
         },
         "datasource": "Aerospike Prometheus",
         "definition": "label_values(aerospike_node_stats_uptime{job=\"aerospike\", cluster_name=~\"$cluster|$^\"},service)",
@@ -192,15 +284,17 @@
       {
         "allValue": null,
         "current": {
-          "text": "null",
-          "value": "null"
+          "text": "All",
+          "value": [
+            "$__all"
+          ]
         },
         "datasource": "Aerospike Prometheus",
         "definition": "label_values(aerospike_namespace_objects{job=\"aerospike\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\" },ns)",
         "hide": 0,
-        "includeAll": false,
+        "includeAll": true,
         "label": "Namespace",
-        "multi": false,
+        "multi": true,
         "name": "namespace",
         "options": [],
         "query": "label_values(aerospike_namespace_objects{job=\"aerospike\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\" },ns)",
@@ -217,48 +311,41 @@
       {
         "allValue": null,
         "current": {
-          "selected": true,
+          "tags": [],
           "text": "All",
-          "value": "$__all"
+          "value": [
+            "$__all"
+          ]
         },
         "datasource": "Aerospike Prometheus",
-        "definition": "label_values({__name__=~\"aerospike_latencies_.*\", job=\"aerospike\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}, quartile_sorted)",
-        "hide": 0,
-        "includeAll": true,
-        "label": "Quartile",
-        "multi": true,
-        "name": "quartile",
-        "options": [],
-        "query": "label_values({__name__=~\"aerospike_latencies_.*\", job=\"aerospike\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}, quartile_sorted)",
-        "refresh": 2,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 1,
-        "tagValuesQuery": "",
-        "tags": [],
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
-      },
-      {
-        "allValue": null,
-        "current": {
-          "text": "All",
-          "value": "$__all"
-        },
-        "datasource": "Aerospike Prometheus",
-        "definition": "label_values({__name__=~\"aerospike_latencies_.*\", job=\"aerospike\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}, op_type)",
+        "definition": "metrics(aerospike_latencies_)",
         "hide": 0,
         "includeAll": true,
         "label": "Operation",
         "multi": true,
-        "name": "op_type",
-        "options": [],
-        "query": "label_values({__name__=~\"aerospike_latencies_.*\", job=\"aerospike\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}, op_type)",
-        "refresh": 2,
-        "regex": "",
+        "name": "operation",
+        "options": [
+          {
+            "selected": true,
+            "text": "All",
+            "value": "$__all"
+          },
+          {
+            "selected": false,
+            "text": "read",
+            "value": "read"
+          },
+          {
+            "selected": false,
+            "text": "write",
+            "value": "write"
+          }
+        ],
+        "query": "metrics(aerospike_latencies_)",
+        "refresh": 0,
+        "regex": "/.*aerospike_latencies_([a-z]*)_ms_count/",
         "skipUrlSync": false,
-        "sort": 1,
+        "sort": 0,
         "tagValuesQuery": "",
         "tags": [],
         "tagsQuery": "",
@@ -299,5 +386,5 @@
   "timezone": "",
   "title": "Latency View",
   "uid": "ZoeGW1DBk",
-  "version": 15
+  "version": 1
 }
