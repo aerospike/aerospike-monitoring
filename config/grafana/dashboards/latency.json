@@ -78,14 +78,14 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg(aerospike_latencies_${operation}_ms_bucket{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", le=~\"[0-9]*\"}) by (le,ns,service)",
+          "expr": "avg(aerospike_latencies_${operation}_${latencytimeunit}_bucket{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", le=~\"[0-9]*\"}) by (le,ns,service)",
           "hide": false,
           "instant": false,
-          "legendFormat": "{{service}}/{{ns}} : <= {{le}}ms",
+          "legendFormat": "{{service}}/{{ns}} : <= {{le}}${latencytimeunit}",
           "refId": "A"
         },
         {
-          "expr": "avg(aerospike_latencies_${operation}_ms_count{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}) by (le,ns,service)",
+          "expr": "avg(aerospike_latencies_${operation}_${latencytimeunit}_count{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}) by (le,ns,service)",
           "hide": false,
           "instant": false,
           "legendFormat": "{{service}}/{{ns}} : ops/sec",
@@ -176,7 +176,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "histogram_quantile(0.9,rate(aerospike_latencies_${operation}_ms_bucket{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
+          "expr": "histogram_quantile(0.9,rate(aerospike_latencies_${operation}_${latencytimeunit}_bucket{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
           "legendFormat": "{{service}}/{{ns}}",
           "refId": "A"
         }
@@ -185,7 +185,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Histogram Quantile 90% $operation",
+      "title": "Histogram Quantile 90% $operation ($latencytimeunit)",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -201,8 +201,8 @@
       },
       "yaxes": [
         {
-          "format": "ms",
-          "label": "Milliseconds",
+          "format": "short",
+          "label": "",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -210,7 +210,7 @@
         },
         {
           "format": "short",
-          "label": "Milliseconds",
+          "label": "",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -342,8 +342,40 @@
           }
         ],
         "query": "metrics(aerospike_latencies_)",
-        "refresh": 0,
-        "regex": "/.*aerospike_latencies_([a-z]*)_ms_count/",
+        "refresh": 2,
+        "regex": "/.*aerospike_latencies_([a-z]*)_[a-z]*_count/",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "tags": [],
+          "text": "ms",
+          "value": "ms"
+        },
+        "datasource": "Aerospike Prometheus",
+        "definition": "metrics(aerospike_latencies_)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Latency Time Unit",
+        "multi": false,
+        "name": "latencytimeunit",
+        "options": [
+          {
+            "selected": true,
+            "text": "ms",
+            "value": "ms"
+          }
+        ],
+        "query": "metrics(aerospike_latencies_)",
+        "refresh": 2,
+        "regex": "/.*aerospike_latencies_[a-z]*_([a-z]*)_count/",
         "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",
