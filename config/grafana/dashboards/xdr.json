@@ -1,4 +1,30 @@
 {
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "7.2.2"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -15,26 +41,220 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 7,
-  "iteration": 1587474352222,
+  "id": null,
+  "iteration": 1603802208531,
   "links": [],
   "panels": [
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 30,
+      "panels": [],
+      "title": "Overview",
+      "type": "row"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "description": "Total Throughput (sum across all namespaces and all DCs)\n\nAverage XDR Lag\n\nAverage Ship Latency\n\nAverage Lap us (Time taken to process records across partitions in one lap)\n\nTotal recoveries pending\n\nTotal In Progress\n\nTotal In Queue",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "decimals": 1,
+          "mappings": [
+            {
+              "id": 0,
+              "op": "=",
+              "text": "N/A",
+              "type": 1,
+              "value": "null"
+            }
+          ],
+          "nullValueMode": "connected",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#299c46",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Avg Lag"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "#299c46",
+                      "value": null
+                    },
+                    {
+                      "color": "dark-red",
+                      "value": 10
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Avg Ship Latency"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "ms"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Avg Lap us"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "µs"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "id": 34,
+      "interval": null,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.2.2",
+      "targets": [
+        {
+          "expr": "sum(aerospike_xdr_throughput{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"})",
+          "interval": "",
+          "legendFormat": "Total Throughput",
+          "refId": "A"
+        },
+        {
+          "expr": "avg(aerospike_xdr_lag{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"})",
+          "interval": "",
+          "legendFormat": "Avg Lag",
+          "refId": "B"
+        },
+        {
+          "expr": "avg(aerospike_xdr_latency_ms{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"})",
+          "interval": "",
+          "legendFormat": "Avg Ship Latency",
+          "refId": "C"
+        },
+        {
+          "expr": "avg(aerospike_xdr_lap_us{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"})",
+          "interval": "",
+          "legendFormat": "Avg Lap us",
+          "refId": "D"
+        },
+        {
+          "expr": "sum(aerospike_xdr_recoveries_pending{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"})",
+          "interval": "",
+          "legendFormat": "Total Recoveries Pending",
+          "refId": "E"
+        },
+        {
+          "expr": "sum(aerospike_xdr_in_progress{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"})",
+          "interval": "",
+          "legendFormat": "Total In Progress",
+          "refId": "F"
+        },
+        {
+          "expr": "sum(aerospike_xdr_in_queue{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"})",
+          "interval": "",
+          "legendFormat": "Total In Queue",
+          "refId": "G"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "XDR Statistics Summary",
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 5
+      },
+      "id": 32,
+      "panels": [],
+      "title": "Detailed Statistics",
+      "type": "row"
+    },
     {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Aerospike Prometheus",
-      "description": "XDR throughput",
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
       "decimals": 0,
-      "fill": 1,
-      "fillGradient": 0,
+      "description": "XDR throughput",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 5,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 0
+        "y": 6
       },
+      "hiddenSeries": false,
       "id": 2,
       "legend": {
         "alignAsTable": true,
@@ -51,9 +271,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -114,17 +335,25 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Aerospike Prometheus",
-      "description": "Number of records successfully shipped",
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
       "decimals": null,
-      "fill": 1,
-      "fillGradient": 0,
+      "description": "Number of records successfully shipped",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 5,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 0
+        "y": 6
       },
+      "hiddenSeries": false,
       "id": 4,
       "legend": {
         "alignAsTable": true,
@@ -141,9 +370,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -204,17 +434,25 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Aerospike Prometheus",
-      "description": "Number of ships abandoned",
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
       "decimals": null,
-      "fill": 1,
-      "fillGradient": 0,
+      "description": "Number of ships abandoned",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 5,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 8
+        "y": 14
       },
+      "hiddenSeries": false,
       "id": 17,
       "legend": {
         "alignAsTable": true,
@@ -231,9 +469,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -294,17 +533,25 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Aerospike Prometheus",
-      "description": "Number of XDR local read not found",
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
       "decimals": null,
-      "fill": 1,
-      "fillGradient": 0,
+      "description": "Number of XDR local read not found",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 5,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 8
+        "y": 14
       },
+      "hiddenSeries": false,
       "id": 18,
       "legend": {
         "alignAsTable": true,
@@ -321,9 +568,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -384,17 +632,25 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Aerospike Prometheus",
-      "description": "How many records are skipped after XDR reading the record locally but before putting them on wire",
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
       "decimals": null,
-      "fill": 1,
-      "fillGradient": 0,
+      "description": "How many records are skipped after XDR reading the record locally but before putting them on wire",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 5,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 16
+        "y": 22
       },
+      "hiddenSeries": false,
       "id": 19,
       "legend": {
         "alignAsTable": true,
@@ -411,9 +667,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -474,17 +731,25 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Aerospike Prometheus",
-      "description": "Number of retries due to connection reset",
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
       "decimals": null,
-      "fill": 1,
-      "fillGradient": 0,
+      "description": "Number of retries due to connection reset",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 5,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 16
+        "y": 22
       },
+      "hiddenSeries": false,
       "id": 22,
       "legend": {
         "alignAsTable": true,
@@ -501,9 +766,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -564,17 +830,25 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Aerospike Prometheus",
-      "description": "Number of retries due to temporary error from destination",
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
       "decimals": null,
-      "fill": 1,
-      "fillGradient": 0,
+      "description": "Number of retries due to temporary error from destination",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 5,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 24
+        "y": 30
       },
+      "hiddenSeries": false,
       "id": 21,
       "legend": {
         "alignAsTable": true,
@@ -591,9 +865,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -654,17 +929,25 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Aerospike Prometheus",
-      "description": "Number of times a record write is skipped from processing because that record is already pending processing",
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
       "decimals": null,
-      "fill": 1,
-      "fillGradient": 0,
+      "description": "Number of times a record write is skipped from processing because that record is already pending processing",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 5,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 24
+        "y": 30
       },
+      "hiddenSeries": false,
       "id": 24,
       "legend": {
         "alignAsTable": true,
@@ -681,9 +964,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -744,16 +1028,24 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Aerospike Prometheus",
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
       "description": "Number of XDR processing record in progress",
-      "fill": 1,
-      "fillGradient": 0,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 5,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 32
+        "y": 38
       },
+      "hiddenSeries": false,
       "id": 14,
       "legend": {
         "alignAsTable": true,
@@ -769,9 +1061,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -832,16 +1125,24 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Aerospike Prometheus",
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
       "description": "Number of records waiting to be processed in in-memory transaction queue",
-      "fill": 1,
-      "fillGradient": 0,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 5,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 32
+        "y": 38
       },
+      "hiddenSeries": false,
       "id": 12,
       "legend": {
         "alignAsTable": true,
@@ -857,9 +1158,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -920,16 +1222,24 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Aerospike Prometheus",
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
       "description": "It signifies how much behind the destination is compared to the source. In other words, so much time worth of data is yet to be shipped from source to destination",
-      "fill": 1,
-      "fillGradient": 0,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 5,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 40
+        "y": 46
       },
+      "hiddenSeries": false,
       "id": 16,
       "legend": {
         "alignAsTable": true,
@@ -946,9 +1256,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1009,16 +1320,24 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Aerospike Prometheus",
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
       "description": "Time taken to process records across partitions in one lap. A higher number indicates slowness of source in processing the records.",
-      "fill": 1,
-      "fillGradient": 0,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 5,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 40
+        "y": 46
       },
+      "hiddenSeries": false,
       "id": 25,
       "legend": {
         "alignAsTable": true,
@@ -1034,9 +1353,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1097,17 +1417,25 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Aerospike Prometheus",
-      "description": "Number of partitions that are recovered by reducing the primary index of that partition",
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
       "decimals": null,
-      "fill": 1,
-      "fillGradient": 0,
+      "description": "Number of partitions that are recovered by reducing the primary index of that partition",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 5,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 48
+        "y": 54
       },
+      "hiddenSeries": false,
       "id": 20,
       "legend": {
         "alignAsTable": true,
@@ -1124,9 +1452,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1187,16 +1516,24 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Aerospike Prometheus",
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
       "description": "Number of recoveries that are currently pending",
-      "fill": 1,
-      "fillGradient": 0,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 5,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 48
+        "y": 54
       },
+      "hiddenSeries": false,
       "id": 23,
       "legend": {
         "alignAsTable": true,
@@ -1212,9 +1549,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1275,16 +1613,24 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Aerospike Prometheus",
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
       "description": "Average network latency for the successfully shipped records",
-      "fill": 1,
-      "fillGradient": 0,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 5,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 56
+        "y": 62
       },
+      "hiddenSeries": false,
       "id": 26,
       "legend": {
         "alignAsTable": true,
@@ -1300,9 +1646,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1363,16 +1710,24 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Aerospike Prometheus",
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
       "description": "Average XDR compression ratio",
-      "fill": 1,
-      "fillGradient": 0,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 5,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 56
+        "y": 62
       },
+      "hiddenSeries": false,
       "id": 27,
       "legend": {
         "alignAsTable": true,
@@ -1388,9 +1743,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1451,16 +1807,24 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Aerospike Prometheus",
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
       "description": "How much % of records are not compressed because they are below the compression threshold",
-      "fill": 1,
-      "fillGradient": 0,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 5,
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 64
+        "y": 70
       },
+      "hiddenSeries": false,
       "id": 28,
       "legend": {
         "alignAsTable": true,
@@ -1476,9 +1840,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1536,20 +1901,15 @@
     }
   ],
   "refresh": "1m",
-  "schemaVersion": 19,
+  "schemaVersion": 26,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": [
       {
         "allValue": null,
-        "current": {
-          "text": "All",
-          "value": [
-            "$__all"
-          ]
-        },
-        "datasource": "Aerospike Prometheus",
+        "current": {},
+        "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
         "definition": "label_values(aerospike_node_stats_uptime{job=\"aerospike\"},cluster_name)",
         "hide": 0,
         "includeAll": true,
@@ -1570,13 +1930,8 @@
       },
       {
         "allValue": null,
-        "current": {
-          "text": "All",
-          "value": [
-            "$__all"
-          ]
-        },
-        "datasource": "Aerospike Prometheus",
+        "current": {},
+        "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
         "definition": "label_values(aerospike_node_stats_uptime{job=\"aerospike\", cluster_name=~\"$cluster|$^\"},service)",
         "hide": 0,
         "includeAll": true,
@@ -1597,13 +1952,8 @@
       },
       {
         "allValue": null,
-        "current": {
-          "text": "All",
-          "value": [
-            "$__all"
-          ]
-        },
-        "datasource": "Aerospike Prometheus",
+        "current": {},
+        "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
         "definition": "label_values(aerospike_xdr_lap_us{job=\"aerospike\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\" },dc)",
         "hide": 0,
         "includeAll": true,
@@ -1624,21 +1974,22 @@
       },
       {
         "current": {
-          "text": "",
-          "value": ""
+          "selected": false,
+          "text": "Aerospike Prometheus",
+          "value": "Aerospike Prometheus"
         },
         "hide": 0,
-        "label": "Tags",
-        "name": "tags",
-        "options": [
-          {
-            "text": "",
-            "value": ""
-          }
-        ],
-        "query": "",
+        "includeAll": false,
+        "label": "Datasource",
+        "multi": false,
+        "name": "DS_AEROSPIKE_PROMETHEUS",
+        "options": [],
+        "query": "prometheus",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
         "skipUrlSync": false,
-        "type": "textbox"
+        "type": "datasource"
       }
     ]
   },
