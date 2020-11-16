@@ -62,15 +62,18 @@ services:
     - aeronet
     depends_on:
     - aerospike
+    labels:
+      prometheus-job: "aerospike"
     deploy:
       mode: replicated
       replicas: 3
       endpoint_mode: dnsrr
     environment:
     - AS_HOST=aero{{.Task.Slot}}.aerospike.com
+    - AGENT_LOG_LEVEL=debug
 
   prometheus:
-    image: prom/prometheus:v2.11.1
+    image: prom/prometheus:latest
     user: root
     deploy:
       replicas: 1
@@ -80,6 +83,7 @@ services:
     networks:
     - aeronet
     volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
     - source: prometheus_data
       target: /var/lib/prometheus/
       type: volume
@@ -121,7 +125,7 @@ services:
       mode: 0444
 
   grafana:
-    image: grafana/grafana:6.3.2
+    image: grafana/grafana:latest
     user: root
     deploy:
       replicas: 1

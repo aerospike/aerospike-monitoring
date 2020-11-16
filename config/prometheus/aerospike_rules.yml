@@ -5,7 +5,7 @@ groups:
       expr: up{job="aerospike"} == 0
       for: 30s
       labels:
-        severity: "2"
+        severity: "1"
       annotations:
         description: '{{ $labels.instance }} has been down for more than 30 seconds.'
         summary: Node {{ $labels.instance }} down
@@ -13,7 +13,7 @@ groups:
       expr: aerospike_node_up{job="aerospike"} == 0
       for: 30s
       labels:
-        severity: "2"
+        severity: "1"
       annotations:
         description: '{{ $labels.instance }} node is down.'
         summary: Node {{ $labels.instance }} down
@@ -25,6 +25,30 @@ groups:
       annotations:
         description: 'Used diskspace for namespace {{ $labels.ns }} in node {{ $labels.instance }} is above stop writes limit.'
         summary: Stop Writes for {{ $labels.instance }}/{{ $labels.ns }}
+    - alert: NamespaceMemoryCloseToStopWrites
+      expr: (aerospike_namespace_stop_writes_pct{job="aerospike"} - (100 - aerospike_namespace_memory_free_pct{job="aerospike"})) <= 10
+      for: 30s
+      labels:
+        severity: "2"
+      annotations:
+        description: 'Free memory for namespace {{ $labels.ns }} in node {{ $labels.instance }} is close to stop writes limit.'
+        summary: Close to stop writes for {{ $labels.instance }}/{{ $labels.ns }} due to memory
+    - alert: NamespaceDiskCloseToStopWrites
+      expr: (aerospike_namespace_device_available_pct{job="aerospike"} - aerospike_namespace_storage_engine_min_avail_pct{job="aerospike"}) <= 10
+      for: 30s
+      labels:
+        severity: "2"
+      annotations:
+        description: 'device_available_pct for namespace {{ $labels.ns }} in node {{ $labels.instance }} is close to min-avail-pct (stop writes) limit.'
+        summary: Close to stop writes for {{ $labels.instance }}/{{ $labels.ns }} due to device_available_pct
+    - alert: NamespacePmemCloseToStopWrites
+      expr: (aerospike_namespace_pmem_available_pct{job="aerospike"} - aerospike_namespace_storage_engine_min_avail_pct{job="aerospike"}) <= 10
+      for: 30s
+      labels:
+        severity: "2"
+      annotations:
+        description: 'pmem_available_pct for namespace {{ $labels.ns }} in node {{ $labels.instance }} is close to min-avail-pct (stop writes) limit.'
+        summary: Close to stop writes for {{ $labels.instance }}/{{ $labels.ns }} due to pmem_available_pct
     - alert: ClockSkewStopWrites
       expr: aerospike_namespace_clock_skew_stop_writes{job="aerospike"} == 1
       for: 30s
@@ -34,10 +58,10 @@ groups:
         description: 'Clock has skewed for namespace {{ $labels.ns }} in node {{ $labels.instance }}'
         summary: Writes will be stopped by Aerospike
     - alert: ClusterSize
-      expr: aerospike_node_stats_cluster_size{job="aerospike"} < 3 # user has to replace his cluster size with 2 here in the example
+      expr: aerospike_node_stats_cluster_size{job="aerospike"} < 3 # user has to replace 3 here with their desired cluster size.
       for: 30s
       labels:
-        severity: "2"
+        severity: "1"
       annotations:
         description: 'Cluster size mismatch for namespace {{ $labels.ns }} in node {{ $labels.instance }}'
         summary: Some of the node(s) has gone out of the cluster
@@ -53,7 +77,7 @@ groups:
       expr: aerospike_namespace_hwm_breached{job="aerospike"} == 1
       for: 30s
       labels:
-        severity: "2"
+        severity: "1"
       annotations:
         description: 'High water mark has breached for namespace {{ $labels.ns }} in node {{ $labels.instance }}'
         summary: Eviction will start to make the space available
@@ -64,45 +88,28 @@ groups:
         severity: "1"
       annotations:
         description: 'Some of the partition(s) is not available for namespace {{ $labels.ns }} in node {{ $labels.instance }}'
-        summary: Server could not found some partition(s). Check for the network issues and make sure cluster forms properly
+        summary: Server could not find some partition(s). Check for the network issues and make sure cluster forms properly
     - alert: XDRTimelag
-      expr: aerospike_node_stats_xdr_timelag{job="aerospike"} > 10 # user can configure the seconds. Refer XDR throttling
+      expr: aerospike_node_stats_xdr_timelag{job="aerospike"} > 10 # (Aerospike 4.9 and older) user can configure the seconds. Refer XDR throttling
       for: 30s
       labels:
         severity: "2"
       annotations:
         description: 'There seems some lag in XDR for namespace {{ $labels.ns }} in node {{ $labels.instance }}'
         summary: Lag can be there in XDR due to network connectivity issues or errors writing at a destination cluster
-    - alert: LowDeviceAvailWarning
-      expr: aerospike_namespace_device_available_pct{job="aerospike"} < 20
+    - alert: XDRTimelag
+      expr: aerospike_xdr_lag{job="aerospike"} > 10 # (Aerospike 5.0 and later) user can configure the seconds. Refer XDR throttling
       for: 30s
       labels:
         severity: "2"
       annotations:
-        description: 'Device available percentage has dropped below 20 for namespace {{ $labels.ns }} in node {{ $labels.instance }}'
-        summary: Defrag is unable to keep up with the current load {{ $labels.instance }}/{{ $labels.ns }}
-    - alert: LowDeviceAvailCritical
-      expr: aerospike_namespace_device_available_pct{job="aerospike"} < 15
-      for: 30s
-      labels:
-        severity: "1"
-      annotations:
-        description: 'Device available percentage has dropped below 15 for namespace {{ $labels.ns }} in node {{ $labels.instance }}'
-        summary: Usable disk resources are critically low which may result in a stop-writes if available percentage goes below 5
-    - alert: LowPmemAvailWarning
-      expr: aerospike_namespace_pmem_available_pct{job="aerospike"} < 20
+        description: 'There seems some lag in XDR for namespace {{ $labels.ns }} in node {{ $labels.instance }}'
+        summary: Lag can be there in XDR due to network connectivity issues or errors writing at a destination cluster
+    - alert: ActiveProxies
+      expr: (increase(aerospike_namespace_client_proxy_complete{job="aerospike"}[2m]) + increase(aerospike_namespace_client_proxy_timeout{job="aerospike"}[2m]) + increase(aerospike_namespace_client_proxy_error{job="aerospike"}[2m]) + increase(aerospike_namespace_batch_sub_proxy_complete{job="aerospike"}[2m]) + increase(aerospike_namespace_batch_sub_proxy_timeout{job="aerospike"}[2m]) + increase(aerospike_namespace_batch_sub_proxy_error{job="aerospike"}[2m])) > 0
       for: 30s
       labels:
         severity: "2"
       annotations:
-        description: 'Pmem available percentage has dropped below 20 for namespace {{ $labels.ns }} in node {{ $labels.instance }}'
-        summary: Defrag is unable to keep up with the current load {{ $labels.instance }}/{{ $labels.ns }}
-    - alert: LowPmemAvailCritical
-      expr: aerospike_namespace_pmem_available_pct{job="aerospike"} < 15
-      for: 30s
-      labels:
-        severity: "1"
-      annotations:
-        description: 'Pmem available percentage has dropped below 15 for namespace {{ $labels.ns }} in node {{ $labels.instance }}'
-        summary: Usable Pmem resource is critically low which may result in a stop-writes if available percentage goes below 5
-  
+        description: 'Active proxies detected for {{ $labels.ns }} on node {{ $labels.instance }}'
+        summary: Node is doing proxy. Proxies can happen during cluster change / migrations or if there are any network issues.

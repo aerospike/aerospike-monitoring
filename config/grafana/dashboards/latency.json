@@ -1,4 +1,24 @@
 {
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "7.2.2"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -15,12 +35,13 @@
   "editable": true,
   "gnetId": null,
   "graphTooltip": 0,
-  "id": 4,
-  "iteration": 1595275514565,
+  "id": null,
+  "iteration": 1603381556406,
   "links": [],
   "panels": [
     {
       "collapsed": false,
+      "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -38,16 +59,24 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Aerospike Prometheus",
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
       "description": "$operation latency",
-      "fill": 1,
-      "fillGradient": 0,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 5,
       "gridPos": {
         "h": 9,
         "w": 12,
         "x": 0,
         "y": 1
       },
+      "hiddenSeries": false,
       "id": 5,
       "legend": {
         "alignAsTable": true,
@@ -64,9 +93,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -138,16 +168,24 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Aerospike Prometheus",
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
       "description": "90th percentile of $operation request durations over the last 1m",
-      "fill": 1,
-      "fillGradient": 0,
+      "fieldConfig": {
+        "defaults": {
+          "custom": {},
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 5,
       "gridPos": {
         "h": 9,
         "w": 12,
         "x": 12,
         "y": 1
       },
+      "hiddenSeries": false,
       "id": 9,
       "legend": {
         "alignAsTable": true,
@@ -164,9 +202,10 @@
       "linewidth": 1,
       "nullPointMode": "null",
       "options": {
-        "dataLinks": []
+        "alertThreshold": true
       },
       "percentage": false,
+      "pluginVersion": "7.2.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -224,18 +263,15 @@
     }
   ],
   "refresh": "1m",
-  "schemaVersion": 19,
+  "schemaVersion": 26,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": [
       {
         "allValue": null,
-        "current": {
-          "text": "null",
-          "value": "null"
-        },
-        "datasource": "Aerospike Prometheus",
+        "current": {},
+        "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
         "definition": "label_values(aerospike_node_stats_uptime{job=\"aerospike\"},cluster_name)",
         "hide": 0,
         "includeAll": false,
@@ -256,13 +292,8 @@
       },
       {
         "allValue": null,
-        "current": {
-          "text": "All",
-          "value": [
-            "$__all"
-          ]
-        },
-        "datasource": "Aerospike Prometheus",
+        "current": {},
+        "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
         "definition": "label_values(aerospike_node_stats_uptime{job=\"aerospike\", cluster_name=~\"$cluster|$^\"},service)",
         "hide": 0,
         "includeAll": true,
@@ -283,13 +314,8 @@
       },
       {
         "allValue": null,
-        "current": {
-          "text": "All",
-          "value": [
-            "$__all"
-          ]
-        },
-        "datasource": "Aerospike Prometheus",
+        "current": {},
+        "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
         "definition": "label_values(aerospike_namespace_objects{job=\"aerospike\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\" },ns)",
         "hide": 0,
         "includeAll": true,
@@ -310,37 +336,15 @@
       },
       {
         "allValue": null,
-        "current": {
-          "tags": [],
-          "text": "All",
-          "value": [
-            "$__all"
-          ]
-        },
-        "datasource": "Aerospike Prometheus",
+        "current": {},
+        "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
         "definition": "metrics(aerospike_latencies_)",
         "hide": 0,
         "includeAll": true,
         "label": "Operation",
         "multi": true,
         "name": "operation",
-        "options": [
-          {
-            "selected": true,
-            "text": "All",
-            "value": "$__all"
-          },
-          {
-            "selected": false,
-            "text": "read",
-            "value": "read"
-          },
-          {
-            "selected": false,
-            "text": "write",
-            "value": "write"
-          }
-        ],
+        "options": [],
         "query": "metrics(aerospike_latencies_)",
         "refresh": 2,
         "regex": "/.*aerospike_latencies_([a-z]*)_[a-z]*_count/",
@@ -354,25 +358,15 @@
       },
       {
         "allValue": null,
-        "current": {
-          "tags": [],
-          "text": "ms",
-          "value": "ms"
-        },
-        "datasource": "Aerospike Prometheus",
+        "current": {},
+        "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
         "definition": "metrics(aerospike_latencies_)",
         "hide": 0,
         "includeAll": false,
         "label": "Latency Time Unit",
         "multi": false,
         "name": "latencytimeunit",
-        "options": [
-          {
-            "selected": true,
-            "text": "ms",
-            "value": "ms"
-          }
-        ],
+        "options": [],
         "query": "metrics(aerospike_latencies_)",
         "refresh": 2,
         "regex": "/.*aerospike_latencies_[a-z]*_([a-z]*)_count/",
@@ -383,6 +377,25 @@
         "tagsQuery": "",
         "type": "query",
         "useTags": false
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "Aerospike Prometheus",
+          "value": "Aerospike Prometheus"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Datasource",
+        "multi": false,
+        "name": "DS_AEROSPIKE_PROMETHEUS",
+        "options": [],
+        "query": "prometheus",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
       }
     ]
   },
