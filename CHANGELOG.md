@@ -2,6 +2,21 @@
 
 This file documents all notable changes to Aerospike Monitoring Stack
 
+
+## [v1.2.0](https://github.com/aerospike/aerospike-monitoring/releases/tag/v1.2.0)
+
+### Features
+- [TOOLS-1589] - Migrate dashboards to Grafana 7.
+
+### Improvements
+- [TOOLS-1591] - Make datasource configurable through a dashboard variable (Thanks to @realmgic for the contribution).
+- [TOOLS-1588] - Alert when 'close to' stop writes, when node is proxying and when XDR lag is above a threshold.
+- [TOOLS-1590] - Add Prometheus' docker swarm service discovery config to the example.
+
+### Fixes
+- [TOOLS-1592] - Fix units for "Failure rate" panel in Namespace view.
+
+
 ## [v1.1.1](https://github.com/aerospike/aerospike-monitoring/releases/tag/v1.1.1)
 
 ### Improvements
