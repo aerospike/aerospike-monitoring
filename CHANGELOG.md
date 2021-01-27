@@ -3,6 +3,12 @@
 This file documents all notable changes to Aerospike Monitoring Stack
 
 
+## [v1.2.1](https://github.com/aerospike/aerospike-monitoring/releases/tag/v1.2.1)
+
+### Improvements
+- Added DC `nodes` metric to XDR dashboard
+
+
 ## [v1.2.0](https://github.com/aerospike/aerospike-monitoring/releases/tag/v1.2.0)
 
 ### Features
