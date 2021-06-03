@@ -3,6 +3,36 @@
 This file documents all notable changes to Aerospike Monitoring Stack
 
 
+## [v1.3.0](https://github.com/aerospike/aerospike-monitoring/releases/tag/v1.3.0)
+
+### Features
+- [PROD-1742] - Added support for user statistics (Users View dashboard)
+  - Per-user statistics are available in Aerospike 5.6+.
+
+### Improvements
+- [PROD-1774] - Add new connections opened/closed statistics introduced in 5.6
+    - `client_connections_opened`
+    - `client_connections_closed`
+    - `heartbeat_connections_opened`
+    - `heartbeat_connections_closed`
+    - `fabric_connections_opened`
+    - `fabric_connections_closed`
+- [PROD-1775] - Add new all flash statistics introduced in 5.6
+    - `index_flash_alloc_bytes`
+    - `index_flash_alloc_pct`
+- Add other new metrics introduced in 5.6,
+    - `memory_used_set_index_bytes`
+    - `fail_client_lost_conflict`
+    - `fail_xdr_lost_conflict`
+    - `threads_joinable`
+    - `threads_detached`
+    - `threads_pool_total`
+    - `threads_pool_active`
+
+### Fixes
+- Fixed 90th percentile latency computation in Latency View dashboard to not use `rate()`
+
+
 ## [v1.2.1](https://github.com/aerospike/aerospike-monitoring/releases/tag/v1.2.1)
 
 ### Improvements
