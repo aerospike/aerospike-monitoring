@@ -3,6 +3,15 @@
 This file documents all notable changes to Aerospike Monitoring Stack
 
 
+## [v1.3.1](https://github.com/aerospike/aerospike-monitoring/releases/tag/v1.3.1)
+
+### Improvements
+- Add `Exporters View` dashboard to track status of all Aerospike Prometheus Exporter targets
+
+### Fixes
+- [TOOLS-1721] - Fix incorrect status of the exporters and Aerospike nodes in `Node View` dashboard
+
+
 ## [v1.3.0](https://github.com/aerospike/aerospike-monitoring/releases/tag/v1.3.0)
 
 ### Features
