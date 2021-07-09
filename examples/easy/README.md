@@ -13,13 +13,13 @@ accessible from port 3000 of the host where the monitoring stack is deployed.  I
 do not already have such an Aerospike cluster, you can deploy a single-node cluster
 in a container using:
 ```
-docker run -tid --name aerospike -p 3000:3000 -p 3001:3001 -p 3002:3002 aerospike/aerospike-server:latest
+$ docker run -tid --name aerospike -p 3000:3000 -p 3001:3001 -p 3002:3002 aerospike/aerospike-server:latest
 ```
 
 
 ## To start the stack
 ```
-docker-compose -f easy-compose.yml up
+$ docker-compose -f easy-compose.yml up
 ```
 
 Now simply point your browser at `http://<host>:4000` to see the dashboard.
@@ -31,6 +31,6 @@ server.
 
 ## To stop the stack
 ```
-docker-compose -f easy-compose.yml down
+$ docker-compose -f easy-compose.yml down
 ```
 
