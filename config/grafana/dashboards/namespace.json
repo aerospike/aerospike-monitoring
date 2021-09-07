@@ -48,7 +48,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1622751515834,
+  "iteration": 1631004273797,
   "links": [],
   "panels": [
     {
@@ -250,7 +250,7 @@
       "fill": 5,
       "fillGradient": 5,
       "gridPos": {
-        "h": 7,
+        "h": 8,
         "w": 12,
         "x": 12,
         "y": 1
@@ -446,10 +446,35 @@
           },
           "unit": "short"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Unreplicated records"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "#299c46",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 7,
+        "h": 8,
         "w": 6,
         "x": 0,
         "y": 5
@@ -477,38 +502,62 @@
           "exemplar": true,
           "expr": "sum(aerospike_namespace_tombstones{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "format": "time_series",
+          "instant": true,
           "interval": "",
           "intervalFactor": 1,
           "legendFormat": "Tombstones",
           "refId": "C"
         },
         {
+          "exemplar": true,
           "expr": "sum(aerospike_namespace_evicted_objects{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "format": "time_series",
+          "instant": true,
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "Evicted objects",
           "refId": "D"
         },
         {
+          "exemplar": true,
           "expr": "sum(aerospike_namespace_prole_objects{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "format": "time_series",
+          "instant": true,
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "Replica objects",
           "refId": "B"
         },
         {
+          "exemplar": true,
           "expr": "sum(aerospike_namespace_master_objects{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "format": "time_series",
+          "instant": true,
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "Master objects",
           "refId": "A"
         },
         {
+          "exemplar": true,
           "expr": "sum(aerospike_namespace_expired_objects{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "format": "time_series",
+          "instant": true,
+          "interval": "",
           "intervalFactor": 1,
           "legendFormat": "Expired objects",
           "refId": "E"
+        },
+        {
+          "exemplar": true,
+          "expr": "sum(aerospike_namespace_unreplicated_records{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+          "format": "time_series",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "Unreplicated records",
+          "refId": "F"
         }
       ],
       "timeFrom": null,
@@ -635,10 +684,10 @@
       "fill": 5,
       "fillGradient": 5,
       "gridPos": {
-        "h": 7,
+        "h": 9,
         "w": 12,
         "x": 12,
-        "y": 8
+        "y": 9
       },
       "hiddenSeries": false,
       "id": 27,
@@ -796,6 +845,7 @@
       "pluginVersion": "7.5.7",
       "targets": [
         {
+          "exemplar": true,
           "expr": "avg(aerospike_namespace_device_total_bytes{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})*(avg(aerospike_namespace_device_free_pct{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})/100)",
           "format": "time_series",
           "instant": true,
@@ -893,10 +943,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 3,
+        "h": 4,
         "w": 6,
         "x": 0,
-        "y": 12
+        "y": 13
       },
       "id": 358,
       "interval": null,
@@ -941,6 +991,200 @@
       "timeFrom": null,
       "timeShift": null,
       "title": "Partitions",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "description": "Number of Secondary Indexes in this namespace per node",
+      "fieldConfig": {
+        "defaults": {
+          "links": [],
+          "mappings": [
+            {
+              "from": "",
+              "id": 1,
+              "text": "N/A",
+              "to": "",
+              "type": 1,
+              "value": "null"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#299c46",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 6,
+        "y": 15
+      },
+      "id": 373,
+      "links": [],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.5.7",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "max(sum(aerospike_sets_sindexes{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}) by (cluster_name, ns, service))",
+          "format": "time_series",
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "Sindexes",
+          "refId": "C"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Sindexes",
+      "type": "stat"
+    },
+    {
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "description": "Indicates for any set in this namespace whether set index is populating",
+      "fieldConfig": {
+        "defaults": {
+          "links": [],
+          "mappings": [
+            {
+              "from": "",
+              "id": 1,
+              "text": "N/A",
+              "to": "",
+              "type": 1,
+              "value": "null"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#299c46",
+                "value": null
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Set Index Populating"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "#299c46",
+                      "value": null
+                    },
+                    {
+                      "color": "dark-orange",
+                      "value": 1
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "from": "",
+                    "id": 1,
+                    "text": "YES",
+                    "to": "",
+                    "type": 1,
+                    "value": "1"
+                  },
+                  {
+                    "from": "",
+                    "id": 2,
+                    "text": "NO",
+                    "to": "",
+                    "type": 1,
+                    "value": "0"
+                  },
+                  {
+                    "from": "",
+                    "id": 3,
+                    "text": "N/A",
+                    "to": "",
+                    "type": 1,
+                    "value": "null"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 9,
+        "y": 15
+      },
+      "id": 375,
+      "links": [],
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "7.5.7",
+      "targets": [
+        {
+          "exemplar": true,
+          "expr": "max(aerospike_sets_index_populating{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}) by (cluster_name,ns)",
+          "format": "time_series",
+          "instant": true,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "Set Index Populating",
+          "refId": "C"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Set Index Populating",
       "type": "stat"
     },
     {
@@ -994,10 +1238,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 3,
+        "h": 4,
         "w": 6,
         "x": 0,
-        "y": 15
+        "y": 17
       },
       "id": 113,
       "interval": null,
@@ -1100,7 +1344,7 @@
         "h": 3,
         "w": 6,
         "x": 6,
-        "y": 15
+        "y": 18
       },
       "id": 305,
       "links": [],
@@ -1174,7 +1418,7 @@
         "h": 3,
         "w": 6,
         "x": 12,
-        "y": 15
+        "y": 18
       },
       "id": 345,
       "interval": null,
@@ -1256,7 +1500,7 @@
         "h": 3,
         "w": 6,
         "x": 18,
-        "y": 15
+        "y": 18
       },
       "id": 361,
       "interval": null,
@@ -1312,7 +1556,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 21
       },
       "id": 181,
       "panels": [],
@@ -1339,7 +1583,7 @@
         "h": 9,
         "w": 12,
         "x": 0,
-        "y": 19
+        "y": 22
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -1479,7 +1723,7 @@
         "h": 9,
         "w": 12,
         "x": 12,
-        "y": 19
+        "y": 22
       },
       "hiddenSeries": false,
       "id": 179,
@@ -1590,7 +1834,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 28
+        "y": 31
       },
       "id": 191,
       "panels": [],
@@ -1617,7 +1861,7 @@
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 29
+        "y": 32
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -1746,7 +1990,7 @@
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 29
+        "y": 32
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -1877,7 +2121,7 @@
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 39
+        "y": 42
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -1999,7 +2243,7 @@
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 39
+        "y": 42
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -2117,7 +2361,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 49
+        "y": 52
       },
       "id": 211,
       "panels": [],
@@ -2144,7 +2388,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 50
+        "y": 53
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -2251,7 +2495,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 50
+        "y": 53
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -2358,7 +2602,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 50
+        "y": 53
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -2465,7 +2709,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 58
+        "y": 61
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -2572,7 +2816,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 58
+        "y": 61
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -2679,7 +2923,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 58
+        "y": 61
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -2786,7 +3030,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 66
+        "y": 69
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -2894,7 +3138,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 66
+        "y": 69
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -3001,7 +3245,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 66
+        "y": 69
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -3117,7 +3361,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 74
+        "y": 77
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -3226,7 +3470,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 74
+        "y": 77
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -3322,7 +3566,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 82
+        "y": 85
       },
       "id": 259,
       "panels": [],
@@ -3349,7 +3593,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 83
+        "y": 86
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -3474,7 +3718,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 83
+        "y": 86
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -3582,7 +3826,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 83
+        "y": 86
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -3689,7 +3933,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 91
+        "y": 94
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -3821,7 +4065,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 91
+        "y": 94
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -3927,7 +4171,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 91
+        "y": 94
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -4032,7 +4276,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 99
+        "y": 102
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -4147,7 +4391,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 99
+        "y": 102
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -4262,7 +4506,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 99
+        "y": 102
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -4376,7 +4620,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 107
+        "y": 110
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -4515,6 +4759,869 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "collapsed": true,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 118
+      },
+      "id": 365,
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+          "decimals": 0,
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "links": []
+            },
+            "overrides": []
+          },
+          "fill": 5,
+          "fillGradient": 5,
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 0,
+            "y": 140
+          },
+          "hiddenSeries": false,
+          "hideTimeOverride": false,
+          "id": 367,
+          "interval": "",
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.5.7",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "sum(rate(aerospike_namespace_query_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{ns}}: Success",
+              "refId": "B"
+            },
+            {
+              "exemplar": true,
+              "expr": "sum(rate(aerospike_namespace_query_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{ns}}: Error",
+              "refId": "A"
+            },
+            {
+              "exemplar": true,
+              "expr": "sum(rate(aerospike_namespace_query_basic_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{ns}}: Abort",
+              "refId": "C"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Basic Queries",
+          "tooltip": {
+            "shared": true,
+            "sort": 1,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "decimals": 0,
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+          "decimals": 0,
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "links": []
+            },
+            "overrides": []
+          },
+          "fill": 5,
+          "fillGradient": 5,
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 12,
+            "y": 140
+          },
+          "hiddenSeries": false,
+          "hideTimeOverride": false,
+          "id": 366,
+          "interval": "",
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.5.7",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "sum(rate(aerospike_namespace_query_aggr_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{ns}}: Success",
+              "refId": "B"
+            },
+            {
+              "exemplar": true,
+              "expr": "sum(rate(aerospike_namespace_query_aggr_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{ns}}: Error",
+              "refId": "A"
+            },
+            {
+              "exemplar": true,
+              "expr": "sum(rate(aerospike_namespace_query_aggr_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{ns}}: Abort",
+              "refId": "C"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Aggregate Queries",
+          "tooltip": {
+            "shared": true,
+            "sort": 1,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "decimals": 0,
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+          "decimals": 0,
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "links": []
+            },
+            "overrides": []
+          },
+          "fill": 5,
+          "fillGradient": 5,
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 0,
+            "y": 150
+          },
+          "hiddenSeries": false,
+          "hideTimeOverride": false,
+          "id": 368,
+          "interval": "",
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.5.7",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "sum(rate(aerospike_namespace_query_udf_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{ns}}: Success",
+              "refId": "B"
+            },
+            {
+              "exemplar": true,
+              "expr": "sum(rate(aerospike_namespace_query_udf_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{ns}}: Error",
+              "refId": "A"
+            },
+            {
+              "exemplar": true,
+              "expr": "sum(rate(aerospike_namespace_query_udf_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{ns}}: Abort",
+              "refId": "C"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "UDF BG Queries",
+          "tooltip": {
+            "shared": true,
+            "sort": 1,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "decimals": 0,
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+          "decimals": 0,
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "links": []
+            },
+            "overrides": []
+          },
+          "fill": 5,
+          "fillGradient": 5,
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 12,
+            "y": 150
+          },
+          "hiddenSeries": false,
+          "hideTimeOverride": false,
+          "id": 369,
+          "interval": "",
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.5.7",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "sum(rate(aerospike_namespace_query_ops_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{ns}}: Success",
+              "refId": "B"
+            },
+            {
+              "exemplar": true,
+              "expr": "sum(rate(aerospike_namespace_query_ops_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{ns}}: Error",
+              "refId": "A"
+            },
+            {
+              "exemplar": true,
+              "expr": "sum(rate(aerospike_namespace_query_ops_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{ns}}: Abort",
+              "refId": "C"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "OPS BG Queries",
+          "tooltip": {
+            "shared": true,
+            "sort": 1,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "decimals": 0,
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+          "decimals": 0,
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "links": []
+            },
+            "overrides": []
+          },
+          "fill": 5,
+          "fillGradient": 5,
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 0,
+            "y": 160
+          },
+          "hiddenSeries": false,
+          "hideTimeOverride": false,
+          "id": 370,
+          "interval": "",
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.5.7",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "sum(rate(aerospike_namespace_query_false_positives{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{ns}}: ",
+              "refId": "B"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "False Positives",
+          "tooltip": {
+            "shared": true,
+            "sort": 1,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "decimals": 0,
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+          "decimals": 0,
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "links": []
+            },
+            "overrides": []
+          },
+          "fill": 5,
+          "fillGradient": 5,
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 12,
+            "y": 160
+          },
+          "hiddenSeries": false,
+          "hideTimeOverride": false,
+          "id": 371,
+          "interval": "",
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.5.7",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "sum(rate(aerospike_namespace_sindex_gc_cleaned{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{ns}}: ",
+              "refId": "B"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Sindex GC Cleaned",
+          "tooltip": {
+            "shared": true,
+            "sort": 1,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "decimals": 0,
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+          "decimals": 0,
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "links": []
+            },
+            "overrides": []
+          },
+          "fill": 5,
+          "fillGradient": 5,
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 0,
+            "y": 170
+          },
+          "hiddenSeries": false,
+          "hideTimeOverride": false,
+          "id": 374,
+          "interval": "",
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.5.7",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "exemplar": true,
+              "expr": "sum(aerospike_namespace_query_basic_avg_rec_count{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}) by (job,cluster_name,ns)",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{ns}}: Basic",
+              "refId": "B"
+            },
+            {
+              "exemplar": true,
+              "expr": "sum(aerospike_namespace_query_aggr_avg_rec_count{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}) by (job,cluster_name,ns)",
+              "format": "time_series",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{ns}}: Aggr",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Average Record Count",
+          "tooltip": {
+            "shared": true,
+            "sort": 1,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "decimals": 0,
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        }
+      ],
+      "title": "Sindex/Query Statistics",
+      "type": "row"
     }
   ],
   "refresh": "1m",
