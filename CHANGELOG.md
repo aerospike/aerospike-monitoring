@@ -3,6 +3,12 @@
 This file documents all notable changes to Aerospike Monitoring Stack
 
 
+## [v1.3.2](https://github.com/aerospike/aerospike-monitoring/releases/tag/v1.3.2)
+
+### Improvements
+- [TOOLS-1785] - Added new metrics introduced in Aerospike 5.7
+
+
 ## [v1.3.1](https://github.com/aerospike/aerospike-monitoring/releases/tag/v1.3.1)
 
 ### Improvements
