@@ -3,6 +3,14 @@
 This file documents all notable changes to Aerospike Monitoring Stack
 
 
+## [v1.4.0](https://github.com/aerospike/aerospike-monitoring/releases/tag/v1.4.0)
+
+### Features
+- [TOOLS-1956] - Add `Jobs View` and `Secondary Index View` dashboards
+  - [TOOLS-1946] - Add support for per-job scan and query statistics
+  - [TOOLS-1947] - Add support for secondary index statistics
+
+
 ## [v1.3.2](https://github.com/aerospike/aerospike-monitoring/releases/tag/v1.3.2)
 
 ### Improvements
