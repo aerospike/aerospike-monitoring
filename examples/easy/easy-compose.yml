@@ -2,20 +2,6 @@
 version: '3.7'
 
 services:
-  exporter:
-    image: aerospike/aerospike-prometheus-exporter:latest
-    networks:
-    - aerospike
-    container_name: exporter
-    environment:
-    - AS_HOST=host.docker.internal
-    - AS_PORT=3000
-    - "METRIC_LABELS=type='development',source='aerospike'"
-    extra_hosts:
-    - "host.docker.internal:host-gateway"
-    ports:
-    - "9145:9145"
-
   prometheus:
     image: prom/prometheus:latest
     networks:
@@ -31,8 +17,6 @@ services:
     - source: ./config/prometheus/aerospike_rules.yml
       target: /etc/prometheus/aerospike_rules.yml
       type: bind
-    depends_on:
-    - exporter
     command:
     - '--config.file=/etc/prometheus/prometheus.yml'
     ports:
