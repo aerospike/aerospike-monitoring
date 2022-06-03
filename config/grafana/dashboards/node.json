@@ -1243,7 +1243,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
-      "description": "Queries per second",
+      "description": "Secondary index queries per second",
       "fieldConfig": {
         "defaults": {
           "links": []
@@ -1291,7 +1291,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "avg(aerospike_latencies_query_${latencytimeunit}_bucket{job=\"aerospike\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", le=~\"[0-9]*\"}) by (le)",
+          "expr": "avg(aerospike_latencies_si_query_${latencytimeunit}_bucket{job=\"aerospike\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", le=~\"[0-9]*\"}) by (le)",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -1300,7 +1300,7 @@
           "refId": "A"
         },
         {
-          "expr": "avg(aerospike_latencies_query_${latencytimeunit}_count{job=\"aerospike\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+          "expr": "avg(aerospike_latencies_si_query_${latencytimeunit}_count{job=\"aerospike\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "legendFormat": "Ops/sec",
           "refId": "B"
         }
@@ -1309,7 +1309,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Latency: Query / sec",
+      "title": "Latency: Sindex Query / sec",
       "tooltip": {
         "shared": true,
         "sort": 1,
@@ -1355,7 +1355,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
-      "description": "Client connections, fabric connections and heartbeat connections",
+      "description": "Primary index queries per second",
       "fieldConfig": {
         "defaults": {
           "links": []
@@ -1371,13 +1371,13 @@
         "y": 27
       },
       "hiddenSeries": false,
-      "id": 120,
+      "id": 102,
       "legend": {
         "alignAsTable": true,
         "avg": true,
         "current": true,
-        "hideEmpty": true,
-        "hideZero": true,
+        "hideEmpty": false,
+        "hideZero": false,
         "max": false,
         "min": false,
         "rightSide": true,
@@ -1403,34 +1403,25 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "aerospike_node_stats_client_connections{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
+          "expr": "avg(aerospike_latencies_pi_query_${latencytimeunit}_bucket{job=\"aerospike\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", le=~\"[0-9]*\"}) by (le)",
           "format": "time_series",
           "instant": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "Client Connections",
+          "legendFormat": "<={{le}}${latencytimeunit}",
           "refId": "A"
         },
         {
-          "expr": "aerospike_node_stats_fabric_connections{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "Fabric Connections",
+          "expr": "avg(aerospike_latencies_pi_query_${latencytimeunit}_count{job=\"aerospike\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+          "legendFormat": "Ops/sec",
           "refId": "B"
-        },
-        {
-          "expr": "aerospike_node_stats_heartbeat_connections{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "Heartbeat Connections",
-          "refId": "C"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Connections",
+      "title": "Latency: Pindex Query / sec",
       "tooltip": {
         "shared": true,
         "sort": 1,
@@ -1951,6 +1942,127 @@
       "timeRegions": [],
       "timeShift": null,
       "title": "Threads",
+      "tooltip": {
+        "shared": true,
+        "sort": 1,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "decimals": 0,
+          "format": "short",
+          "label": "Count",
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "decimals": 0,
+          "format": "short",
+          "label": "Count",
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "cacheTimeout": null,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "description": "Client connections, fabric connections and heartbeat connections",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 5,
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 43
+      },
+      "hiddenSeries": false,
+      "id": 120,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "hideEmpty": true,
+        "hideZero": true,
+        "max": false,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "7.5.7",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "aerospike_node_stats_client_connections{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "Client Connections",
+          "refId": "A"
+        },
+        {
+          "expr": "aerospike_node_stats_fabric_connections{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Fabric Connections",
+          "refId": "B"
+        },
+        {
+          "expr": "aerospike_node_stats_heartbeat_connections{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Heartbeat Connections",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Connections",
       "tooltip": {
         "shared": true,
         "sort": 1,
