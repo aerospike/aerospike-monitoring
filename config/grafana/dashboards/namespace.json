@@ -1831,7 +1831,7 @@
       "collapsed": false,
       "datasource": null,
       "gridPos": {
-        "h": 1,
+        "h": 10,
         "w": 24,
         "x": 0,
         "y": 31
@@ -1848,7 +1848,7 @@
       "dashes": false,
       "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
       "decimals": 0,
-      "description": "Shows per-second average rate of increase in batch_sub_read_success, batch_sub_read_not_found, batch_sub_read_error and batch_sub_read_timeout",
+      "description": "Shows per-second average rate of increase in batch transactions",
       "fieldConfig": {
         "defaults": {
           "links": []
@@ -1865,7 +1865,7 @@
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
-      "id": 183,
+      "id": 184,
       "interval": "",
       "legend": {
         "alignAsTable": true,
@@ -1896,16 +1896,16 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(aerospike_namespace_batch_sub_read_success{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+          "expr": "rate(aerospike_namespace_batch_sub_read_success{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_success{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_delete_success{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_udf_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
           "format": "time_series",
           "instant": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{service}}/{{ns}}: Total",
+          "legendFormat": "{{service}}/{{ns}}: Success",
           "refId": "B"
         },
         {
-          "expr": "rate(aerospike_namespace_batch_sub_read_not_found{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+          "expr": "rate(aerospike_namespace_batch_sub_read_not_found{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_not_found{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_delete_not_found{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_udf_not_found{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -1914,7 +1914,16 @@
           "refId": "C"
         },
         {
-          "expr": "rate(aerospike_namespace_batch_sub_read_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+          "expr": "rate(aerospike_namespace_batch_sub_read_filtered_out{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_filtered_out{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_delete_filtered_out{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_udf_filtered_out{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{service}}/{{ns}}: Filtered Out",
+          "refId": "E"
+        },
+        {
+          "expr": "rate(aerospike_namespace_batch_sub_read_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_delete_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_udf_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -1923,7 +1932,7 @@
           "refId": "D"
         },
         {
-          "expr": "rate(aerospike_namespace_batch_sub_read_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+          "expr": "rate(aerospike_namespace_batch_sub_read_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_delete_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_udf_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
           "legendFormat": "{{service}}/{{ns}}: Timeout",
           "refId": "A"
         }
@@ -1932,7 +1941,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Batch Sub Reads",
+      "title": "Batch Sub Transactions (TPS)",
       "tooltip": {
         "shared": true,
         "sort": 1,
@@ -1989,8 +1998,8 @@
       "gridPos": {
         "h": 10,
         "w": 12,
-        "x": 0,
-        "y": 42
+        "x": 12,
+        "y": 32
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -2118,7 +2127,7 @@
       "gridPos": {
         "h": 10,
         "w": 12,
-        "x": 12,
+        "x": 0,
         "y": 42
       },
       "hiddenSeries": false,
@@ -4635,6 +4644,652 @@
         "align": false,
         "alignLevel": null
       }
+    },
+    {
+      "collapsed": true,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 118
+      },
+      "id": 700,
+      "panels": [
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+          "decimals": 0,
+          "description": "Shows per-second average rate of increase in batch_sub_read_success, batch_sub_read_not_found, batch_sub_read_error and batch_sub_read_timeout",
+          "fieldConfig": {
+            "defaults": {
+              "links": []
+            },
+            "overrides": []
+          },
+          "fill": 5,
+          "fillGradient": 5,
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 0,
+            "y": 0
+          },
+          "hiddenSeries": false,
+          "hideTimeOverride": false,
+          "id": 701,
+          "interval": "",
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.5.7",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "rate(aerospike_namespace_batch_sub_read_success{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{service}}/{{ns}}: Success",
+              "refId": "B"
+            },
+            {
+              "expr": "rate(aerospike_namespace_batch_sub_read_not_found{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{service}}/{{ns}}: Not Found",
+              "refId": "C"
+            },
+            {
+              "expr": "rate(aerospike_namespace_batch_sub_read_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{service}}/{{ns}}: Error",
+              "refId": "D"
+            },
+            {
+              "expr": "rate(aerospike_namespace_batch_sub_read_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+              "legendFormat": "{{service}}/{{ns}}: Timeout",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Batch Sub Reads",
+          "tooltip": {
+            "shared": true,
+            "sort": 1,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "decimals": 0,
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+          "decimals": 0,
+          "description": "Shows per-second average rate of increase in batch_sub_write_success, batch_sub_write_not_found, batch_sub_write_error and batch_sub_write_timeout",
+          "fieldConfig": {
+            "defaults": {
+              "links": []
+            },
+            "overrides": []
+          },
+          "fill": 5,
+          "fillGradient": 5,
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 12,
+            "y": 0
+          },
+          "hiddenSeries": false,
+          "hideTimeOverride": false,
+          "id": 702,
+          "interval": "",
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.5.7",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "rate(aerospike_namespace_batch_sub_write_success{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{service}}/{{ns}}: Success",
+              "refId": "B"
+            },
+            {
+              "expr": "rate(aerospike_namespace_batch_sub_write_not_found{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{service}}/{{ns}}: Not Found",
+              "refId": "C"
+            },
+            {
+              "expr": "rate(aerospike_namespace_batch_sub_write_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{service}}/{{ns}}: Error",
+              "refId": "D"
+            },
+            {
+              "expr": "rate(aerospike_namespace_batch_sub_write_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+              "legendFormat": "{{service}}/{{ns}}: Timeout",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Batch Sub Writes",
+          "tooltip": {
+            "shared": true,
+            "sort": 1,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "decimals": 0,
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+          "decimals": 0,
+          "description": "Shows per-second average rate of increase in batch_sub_delete_success, batch_sub_delete_not_found, batch_sub_delete_error and batch_sub_delete_timeout",
+          "fieldConfig": {
+            "defaults": {
+              "links": []
+            },
+            "overrides": []
+          },
+          "fill": 5,
+          "fillGradient": 5,
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 0,
+            "y": 10
+          },
+          "hiddenSeries": false,
+          "hideTimeOverride": false,
+          "id": 703,
+          "interval": "",
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.5.7",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "rate(aerospike_namespace_batch_sub_delete_success{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{service}}/{{ns}}: Success",
+              "refId": "B"
+            },
+            {
+              "expr": "rate(aerospike_namespace_batch_sub_delete_not_found{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{service}}/{{ns}}: Not Found",
+              "refId": "C"
+            },
+            {
+              "expr": "rate(aerospike_namespace_batch_sub_delete_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{service}}/{{ns}}: Error",
+              "refId": "D"
+            },
+            {
+              "expr": "rate(aerospike_namespace_batch_sub_delete_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+              "legendFormat": "{{service}}/{{ns}}: Timeout",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Batch Sub Deletes",
+          "tooltip": {
+            "shared": true,
+            "sort": 1,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "decimals": 0,
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+          "decimals": 0,
+          "description": "Shows per-second average rate of increase in batch_sub_udf_success, batch_sub_udf_not_found, batch_sub_udf_error and batch_sub_udf_timeout",
+          "fieldConfig": {
+            "defaults": {
+              "links": []
+            },
+            "overrides": []
+          },
+          "fill": 5,
+          "fillGradient": 5,
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 12,
+            "y": 10
+          },
+          "hiddenSeries": false,
+          "hideTimeOverride": false,
+          "id": 704,
+          "interval": "",
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.5.7",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "rate(aerospike_namespace_batch_sub_udf_success{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{service}}/{{ns}}: Success",
+              "refId": "B"
+            },
+            {
+              "expr": "rate(aerospike_namespace_batch_sub_udf_not_found{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{service}}/{{ns}}: Not Found",
+              "refId": "C"
+            },
+            {
+              "expr": "rate(aerospike_namespace_batch_sub_udf_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{service}}/{{ns}}: Error",
+              "refId": "D"
+            },
+            {
+              "expr": "rate(aerospike_namespace_batch_sub_udf_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+              "legendFormat": "{{service}}/{{ns}}: Timeout",
+              "refId": "A"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Batch Sub UDF",
+          "tooltip": {
+            "shared": true,
+            "sort": 1,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "decimals": 0,
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        },
+        {
+          "aliasColors": {},
+          "bars": false,
+          "dashLength": 10,
+          "dashes": false,
+          "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+          "decimals": 0,
+          "description": "Shows per-second average rate of increase in batch_sub_tsvc_error, batch_sub_tsvc_timeout",
+          "fieldConfig": {
+            "defaults": {
+              "links": []
+            },
+            "overrides": []
+          },
+          "fill": 5,
+          "fillGradient": 5,
+          "gridPos": {
+            "h": 10,
+            "w": 12,
+            "x": 0,
+            "y": 10
+          },
+          "hiddenSeries": false,
+          "hideTimeOverride": false,
+          "id": 704,
+          "interval": "",
+          "legend": {
+            "alignAsTable": true,
+            "avg": true,
+            "current": true,
+            "max": true,
+            "min": true,
+            "rightSide": true,
+            "show": true,
+            "total": false,
+            "values": true
+          },
+          "lines": true,
+          "linewidth": 1,
+          "links": [],
+          "nullPointMode": "null",
+          "options": {
+            "alertThreshold": true
+          },
+          "percentage": false,
+          "pluginVersion": "7.5.7",
+          "pointradius": 2,
+          "points": false,
+          "renderer": "flot",
+          "seriesOverrides": [],
+          "spaceLength": 10,
+          "stack": false,
+          "steppedLine": false,
+          "targets": [
+            {
+              "expr": "rate(aerospike_namespace_batch_sub_tsvc_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{service}}/{{ns}}: Timeout",
+              "refId": "A"
+            },
+            {
+              "expr": "rate(aerospike_namespace_batch_sub_tsvc_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{service}}/{{ns}}: Error",
+              "refId": "B"
+            }
+          ],
+          "thresholds": [],
+          "timeFrom": null,
+          "timeRegions": [],
+          "timeShift": null,
+          "title": "Batch Sub TSVC",
+          "tooltip": {
+            "shared": true,
+            "sort": 1,
+            "value_type": "individual"
+          },
+          "type": "graph",
+          "xaxis": {
+            "buckets": null,
+            "mode": "time",
+            "name": null,
+            "show": true,
+            "values": []
+          },
+          "yaxes": [
+            {
+              "decimals": 0,
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": "0",
+              "show": true
+            },
+            {
+              "format": "short",
+              "label": "TPS",
+              "logBase": 1,
+              "max": null,
+              "min": null,
+              "show": true
+            }
+          ],
+          "yaxis": {
+            "align": false,
+            "alignLevel": null
+          }
+        }
+      ],
+      "title": "Batch Statistics",
+      "type": "row"
     },
     {
       "collapsed": true,
