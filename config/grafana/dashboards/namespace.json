@@ -1618,7 +1618,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(aerospike_namespace_client_read_success{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+rate(aerospike_namespace_client_read_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+rate(aerospike_namespace_client_read_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+rate(aerospike_namespace_client_read_not_found{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+          "expr": "rate(aerospike_namespace_client_read_success{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+rate(aerospike_namespace_client_read_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+rate(aerospike_namespace_client_read_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+rate(aerospike_namespace_client_read_not_found{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_read_success{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_read_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_read_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_read_not_found{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -1627,14 +1627,14 @@
           "refId": "B"
         },
         {
-          "expr": "rate(aerospike_namespace_client_read_success{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+          "expr": "rate(aerospike_namespace_client_read_success{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_read_success{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{service}}/{{ns}}: Successful",
           "refId": "A"
         },
         {
-          "expr": "rate(aerospike_namespace_client_read_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+          "expr": "rate(aerospike_namespace_client_read_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_read_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -1643,7 +1643,7 @@
           "refId": "C"
         },
         {
-          "expr": "rate(aerospike_namespace_client_read_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+          "expr": "rate(aerospike_namespace_client_read_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_read_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -1652,7 +1652,7 @@
           "refId": "D"
         },
         {
-          "expr": "sum by (job, cluster_name, service) (increase(aerospike_namespace_client_read_not_found{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
+          "expr": "rate(aerospike_namespace_client_read_not_found{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_read_not_found{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -1756,21 +1756,21 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "rate(aerospike_namespace_client_write_success{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+rate(aerospike_namespace_client_write_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+rate(aerospike_namespace_client_write_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+          "expr": "rate(aerospike_namespace_client_write_success{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+rate(aerospike_namespace_client_write_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+rate(aerospike_namespace_client_write_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_success{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{service}}/{{ns}}: Total",
           "refId": "B"
         },
         {
-          "expr": "rate(aerospike_namespace_client_write_success{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+          "expr": "rate(aerospike_namespace_client_write_success{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_success{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{service}}/{{ns}}: Successful",
           "refId": "A"
         },
         {
-          "expr": "rate(aerospike_namespace_client_write_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+          "expr": "rate(aerospike_namespace_client_write_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
           "format": "time_series",
           "interval": "",
           "intervalFactor": 1,
@@ -1778,7 +1778,7 @@
           "refId": "C"
         },
         {
-          "expr": "rate(aerospike_namespace_client_write_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
+          "expr": "rate(aerospike_namespace_client_write_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{service}}/{{ns}}: Error",
@@ -2035,7 +2035,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum by (job,cluster_name,ns)(rate(aerospike_namespace_pi_query_long_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_short_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_aggr_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_udf_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_ops_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_long_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_short_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_aggr_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_udf_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_ops_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
+          "expr": "rate(aerospike_namespace_pi_query_long_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_short_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_aggr_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_udf_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_ops_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_long_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_short_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_aggr_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_udf_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_ops_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
           "format": "time_series",
           "instant": false,
           "interval": "",
@@ -2045,7 +2045,7 @@
         },
         {
           "exemplar": true,
-          "expr": "sum by (job,cluster_name,ns)(rate(aerospike_namespace_pi_query_long_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_short_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_aggr_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_udf_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_ops_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_long_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_short_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_aggr_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_udf_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_ops_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
+          "expr": "rate(aerospike_namespace_pi_query_long_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_short_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_aggr_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_udf_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_ops_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_long_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_short_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_aggr_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_udf_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_ops_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -2056,7 +2056,7 @@
         },
         {
           "exemplar": true,
-          "expr": "sum by (job,cluster_name,ns)(rate(aerospike_namespace_pi_query_long_basic_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_short_basic_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_aggr_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_udf_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_ops_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_long_basic_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_short_basic_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_aggr_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_udf_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_ops_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
+          "expr": "rate(aerospike_namespace_pi_query_long_basic_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_short_basic_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_aggr_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_udf_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_ops_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_long_basic_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_short_basic_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_aggr_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_udf_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_ops_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -5358,34 +5358,34 @@
           "targets": [
             {
               "exemplar": true,
-              "expr": "sum by (job,cluster_name,ns)(rate(aerospike_namespace_pi_query_long_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_short_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_aggr_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_udf_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_ops_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
+              "expr": "rate(aerospike_namespace_pi_query_long_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_short_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_aggr_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_udf_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_ops_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Success",
+              "legendFormat": "{{service}}/{{ns}}: Success",
               "refId": "B"
             },
             {
               "exemplar": true,
-              "expr": "sum by (job,cluster_name,ns)(rate(aerospike_namespace_pi_query_long_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_short_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_aggr_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_udf_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_ops_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
+              "expr": "rate(aerospike_namespace_pi_query_long_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_short_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_aggr_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_udf_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_ops_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Error",
+              "legendFormat": "{{service}}/{{ns}}: Error",
               "refId": "A"
             },
             {
               "exemplar": true,
-              "expr": "sum by (job,cluster_name,ns)(rate(aerospike_namespace_pi_query_long_basic_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_short_basic_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_aggr_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_udf_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_ops_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
+              "expr": "rate(aerospike_namespace_pi_query_long_basic_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_short_basic_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_aggr_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_udf_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_ops_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Abort/Timeout",
+              "legendFormat": "{{service}}/{{ns}}: Abort/Timeout",
               "refId": "C"
             }
           ],
@@ -5487,34 +5487,34 @@
           "targets": [
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_pi_query_long_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns) + sum(rate(aerospike_namespace_pi_query_short_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_pi_query_long_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_short_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Success",
+              "legendFormat": "{{service}}/{{ns}}: Success",
               "refId": "B"
             },
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_pi_query_long_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns) + sum(rate(aerospike_namespace_pi_query_short_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_pi_query_long_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_short_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Error",
+              "legendFormat": "{{service}}/{{ns}}: Error",
               "refId": "A"
             },
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_pi_query_long_basic_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns) + sum(rate(aerospike_namespace_pi_query_short_basic_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_pi_query_long_basic_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_pi_query_short_basic_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Abort/Timeout",
+              "legendFormat": "{{service}}/{{ns}}: Abort/Timeout",
               "refId": "C"
             }
           ],
@@ -5616,34 +5616,34 @@
           "targets": [
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_pi_query_aggr_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_pi_query_aggr_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Success",
+              "legendFormat": "{{service}}/{{ns}}: Success",
               "refId": "B"
             },
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_pi_query_aggr_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_pi_query_aggr_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Error",
+              "legendFormat": "{{service}}/{{ns}}: Error",
               "refId": "A"
             },
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_pi_query_aggr_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_pi_query_aggr_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Abort",
+              "legendFormat": "{{service}}/{{ns}}: Abort",
               "refId": "C"
             }
           ],
@@ -5745,34 +5745,34 @@
           "targets": [
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_pi_query_udf_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_pi_query_udf_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Success",
+              "legendFormat": "{{service}}/{{ns}}: Success",
               "refId": "B"
             },
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_pi_query_udf_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_pi_query_udf_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Error",
+              "legendFormat": "{{service}}/{{ns}}: Error",
               "refId": "A"
             },
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_pi_query_udf_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_pi_query_udf_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Abort/Timeout",
+              "legendFormat": "{{service}}/{{ns}}: Abort/Timeout",
               "refId": "C"
             }
           ],
@@ -5874,34 +5874,34 @@
           "targets": [
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_pi_query_ops_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_pi_query_ops_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Success",
+              "legendFormat": "{{service}}/{{ns}}: Success",
               "refId": "B"
             },
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_pi_query_ops_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_pi_query_ops_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Error",
+              "legendFormat": "{{service}}/{{ns}}: Error",
               "refId": "A"
             },
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_pi_query_ops_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_pi_query_ops_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Abort/Timeout",
+              "legendFormat": "{{service}}/{{ns}}: Abort/Timeout",
               "refId": "C"
             }
           ],
@@ -6018,34 +6018,34 @@
           "targets": [
             {
               "exemplar": true,
-              "expr": "sum by (job,cluster_name,ns)(rate(aerospike_namespace_si_query_long_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_short_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_aggr_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_udf_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_ops_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
+              "expr": "rate(aerospike_namespace_si_query_long_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_short_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_aggr_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_udf_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_ops_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Success",
+              "legendFormat": "{{service}}/{{ns}}: Success",
               "refId": "B"
             },
             {
               "exemplar": true,
-              "expr": "sum by (job,cluster_name,ns)(rate(aerospike_namespace_si_query_long_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_short_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_aggr_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_udf_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_ops_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
+              "expr": "rate(aerospike_namespace_si_query_long_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_short_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_aggr_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_udf_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_ops_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Error",
+              "legendFormat": "{{service}}/{{ns}}: Error",
               "refId": "A"
             },
             {
               "exemplar": true,
-              "expr": "sum by (job,cluster_name,ns)(rate(aerospike_namespace_si_query_long_basic_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_short_basic_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_aggr_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_udf_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_ops_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
+              "expr": "rate(aerospike_namespace_si_query_long_basic_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_short_basic_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_aggr_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_udf_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_ops_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Abort/Timeout",
+              "legendFormat": "{{service}}/{{ns}}: Abort/Timeout",
               "refId": "C"
             }
           ],
@@ -6147,34 +6147,34 @@
           "targets": [
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_si_query_long_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns) + sum(rate(aerospike_namespace_si_query_short_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_si_query_long_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_short_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Success",
+              "legendFormat": "{{service}}/{{ns}}: Success",
               "refId": "B"
             },
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_si_query_long_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns) + sum(rate(aerospike_namespace_si_query_short_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_si_query_long_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_short_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Error",
+              "legendFormat": "{{service}}/{{ns}}: Error",
               "refId": "A"
             },
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_si_query_long_basic_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns) + sum(rate(aerospike_namespace_si_query_short_basic_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_si_query_long_basic_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_si_query_short_basic_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Abort/Timeout",
+              "legendFormat": "{{service}}/{{ns}}: Abort/Timeout",
               "refId": "C"
             }
           ],
@@ -6276,34 +6276,34 @@
           "targets": [
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_si_query_short_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_si_query_short_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Success",
+              "legendFormat": "{{service}}/{{ns}}: Success",
               "refId": "B"
             },
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_si_query_short_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_si_query_short_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Error",
+              "legendFormat": "{{service}}/{{ns}}: Error",
               "refId": "A"
             },
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_si_query_short_basic_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_si_query_short_basic_timeout{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Timeout",
+              "legendFormat": "{{service}}/{{ns}}: Timeout",
               "refId": "C"
             }
           ],
@@ -6405,34 +6405,34 @@
           "targets": [
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_si_query_long_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_si_query_long_basic_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Success",
+              "legendFormat": "{{service}}/{{ns}}: Success",
               "refId": "B"
             },
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_si_query_long_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_si_query_long_basic_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Error",
+              "legendFormat": "{{service}}/{{ns}}: Error",
               "refId": "A"
             },
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_si_query_long_basic_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_si_query_long_basic_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Abort",
+              "legendFormat": "{{service}}/{{ns}}: Abort",
               "refId": "C"
             }
           ],
@@ -6534,34 +6534,34 @@
           "targets": [
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_si_query_aggr_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_si_query_aggr_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Success",
+              "legendFormat": "{{service}}/{{ns}}: Success",
               "refId": "B"
             },
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_si_query_aggr_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_si_query_aggr_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Error",
+              "legendFormat": "{{service}}/{{ns}}: Error",
               "refId": "A"
             },
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_si_query_aggr_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_si_query_aggr_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Abort",
+              "legendFormat": "{{service}}/{{ns}}: Abort",
               "refId": "C"
             }
           ],
@@ -6663,34 +6663,34 @@
           "targets": [
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_si_query_udf_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_si_query_udf_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Success",
+              "legendFormat": "{{service}}/{{ns}}: Success",
               "refId": "B"
             },
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_si_query_udf_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_si_query_udf_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Error",
+              "legendFormat": "{{service}}/{{ns}}: Error",
               "refId": "A"
             },
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_si_query_udf_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_si_query_udf_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Abort",
+              "legendFormat": "{{service}}/{{ns}}: Abort",
               "refId": "C"
             }
           ],
@@ -6792,34 +6792,34 @@
           "targets": [
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_si_query_ops_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_si_query_ops_bg_complete{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Success",
+              "legendFormat": "{{service}}/{{ns}}: Success",
               "refId": "B"
             },
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_si_query_ops_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_si_query_ops_bg_error{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Error",
+              "legendFormat": "{{service}}/{{ns}}: Error",
               "refId": "A"
             },
             {
               "exemplar": true,
-              "expr": "sum(rate(aerospike_namespace_si_query_ops_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])) by (job,cluster_name,ns)",
+              "expr": "rate(aerospike_namespace_si_query_ops_bg_abort{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])",
               "format": "time_series",
               "hide": false,
               "instant": false,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{ns}}: Abort",
+              "legendFormat": "{{service}}/{{ns}}: Abort",
               "refId": "C"
             }
           ],
@@ -6899,7 +6899,7 @@
           "gridPos": {
             "h": 10,
             "w": 12,
-            "x": 12,
+            "x": 0,
             "y": 160
           },
           "hiddenSeries": false,
