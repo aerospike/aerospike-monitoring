@@ -96,44 +96,39 @@
       "type": "text"
     },
     {
+      "cacheTimeout": null,
       "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
-      "description": "Priority of the job",
+      "description": "Job Type",
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
+          "decimals": 0,
           "mappings": [],
           "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "semi-dark-green",
-                "value": null
-              }
-            ]
+            "mode": "absolute"
           },
-          "unit": "short"
+          "unit": "string"
         },
         "overrides": []
       },
       "gridPos": {
         "h": 4,
         "w": 4,
-        "x": 8,
+        "x": 12,
         "y": 1
       },
-      "id": 7,
+      "id": 5,
+      "interval": null,
+      "links": [],
+      "maxDataPoints": 100,
       "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
-          "fields": "",
+          "fields": "/^job_type$/",
           "values": false
         },
         "text": {},
@@ -142,17 +137,17 @@
       "pluginVersion": "7.5.4",
       "targets": [
         {
-          "exemplar": true,
-          "expr": "max(aerospike_jobs_priority{job=\"aerospike\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", set=~\"$set\", trid=~\"$job_id\"})",
-          "hide": false,
+          "expr": "aerospike_jobs_job_progress{job=\"aerospike\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", set=~\"$set\", trid=~\"$job_id\"}",
+          "format": "table",
           "instant": true,
-          "interval": "",
-          "legendFormat": "Priority",
-          "queryType": "randomWalk",
-          "refId": "B"
+          "intervalFactor": 1,
+          "legendFormat": "",
+          "refId": "A"
         }
       ],
-      "title": "Priority",
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Job Type",
       "type": "stat"
     },
     {
@@ -184,8 +179,8 @@
       "gridPos": {
         "h": 4,
         "w": 4,
-        "x": 12,
-        "y": 1
+        "x": 8,
+        "y": 9
       },
       "id": 14,
       "options": {
@@ -871,76 +866,6 @@
       ],
       "title": "Socket Timeout",
       "type": "stat"
-    },
-    {
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
-      "description": "Number of active UDF transactions (background-udf scans only)\n\nNumber of active background ops transactions (background-ops scans only)",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "semi-dark-green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 8,
-        "y": 9
-      },
-      "id": 25,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "center",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "text": {},
-        "textMode": "auto"
-      },
-      "pluginVersion": "7.5.4",
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "sum(aerospike_jobs_udf_active{job=\"aerospike\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", set=~\"$set\", trid=~\"$job_id\"})",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "udf",
-          "queryType": "randomWalk",
-          "refId": "B"
-        },
-        {
-          "exemplar": true,
-          "expr": "sum(aerospike_jobs_ops_active{job=\"aerospike\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", set=~\"$set\", trid=~\"$job_id\"})",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "bg ops",
-          "queryType": "randomWalk",
-          "refId": "A"
-        }
-      ],
-      "title": "Active UDF / Background OPS Txns",
-      "type": "stat"
     }
   ],
   "schemaVersion": 27,
@@ -1054,7 +979,7 @@
         "allValue": null,
         "current": {},
         "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
-        "definition": "label_values(aerospike_jobs_priority{job=\"aerospike\", cluster_name=~\"$cluster|$^\", ns=~\"$namespace|$^\", set=~\"$set|$^\" },trid)",
+        "definition": "label_values(aerospike_jobs_job_progress{job=\"aerospike\", cluster_name=~\"$cluster|$^\", ns=~\"$namespace|$^\", set=~\"$set|$^\" },trid)",
         "description": null,
         "error": null,
         "hide": 0,
@@ -1064,7 +989,7 @@
         "name": "job_id",
         "options": [],
         "query": {
-          "query": "label_values(aerospike_jobs_priority{job=\"aerospike\", cluster_name=~\"$cluster|$^\", ns=~\"$namespace|$^\", set=~\"$set|$^\" },trid)",
+          "query": "label_values(aerospike_jobs_job_progress{job=\"aerospike\", cluster_name=~\"$cluster|$^\", ns=~\"$namespace|$^\", set=~\"$set|$^\" },trid)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
