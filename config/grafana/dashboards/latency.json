@@ -55,209 +55,201 @@
       "type": "row"
     },
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
-      "description": "$operation latency",
+      "datasource": "Aerospike Prometheus",
+      "description": "Average across all nodes counted into buckets from 0 to 2^16",
       "fieldConfig": {
         "defaults": {
-          "links": []
+          "decimals": 0,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "#EAB839",
+                "value": 2
+              },
+              {
+                "color": "#EF843C",
+                "value": 4
+              },
+              {
+                "color": "red",
+                "value": 16
+              }
+            ]
+          },
+          "unit": "ms"
         },
         "overrides": []
       },
-      "fill": 5,
-      "fillGradient": 5,
       "gridPos": {
         "h": 9,
-        "w": 12,
+        "w": 4,
         "x": 0,
         "y": 1
       },
-      "hiddenSeries": false,
-      "id": 5,
-      "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": true,
-        "max": false,
-        "min": false,
-        "rightSide": true,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
+      "id": 20,
       "options": {
-        "alertThreshold": true
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
       },
-      "percentage": false,
-      "pluginVersion": "7.5.4",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "repeat": null,
-      "repeatDirection": "h",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
+      "pluginVersion": "7.5.12",
+      "scopedVars": {
+        "operation": {
+          "selected": false,
+          "text": "read",
+          "value": "read"
+        }
+      },
       "targets": [
         {
-          "expr": "avg(aerospike_latencies_${operation}_${latencytimeunit}_bucket{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", le=~\"[0-9]*\"}) by (le,ns,service)",
-          "hide": false,
+          "exemplar": true,
+          "expr": "avg by (ns) (histogram_quantile(0.95, (aerospike_latencies_${operation}_${latencytimeunit}_bucket{cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})))",
           "instant": false,
-          "legendFormat": "{{service}}/{{ns}} : <= {{le}}${latencytimeunit}",
+          "interval": "",
+          "legendFormat": "p95",
           "refId": "A"
         },
         {
-          "expr": "avg(aerospike_latencies_${operation}_${latencytimeunit}_count{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}) by (le,ns,service)",
-          "hide": false,
-          "instant": false,
-          "legendFormat": "{{service}}/{{ns}} : ops/sec",
+          "exemplar": true,
+          "expr": "avg by (ns) (histogram_quantile(0.99, (aerospike_latencies_${operation}_${latencytimeunit}_bucket{cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})))",
+          "interval": "",
+          "legendFormat": "p99",
           "refId": "B"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Latency $operation",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": "Ops/sec",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
         },
         {
-          "format": "short",
-          "label": "Ops/sec",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
+          "exemplar": true,
+          "expr": "avg by (ns) (histogram_quantile(0.999, (aerospike_latencies_${operation}_${latencytimeunit}_bucket{cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})))",
+          "instant": false,
+          "interval": "",
+          "legendFormat": "p99.9",
+          "refId": "C"
         }
       ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Percentiles $operation",
+      "type": "stat"
     },
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
-      "description": "90th percentile of $operation request durations over the last 1m",
+      "cards": {
+        "cardPadding": null,
+        "cardRound": null
+      },
+      "color": {
+        "cardColor": "#5794F2",
+        "colorScale": "sqrt",
+        "colorScheme": "interpolateSpectral",
+        "exponent": 0.3,
+        "max": null,
+        "min": null,
+        "mode": "spectrum"
+      },
+      "dataFormat": "tsbuckets",
+      "datasource": "Aerospike Prometheus",
       "fieldConfig": {
-        "defaults": {
-          "links": []
-        },
+        "defaults": {},
         "overrides": []
       },
-      "fill": 5,
-      "fillGradient": 5,
       "gridPos": {
         "h": 9,
-        "w": 12,
-        "x": 12,
+        "w": 20,
+        "x": 4,
         "y": 1
       },
-      "hiddenSeries": false,
-      "id": 9,
+      "heatmap": {},
+      "hideZeroBuckets": true,
+      "highlightCards": true,
+      "id": 14,
       "legend": {
-        "alignAsTable": true,
-        "avg": true,
-        "current": true,
-        "max": false,
-        "min": false,
-        "rightSide": true,
-        "show": true,
-        "total": false,
-        "values": true
+        "show": true
       },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
+      "pluginVersion": "7.5.12",
+      "repeat": null,
+      "repeatDirection": "v",
+      "reverseYBuckets": false,
+      "scopedVars": {
+        "operation": {
+          "selected": false,
+          "text": "read",
+          "value": "read"
+        }
       },
-      "percentage": false,
-      "pluginVersion": "7.5.4",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
       "targets": [
         {
-          "expr": "histogram_quantile(0.9, rate(aerospike_latencies_${operation}_${latencytimeunit}_bucket{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
-          "legendFormat": "{{service}}/{{ns}}",
-          "refId": "A"
+          "exemplar": true,
+          "expr": "sum by (le) (aerospike_latencies_${operation}_${latencytimeunit}_bucket{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\"})",
+          "format": "heatmap",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{ le }}",
+          "refId": "C"
         }
       ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Histogram Quantile 90% $operation ($latencytimeunit)",
+      "title": "Latency $operation",
       "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
         "show": true,
-        "values": []
+        "showHistogram": true
       },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": "",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": "",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
+      "tooltipDecimals": 3,
+      "type": "heatmap",
+      "xAxis": {
+        "show": true
+      },
+      "xBucketNumber": null,
+      "xBucketSize": null,
+      "yAxis": {
+        "decimals": null,
+        "format": "ms",
+        "logBase": 1,
+        "max": null,
+        "min": null,
+        "show": true,
+        "splitFactor": null
+      },
+      "yBucketBound": "auto",
+      "yBucketNumber": null,
+      "yBucketSize": null
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 14
+      },
+      "id": 28,
+      "panels": [],
+      "repeatIteration": 1660073125493,
+      "repeatPanelId": 2,
+      "scopedVars": {
+        "operation": {
+          "selected": false,
+          "text": "write",
+          "value": "write"
         }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
+      },
+      "title": "$operation",
+      "type": "row"
     }
   ],
   "refresh": "1m",
