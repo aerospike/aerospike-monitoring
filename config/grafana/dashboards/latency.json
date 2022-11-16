@@ -192,7 +192,7 @@
       "targets": [
         {
           "exemplar": true,
-          "expr": "sum by (le) (aerospike_latencies_${operation}_${latencytimeunit}_bucket{job=\"aerospike\", cluster_name=~\"$cluster\", service=~\"$node|$^\"})",
+          "expr": "sum by (le) (aerospike_latencies_${operation}_${latencytimeunit}_bucket{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"})",
           "format": "heatmap",
           "hide": false,
           "instant": false,
@@ -261,7 +261,7 @@
         "allValue": null,
         "current": {},
         "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
-        "definition": "label_values(aerospike_node_stats_uptime{job=\"aerospike\"},cluster_name)",
+        "definition": "label_values(aerospike_node_stats_uptime{job=\"$job_name\"},cluster_name)",
         "description": null,
         "error": null,
         "hide": 0,
@@ -271,7 +271,7 @@
         "name": "cluster",
         "options": [],
         "query": {
-          "query": "label_values(aerospike_node_stats_uptime{job=\"aerospike\"},cluster_name)",
+          "query": "label_values(aerospike_node_stats_uptime{job=\"$job_name\"},cluster_name)",
           "refId": "Aerospike Prometheus-cluster-Variable-Query"
         },
         "refresh": 2,
@@ -288,7 +288,7 @@
         "allValue": null,
         "current": {},
         "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
-        "definition": "label_values(aerospike_node_stats_uptime{job=\"aerospike\", cluster_name=~\"$cluster|$^\"},service)",
+        "definition": "label_values(aerospike_node_stats_uptime{job=\"$job_name\", cluster_name=~\"$cluster|$^\"},service)",
         "description": null,
         "error": null,
         "hide": 0,
@@ -298,7 +298,7 @@
         "name": "node",
         "options": [],
         "query": {
-          "query": "label_values(aerospike_node_stats_uptime{job=\"aerospike\", cluster_name=~\"$cluster|$^\"},service)",
+          "query": "label_values(aerospike_node_stats_uptime{job=\"$job_name\", cluster_name=~\"$cluster|$^\"},service)",
           "refId": "Aerospike Prometheus-node-Variable-Query"
         },
         "refresh": 2,
@@ -315,7 +315,7 @@
         "allValue": null,
         "current": {},
         "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
-        "definition": "label_values(aerospike_namespace_objects{job=\"aerospike\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\" },ns)",
+        "definition": "label_values(aerospike_namespace_objects{job=\"$job_name\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\" },ns)",
         "description": null,
         "error": null,
         "hide": 0,
@@ -325,7 +325,7 @@
         "name": "namespace",
         "options": [],
         "query": {
-          "query": "label_values(aerospike_namespace_objects{job=\"aerospike\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\" },ns)",
+          "query": "label_values(aerospike_namespace_objects{job=\"$job_name\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\" },ns)",
           "refId": "Aerospike Prometheus-namespace-Variable-Query"
         },
         "refresh": 2,
@@ -412,6 +412,33 @@
         "regex": "",
         "skipUrlSync": false,
         "type": "datasource"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "aerospike",
+          "value": "aerospike"
+        },
+        "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+        "definition": "label_values(aerospike_node_stats_uptime,job)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "job_name",
+        "multi": false,
+        "name": "job_name",
+        "options": [],
+        "query": {
+          "query": "label_values(aerospike_node_stats_uptime,job)",
+          "refId": "Aerospike Prometheus-job-Variable-Query"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
       }
     ]
   },
