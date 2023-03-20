@@ -295,6 +295,18 @@
           "legendFormat": "Truncations",
           "range": true,
           "refId": "C"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P07E1502634787998"
+          },
+          "editorMode": "code",
+          "expr": "aerospike_sets_stop_writes_count{set=~\"$set\", cluster_name=\"$cluster\", ns=\"$namespace\", job=\"$job_name\"}",
+          "hide": false,
+          "legendFormat": "Truncations",
+          "range": true,
+          "refId": "D"
         }
       ],
       "title": "Objects",
@@ -791,9 +803,21 @@
           },
           "editorMode": "code",
           "expr": "((aerospike_sets_device_data_bytes{set=~\"$set\", cluster_name=\"$cluster\", ns=\"$namespace\", job=\"$job_name\"} + aerospike_sets_memory_data_bytes{set=~\"$set\", cluster_name=\"$cluster\", ns=\"$namespace\", job=\"$job_name\"} ) / aerospike_sets_stop_writes_size{set=~\"$set\", cluster_name=\"$cluster\", ns=\"$namespace\", job=\"$job_name\"} * 100)<100000",
-          "legendFormat": "__auto",
+          "legendFormat": "Size",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "P07E1502634787998"
+          },
+          "editorMode": "code",
+          "expr": "((aerospike_sets_objects{set=~\"$set\", cluster_name=\"$cluster\", ns=\"$namespace\", job=\"$job_name\"} + aerospike_sets_tombstones{set=~\"$set\", cluster_name=\"$cluster\", ns=\"$namespace\", job=\"$job_name\"} ) / aerospike_sets_stop_writes_count{set=~\"$set\", cluster_name=\"$cluster\", ns=\"$namespace\", job=\"$job_name\"} * 100)<100000",
+          "hide": false,
+          "legendFormat": "Count",
+          "range": true,
+          "refId": "B"
         }
       ],
       "title": "Quota Usage",
@@ -961,13 +985,13 @@
     ]
   },
   "time": {
-    "from": "now-5m",
+    "from": "now-3h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Set Dashboard",
   "uid": "A4YjjqbVk",
-  "version": 4,
+  "version": 5,
   "weekStart": ""
 }
