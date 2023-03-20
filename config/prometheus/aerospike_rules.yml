@@ -113,3 +113,19 @@ groups:
       annotations:
         description: 'Active proxies detected for {{ $labels.ns }} on node {{ $labels.instance }}'
         summary: Node is doing proxy. Proxies can happen during cluster change / migrations or if there are any network issues.
+    - alert: NamespaceSupervisorFallingBehind
+      expr: aerospike_namespace_nsup_cycle_deleted_pct{job="aerospike"} > 1 # (Aerospike 6.3 and later) 
+      for: 30s
+      labels:
+        severity: "1"
+      annotations:
+        description: 'There seems some lag falling behind and/or display the length of time the most recent NSUP cycle lasted {{ $labels.ns }} in node {{ $labels.instance }}'
+        summary: NSUP is falling behind and/or display the length of time the most recent NSUP cycle lasted
+    - alert: NamespaceFreeMemoryCloseToStopWrites
+      expr: ((min by (ns) (aerospike_namespace_stop_writes_sys_memory_pct{job="aerospike"} ) ) - (scalar((100-(aerospike_node_stats_system_free_mem_pct{job="aerospike"}))))) <= 10
+      for: 30s
+      labels:
+        severity: "1"
+      annotations:
+        description: 'Free memory for namespace {{ $labels.ns }} in node {{ $labels.instance }} is close to stop writes limit.'
+        summary: Close to stop writes for {{ $labels.instance }}/{{ $labels.ns }} due to memory
