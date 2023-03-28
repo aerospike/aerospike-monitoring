@@ -1,65 +1,39 @@
 {
-  "__requires": [
-    {
-      "type": "panel",
-      "id": "gauge",
-      "name": "Gauge",
-      "version": ""
-    },
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "7.5.4"
-    },
-    {
-      "type": "panel",
-      "id": "graph",
-      "name": "Graph",
-      "version": ""
-    },
-    {
-      "type": "datasource",
-      "id": "prometheus",
-      "name": "Prometheus",
-      "version": "1.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "stat",
-      "name": "Stat",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "text",
-      "name": "Text",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
   "editable": true,
-  "gnetId": null,
+  "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
-  "iteration": 1647197310687,
+  "id": 23,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
       "collapsed": false,
-      "datasource": null,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bUvST0hVk"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -68,16 +42,24 @@
       },
       "id": 13,
       "panels": [],
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "bUvST0hVk"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "Summary",
       "type": "row"
     },
     {
-      "datasource": null,
-      "description": "Secondary Index Name",
-      "fieldConfig": {
-        "defaults": {},
-        "overrides": []
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bUvST0hVk"
       },
+      "description": "Secondary Index Name",
       "gridPos": {
         "h": 4,
         "w": 8,
@@ -86,23 +68,33 @@
       },
       "id": 4,
       "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
         "content": "<center><h1 style=\"color:#299c46;\">$sindex</h1></center>",
         "mode": "html"
       },
-      "pluginVersion": "7.5.4",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "bUvST0hVk"
+          },
           "queryType": "randomWalk",
           "refId": "A"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Secondary Index Name",
       "type": "text"
     },
     {
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Amount of memory, in bytes, consumed by the secondary index.",
       "fieldConfig": {
         "defaults": {
@@ -145,11 +137,15 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.4",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
           "exemplar": true,
-          "expr": "avg(aerospike_sindex_memory_used{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", sindex=~\"$sindex\"})",
+          "expr": "avg(aerospike_sindex_memory_used{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", sindex=~\"$sindex\"})\nor \navg(aerospike_sindex_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", sindex=~\"$sindex\"})",
           "hide": false,
           "instant": true,
           "interval": "",
@@ -162,7 +158,167 @@
       "type": "stat"
     },
     {
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "Ratio of secondary index entries to unique bin values. This uses the aerospike_sindex_entries_per_bval metric.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "semi-dark-green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 12,
+        "y": 1
+      },
+      "id": 30,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "exemplar": true,
+          "expr": "sum(aerospike_sindex_entries_per_bval{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", sindex=~\"$sindex\"})",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "Entries/Bins",
+          "queryType": "randomWalk",
+          "refId": "B"
+        }
+      ],
+      "title": "Entries/Bins",
+      "type": "stat"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "Number of records that have been garbage collected out of the secondary index memory.",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 1
+      },
+      "hiddenSeries": false,
+      "id": 20,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "9.3.2",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "exemplar": true,
+          "expr": "sum(increase(aerospike_sindex_stat_gc_recs{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", sindex=~\"$sindex\"}[5m]))",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "Record count",
+          "queryType": "randomWalk",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "Garbage collection",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        },
+        {
+          "format": "short",
+          "logBase": 1,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
+      }
+    },
+    {
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Progress in percentage of the creation of secondary index",
       "fieldConfig": {
         "defaults": {
@@ -170,6 +326,8 @@
             "mode": "thresholds"
           },
           "mappings": [],
+          "max": 100,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -207,9 +365,12 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "7.5.4",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "exemplar": true,
           "expr": "min(aerospike_sindex_load_pct{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", sindex=~\"$sindex\"})",
           "hide": false,
@@ -224,7 +385,9 @@
       "type": "gauge"
     },
     {
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Maximum time it took for the secondary index to be fully created",
       "fieldConfig": {
         "defaults": {
@@ -271,9 +434,12 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.4",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "exemplar": true,
           "expr": "max(aerospike_sindex_load_time{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", sindex=~\"$sindex\"})",
           "hide": false,
@@ -288,7 +454,9 @@
       "type": "stat"
     },
     {
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Number of secondary index entries for this secondary index. This is the number of records that have been indexed by this secondary index.",
       "fieldConfig": {
         "defaults": {
@@ -330,9 +498,12 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.4",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "exemplar": true,
           "expr": "sum(aerospike_sindex_entries{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", sindex=~\"$sindex\"}) / max(aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})",
           "hide": false,
@@ -347,66 +518,9 @@
       "type": "stat"
     },
     {
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
-      "description": "Ratio of secondary index entries to unique bin values. This uses the aerospike_sindex_entries_per_bval metric.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "semi-dark-green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 12,
-        "y": 1
-      },
-      "id": 30,
-      "options": {
-        "colorMode": "background",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "text": {},
-        "textMode": "auto"
-      },
-      "pluginVersion": "7.5.4",
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "sum(aerospike_sindex_entries_per_bval{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", sindex=~\"$sindex\"})",
-          "hide": false,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "Entries/Bins",
-          "queryType": "randomWalk",
-          "refId": "B"
-        }
-      ],
-      "title": "Entries/Bins",
-      "type": "stat"
-    },
-    {
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
       "description": "Ratio of secondary index entries to unique records. This is always 1 unless the sindex is on a list or map. This uses the aerospike_sindex_entries_per_rec metric.",
       "fieldConfig": {
         "defaults": {
@@ -448,9 +562,12 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.4",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "exemplar": true,
           "expr": "sum(aerospike_sindex_entries_per_rec{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", sindex=~\"$sindex\"})",
           "hide": false,
@@ -463,109 +580,9 @@
       ],
       "title": "Entries/Records",
       "type": "stat"
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
-      "description": "Number of records that have been garbage collected out of the secondary index memory.",
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 16,
-        "y": 1
-      },
-      "hiddenSeries": false,
-      "id": 20,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "nullPointMode": "null",
-      "options": {
-        "alertThreshold": true
-      },
-      "percentage": false,
-      "pluginVersion": "7.5.4",
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "exemplar": true,
-          "expr": "sum(increase(aerospike_sindex_stat_gc_recs{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", sindex=~\"$sindex\"}[5m]))",
-          "hide": false,
-          "instant": false,
-          "interval": "",
-          "legendFormat": "Record count",
-          "queryType": "randomWalk",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Garbage collection",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
     }
   ],
-  "schemaVersion": 27,
+  "schemaVersion": 37,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -573,11 +590,9 @@
       {
         "current": {
           "selected": false,
-          "text": "Aerospike Prometheus",
-          "value": "Aerospike Prometheus"
+          "text": "Prometheus",
+          "value": "Prometheus"
         },
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": false,
         "label": "Datasource",
@@ -592,12 +607,15 @@
         "type": "datasource"
       },
       {
-        "allValue": null,
-        "current": {},
-        "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+        "current": {
+          "selected": false,
+          "text": "null",
+          "value": "null"
+        },
+        "datasource": {
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
         "definition": "label_values(aerospike_node_stats_uptime{job=\"$job_name\"},cluster_name)",
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": false,
         "label": "Cluster",
@@ -613,18 +631,20 @@
         "skipUrlSync": false,
         "sort": 1,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
       },
       {
-        "allValue": null,
-        "current": {},
-        "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+        "current": {
+          "selected": false,
+          "text": "test",
+          "value": "test"
+        },
+        "datasource": {
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
         "definition": "label_values(aerospike_namespace_objects{job=\"$job_name\", cluster_name=~\"$cluster|$^\" },ns)",
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": false,
         "label": "Namespace",
@@ -640,18 +660,20 @@
         "skipUrlSync": false,
         "sort": 1,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
       },
       {
-        "allValue": null,
-        "current": {},
-        "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+        "current": {
+          "selected": false,
+          "text": "test_sindex1",
+          "value": "test_sindex1"
+        },
+        "datasource": {
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
         "definition": "label_values(aerospike_sindex_entries{job=\"$job_name\", cluster_name=~\"$cluster|$^\", ns=~\"$namespace|$^\" },sindex)",
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": false,
         "label": "Secondary Index",
@@ -667,7 +689,6 @@
         "skipUrlSync": false,
         "sort": 1,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
@@ -678,7 +699,9 @@
           "text": "aerospike",
           "value": "aerospike"
         },
-        "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+        "datasource": {
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
         "definition": "label_values(aerospike_node_stats_uptime,job)",
         "hide": 0,
         "includeAll": false,
@@ -709,5 +732,6 @@
   "timezone": "",
   "title": "Secondary Index View",
   "uid": "0fmdGMPnk",
-  "version": 1
+  "version": 3,
+  "weekStart": ""
 }
