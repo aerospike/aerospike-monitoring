@@ -1,65 +1,39 @@
 {
-  "__requires": [
-    {
-      "type": "panel",
-      "id": "gauge",
-      "name": "Gauge",
-      "version": ""
-    },
-    {
-      "type": "grafana",
-      "id": "grafana",
-      "name": "Grafana",
-      "version": "7.5.7"
-    },
-    {
-      "type": "panel",
-      "id": "graph",
-      "name": "Graph",
-      "version": ""
-    },
-    {
-      "type": "datasource",
-      "id": "prometheus",
-      "name": "Prometheus",
-      "version": "1.0.0"
-    },
-    {
-      "type": "panel",
-      "id": "stat",
-      "name": "Stat",
-      "version": ""
-    },
-    {
-      "type": "panel",
-      "id": "table",
-      "name": "Table",
-      "version": ""
-    }
-  ],
   "annotations": {
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
   "editable": true,
-  "gnetId": null,
+  "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": null,
-  "iteration": 1630959034949,
+  "id": 21,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
-      "collapsed": false,
-      "datasource": null,
+      "collapsed": true,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bUvST0hVk"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -67,120 +41,153 @@
         "y": 0
       },
       "id": 4,
-      "panels": [],
+      "panels": [
+        {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": "center",
+                "displayMode": "color-background",
+                "filterable": false,
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#299c46",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 1
+          },
+          "id": 2,
+          "links": [],
+          "options": {
+            "footer": {
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "expr": "aerospike_node_up{job=\"$job_name\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\"}",
+              "format": "table",
+              "instant": true,
+              "intervalFactor": 1,
+              "refId": "A"
+            }
+          ],
+          "title": "Nodes",
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Value": true,
+                  "__name__": true,
+                  "job": true
+                },
+                "indexByName": {},
+                "renameByName": {
+                  "Value": "",
+                  "build": "Build",
+                  "cluster_name": "Cluster Name",
+                  "instance": "Exporter Instance",
+                  "service": "Aerospike Instance"
+                }
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "bUvST0hVk"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "Node List",
       "type": "row"
     },
     {
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": "center",
-            "displayMode": "color-background",
-            "filterable": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#299c46",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 24,
-        "x": 0,
-        "y": 1
-      },
-      "id": 2,
-      "links": [],
-      "options": {
-        "showHeader": true
-      },
-      "pluginVersion": "7.5.7",
-      "targets": [
-        {
-          "expr": "aerospike_node_up{job=\"$job_name\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\"}",
-          "format": "table",
-          "instant": true,
-          "intervalFactor": 1,
-          "refId": "A"
-        }
-      ],
-      "timeFrom": null,
-      "timeShift": null,
-      "title": "Nodes",
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Value": true,
-              "__name__": true,
-              "job": true
-            },
-            "indexByName": {},
-            "renameByName": {
-              "Value": "",
-              "build": "Build",
-              "cluster_name": "Cluster Name",
-              "instance": "Exporter Instance",
-              "service": "Aerospike Instance"
-            }
-          }
-        }
-      ],
-      "type": "table"
-    },
-    {
       "collapsed": false,
-      "datasource": null,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "bUvST0hVk"
+      },
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 10
+        "y": 1
       },
       "id": 6,
       "panels": [],
       "repeat": "node",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "bUvST0hVk"
+          },
+          "refId": "A"
+        }
+      ],
       "title": "$node",
       "type": "row"
     },
     {
-      "cacheTimeout": null,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Aerospike node status",
       "fieldConfig": {
         "defaults": {
           "mappings": [
             {
-              "id": 0,
-              "op": "=",
-              "text": "N/A",
-              "type": 1,
-              "value": "null"
+              "options": {
+                "0": {
+                  "text": "DOWN"
+                },
+                "1": {
+                  "text": "UP"
+                }
+              },
+              "type": "value"
             },
             {
-              "id": 1,
-              "op": "=",
-              "text": "UP",
-              "type": 1,
-              "value": "1"
-            },
-            {
-              "id": 2,
-              "op": "=",
-              "text": "DOWN",
-              "type": 1,
-              "value": "0"
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
             }
           ],
           "thresholds": {
@@ -204,10 +211,9 @@
         "h": 4,
         "w": 4,
         "x": 0,
-        "y": 11
+        "y": 2
       },
       "id": 69,
-      "interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -225,9 +231,12 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "aerospike_node_up{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"}",
           "format": "time_series",
           "instant": true,
@@ -237,25 +246,26 @@
           "refId": "B"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Status",
       "type": "stat"
     },
     {
-      "cacheTimeout": null,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Total records and tombstones count",
       "fieldConfig": {
         "defaults": {
           "decimals": 1,
           "mappings": [
             {
-              "id": 0,
-              "op": "=",
-              "text": "N/A",
-              "type": 1,
-              "value": "null"
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
             }
           ],
           "thresholds": {
@@ -275,10 +285,9 @@
         "h": 4,
         "w": 4,
         "x": 4,
-        "y": 11
+        "y": 2
       },
       "id": 43,
-      "interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -296,9 +305,12 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "sum(aerospike_namespace_objects{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
           "format": "time_series",
           "instant": true,
@@ -308,6 +320,9 @@
           "refId": "A"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "sum(aerospike_namespace_tombstones{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
           "format": "time_series",
           "instant": true,
@@ -317,25 +332,26 @@
           "refId": "B"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Node Namespace Stats",
       "type": "stat"
     },
     {
-      "cacheTimeout": null,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Total namespace memory size\nTotal namespace memory used\nTotal namespace device size\nTotal namespace device used",
       "fieldConfig": {
         "defaults": {
           "decimals": 1,
           "mappings": [
             {
-              "id": 0,
-              "op": "=",
-              "text": "N/A",
-              "type": 1,
-              "value": "null"
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
             }
           ],
           "thresholds": {
@@ -355,10 +371,9 @@
         "h": 4,
         "w": 8,
         "x": 8,
-        "y": 11
+        "y": 2
       },
       "id": 18,
-      "interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -376,9 +391,12 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "sum(aerospike_namespace_memory_size{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
           "format": "time_series",
           "instant": true,
@@ -388,6 +406,9 @@
           "refId": "A"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "sum(aerospike_namespace_memory_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
           "format": "time_series",
           "instant": true,
@@ -397,6 +418,9 @@
           "refId": "B"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "sum(aerospike_namespace_device_total_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
           "format": "time_series",
           "instant": true,
@@ -406,6 +430,9 @@
           "refId": "C"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "sum(aerospike_namespace_device_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
           "format": "time_series",
           "instant": true,
@@ -415,6 +442,9 @@
           "refId": "D"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "sum(aerospike_namespace_pmem_total_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
           "format": "time_series",
           "instant": true,
@@ -424,6 +454,9 @@
           "refId": "E"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "sum(aerospike_namespace_pmem_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
           "format": "time_series",
           "instant": true,
@@ -433,18 +466,17 @@
           "refId": "F"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Node Namespace Stats",
       "type": "stat"
     },
     {
       "aliasColors": {},
       "bars": false,
-      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "UDF transactions per second",
       "fieldConfig": {
         "defaults": {
@@ -458,7 +490,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 11
+        "y": 2
       },
       "hiddenSeries": false,
       "id": 100,
@@ -483,7 +515,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "9.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -493,6 +525,9 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "avg(aerospike_latencies_udf_${latencytimeunit}_bucket{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", le=~\"[0-9]*\"}) by (le)",
           "format": "time_series",
           "instant": false,
@@ -502,15 +537,16 @@
           "refId": "A"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "avg(aerospike_latencies_udf_${latencytimeunit}_count{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "legendFormat": "Ops/sec",
           "refId": "B"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Latency: UDF / sec",
       "tooltip": {
         "shared": true,
@@ -519,9 +555,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -531,7 +565,6 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
@@ -540,29 +573,31 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
-      "cacheTimeout": null,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Alert count",
       "fieldConfig": {
         "defaults": {
           "mappings": [
             {
-              "id": 0,
-              "op": "=",
-              "text": "0",
-              "type": 1,
-              "value": "null"
+              "options": {
+                "match": "null",
+                "result": {
+                  "color": "#299c46",
+                  "text": "0"
+                }
+              },
+              "type": "special"
             }
           ],
           "thresholds": {
@@ -586,10 +621,9 @@
         "h": 4,
         "w": 2,
         "x": 0,
-        "y": 15
+        "y": 6
       },
       "id": 9,
-      "interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -607,9 +641,12 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "ALERTS{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"}",
           "format": "time_series",
           "instant": true,
@@ -617,41 +654,37 @@
           "refId": "A"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Alerts",
       "type": "stat"
     },
     {
-      "cacheTimeout": null,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Node failed best practice check",
       "fieldConfig": {
         "defaults": {
           "decimals": 1,
           "mappings": [
             {
-              "id": 0,
-              "op": "=",
-              "text": "N/A",
-              "type": 1,
-              "value": "null"
+              "options": {
+                "0": {
+                  "text": "OK"
+                },
+                "1": {
+                  "text": "NOT OK"
+                }
+              },
+              "type": "value"
             },
             {
-              "from": "",
-              "id": 1,
-              "text": "OK",
-              "to": "",
-              "type": 1,
-              "value": "0"
-            },
-            {
-              "from": "",
-              "id": 2,
-              "text": "NOT OK",
-              "to": "",
-              "type": 1,
-              "value": "1"
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
             }
           ],
           "thresholds": {
@@ -675,10 +708,9 @@
         "h": 4,
         "w": 2,
         "x": 2,
-        "y": 15
+        "y": 6
       },
       "id": 226,
-      "interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -696,9 +728,12 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "exemplar": true,
           "expr": "aerospike_node_stats_failed_best_practices{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"}",
           "format": "time_series",
@@ -709,24 +744,25 @@
           "refId": "A"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Best Practice",
       "type": "stat"
     },
     {
-      "cacheTimeout": null,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Client/Heartbeat/Fabric connections count",
       "fieldConfig": {
         "defaults": {
           "mappings": [
             {
-              "id": 0,
-              "op": "=",
-              "text": "N/A",
-              "type": 1,
-              "value": "null"
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
             }
           ],
           "thresholds": {
@@ -746,10 +782,9 @@
         "h": 4,
         "w": 4,
         "x": 4,
-        "y": 15
+        "y": 6
       },
       "id": 14,
-      "interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -767,9 +802,12 @@
         "text": {},
         "textMode": "auto"
       },
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "aerospike_node_stats_client_connections{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"}",
           "format": "time_series",
           "instant": true,
@@ -779,6 +817,9 @@
           "refId": "A"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "aerospike_node_stats_heartbeat_connections{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"}",
           "format": "time_series",
           "instant": true,
@@ -788,6 +829,9 @@
           "refId": "B"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "aerospike_node_stats_fabric_connections{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"}",
           "format": "time_series",
           "instant": true,
@@ -797,24 +841,25 @@
           "refId": "C"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Connections",
       "type": "stat"
     },
     {
-      "cacheTimeout": null,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Minimum of the Namespaces' Memory/Device Free Percentage",
       "fieldConfig": {
         "defaults": {
           "mappings": [
             {
-              "id": 0,
-              "op": "=",
-              "text": "N/A",
-              "type": 1,
-              "value": "null"
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
             }
           ],
           "max": 100,
@@ -844,10 +889,9 @@
         "h": 4,
         "w": 8,
         "x": 8,
-        "y": 15
+        "y": 6
       },
       "id": 24,
-      "interval": null,
       "links": [],
       "maxDataPoints": 100,
       "options": {
@@ -863,9 +907,12 @@
         "showThresholdMarkers": true,
         "text": {}
       },
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "min(aerospike_namespace_memory_free_pct{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
           "format": "time_series",
           "instant": true,
@@ -875,6 +922,9 @@
           "refId": "A"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "min(aerospike_namespace_device_free_pct{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
           "format": "time_series",
           "instant": true,
@@ -884,6 +934,9 @@
           "refId": "B"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "min(aerospike_namespace_pmem_free_pct{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
           "format": "time_series",
           "instant": true,
@@ -893,18 +946,17 @@
           "refId": "C"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Node Namespace Stats",
       "type": "gauge"
     },
     {
       "aliasColors": {},
       "bars": false,
-      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Reads per second",
       "fieldConfig": {
         "defaults": {
@@ -918,7 +970,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 19
+        "y": 10
       },
       "hiddenSeries": false,
       "id": 83,
@@ -932,8 +984,6 @@
         "min": false,
         "rightSide": true,
         "show": true,
-        "sort": null,
-        "sortDesc": null,
         "total": false,
         "values": true
       },
@@ -945,7 +995,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "9.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -955,6 +1005,9 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "avg(aerospike_latencies_read_${latencytimeunit}_bucket{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", le=~\"[0-9]*\"}) by (le)",
           "format": "time_series",
           "instant": false,
@@ -964,15 +1017,16 @@
           "refId": "A"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "avg(aerospike_latencies_read_${latencytimeunit}_count{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "legendFormat": "Ops/sec",
           "refId": "B"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Latency: Reads / sec",
       "tooltip": {
         "shared": true,
@@ -981,9 +1035,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -993,7 +1045,6 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
@@ -1002,23 +1053,22 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "aliasColors": {},
       "bars": false,
-      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Writes per second",
       "fieldConfig": {
         "defaults": {
@@ -1032,7 +1082,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 19
+        "y": 10
       },
       "hiddenSeries": false,
       "id": 98,
@@ -1057,7 +1107,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "9.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1067,6 +1117,9 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "avg(aerospike_latencies_write_${latencytimeunit}_bucket{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", le=~\"[0-9]*\"}) by (le)",
           "format": "time_series",
           "instant": false,
@@ -1076,15 +1129,16 @@
           "refId": "A"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "avg(aerospike_latencies_write_${latencytimeunit}_count{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "legendFormat": "Ops/sec",
           "refId": "B"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Latency: Writes / sec",
       "tooltip": {
         "shared": true,
@@ -1093,9 +1147,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -1105,7 +1157,6 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
@@ -1114,23 +1165,22 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "aliasColors": {},
       "bars": false,
-      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Proxies per second",
       "fieldConfig": {
         "defaults": {
@@ -1144,7 +1194,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 19
+        "y": 10
       },
       "hiddenSeries": false,
       "id": 99,
@@ -1169,7 +1219,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "9.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1179,6 +1229,9 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "avg(aerospike_latencies_proxy_${latencytimeunit}_bucket{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", le=~\"[0-9]*\"}) by (le)",
           "format": "time_series",
           "instant": false,
@@ -1188,15 +1241,16 @@
           "refId": "A"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "avg(aerospike_latencies_proxy_${latencytimeunit}_count{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "legendFormat": "Ops/sec",
           "refId": "B"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Latency: Proxies / sec",
       "tooltip": {
         "shared": true,
@@ -1205,9 +1259,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -1217,7 +1269,6 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
@@ -1226,23 +1277,22 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "aliasColors": {},
       "bars": false,
-      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Secondary index queries per second",
       "fieldConfig": {
         "defaults": {
@@ -1256,7 +1306,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 27
+        "y": 18
       },
       "hiddenSeries": false,
       "id": 101,
@@ -1281,7 +1331,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "9.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1291,6 +1341,9 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "avg(aerospike_latencies_si_query_${latencytimeunit}_bucket{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", le=~\"[0-9]*\"}) by (le)",
           "format": "time_series",
           "instant": false,
@@ -1300,15 +1353,16 @@
           "refId": "A"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "avg(aerospike_latencies_si_query_${latencytimeunit}_count{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "legendFormat": "Ops/sec",
           "refId": "B"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Latency: Sindex Query / sec",
       "tooltip": {
         "shared": true,
@@ -1317,9 +1371,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -1329,7 +1381,6 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
@@ -1338,23 +1389,22 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "aliasColors": {},
       "bars": false,
-      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Primary index queries per second",
       "fieldConfig": {
         "defaults": {
@@ -1368,7 +1418,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 27
+        "y": 18
       },
       "hiddenSeries": false,
       "id": 102,
@@ -1393,7 +1443,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "9.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1403,6 +1453,9 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "avg(aerospike_latencies_pi_query_${latencytimeunit}_bucket{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", le=~\"[0-9]*\"}) by (le)",
           "format": "time_series",
           "instant": false,
@@ -1412,15 +1465,16 @@
           "refId": "A"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "avg(aerospike_latencies_pi_query_${latencytimeunit}_count{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "legendFormat": "Ops/sec",
           "refId": "B"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Latency: Pindex Query / sec",
       "tooltip": {
         "shared": true,
@@ -1429,9 +1483,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -1441,7 +1493,6 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
@@ -1450,23 +1501,22 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "aliasColors": {},
       "bars": false,
-      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Rate of client, heartbeat and fabric connections opened or closed",
       "fieldConfig": {
         "defaults": {
@@ -1481,7 +1531,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 27
+        "y": 18
       },
       "hiddenSeries": false,
       "id": 192,
@@ -1506,7 +1556,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "9.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1516,6 +1566,9 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "exemplar": true,
           "expr": "rate(aerospike_node_stats_client_connections_opened{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}[1m])",
           "hide": false,
@@ -1524,6 +1577,9 @@
           "refId": "A"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "exemplar": true,
           "expr": "rate(aerospike_node_stats_client_connections_closed{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}[1m])",
           "hide": false,
@@ -1532,6 +1588,9 @@
           "refId": "B"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "exemplar": true,
           "expr": "rate(aerospike_node_stats_heartbeat_connections_opened{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}[1m])",
           "hide": false,
@@ -1540,6 +1599,9 @@
           "refId": "C"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "exemplar": true,
           "expr": "rate(aerospike_node_stats_heartbeat_connections_closed{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}[1m])",
           "hide": false,
@@ -1548,6 +1610,9 @@
           "refId": "D"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "exemplar": true,
           "expr": "rate(aerospike_node_stats_fabric_connections_opened{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}[1m])",
           "hide": false,
@@ -1556,6 +1621,9 @@
           "refId": "E"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "exemplar": true,
           "expr": "rate(aerospike_node_stats_fabric_connections_closed{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}[1m])",
           "hide": false,
@@ -1565,9 +1633,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Connections Opened / Closed",
       "tooltip": {
         "shared": true,
@@ -1576,9 +1642,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -1588,7 +1652,6 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
@@ -1597,23 +1660,22 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "aliasColors": {},
       "bars": false,
-      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Migrations remaining migrate_tx_partitions_remaining (transmit), migrate_rx_partitions_remaining (receive)",
       "fieldConfig": {
         "defaults": {
@@ -1627,7 +1689,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 35
+        "y": 26
       },
       "hiddenSeries": false,
       "id": 44,
@@ -1651,7 +1713,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "9.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1661,6 +1723,9 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "sum(aerospike_namespace_migrate_rx_partitions_remaining{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
           "format": "time_series",
           "instant": false,
@@ -1669,6 +1734,9 @@
           "refId": "A"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "sum(aerospike_namespace_migrate_tx_partitions_remaining{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
           "format": "time_series",
           "instant": false,
@@ -1678,9 +1746,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Migrations (Partitions Remaining)",
       "tooltip": {
         "shared": true,
@@ -1689,9 +1755,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -1701,7 +1765,6 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
@@ -1710,23 +1773,22 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "aliasColors": {},
       "bars": false,
-      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Master objects, prole objects and tombstones",
       "fieldConfig": {
         "defaults": {
@@ -1740,7 +1802,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 35
+        "y": 26
       },
       "hiddenSeries": false,
       "id": 161,
@@ -1765,7 +1827,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "9.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1775,6 +1837,9 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "aerospike_namespace_master_objects{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
           "format": "time_series",
           "instant": false,
@@ -1784,6 +1849,9 @@
           "refId": "A"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "aerospike_namespace_prole_objects{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
           "format": "time_series",
           "intervalFactor": 1,
@@ -1791,6 +1859,9 @@
           "refId": "B"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "aerospike_namespace_tombstones{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
           "format": "time_series",
           "intervalFactor": 1,
@@ -1799,9 +1870,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Object Count",
       "tooltip": {
         "shared": true,
@@ -1810,9 +1879,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -1822,7 +1889,6 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
@@ -1831,23 +1897,22 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "aliasColors": {},
       "bars": false,
-      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Number of detached server threads currently running.\n\nNumber of joinable server threads currently running.\n\nNumber of currently active threads in the server thread pool.\n\nTotal number of threads in the server thread pool.",
       "fieldConfig": {
         "defaults": {
@@ -1861,7 +1926,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 35
+        "y": 26
       },
       "hiddenSeries": false,
       "id": 225,
@@ -1886,7 +1951,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "9.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -1896,6 +1961,9 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "exemplar": true,
           "expr": "aerospike_node_stats_threads_detached{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
           "format": "time_series",
@@ -1906,6 +1974,9 @@
           "refId": "A"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "exemplar": true,
           "expr": "aerospike_node_stats_threads_joinable{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
           "format": "time_series",
@@ -1916,6 +1987,9 @@
           "refId": "B"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "exemplar": true,
           "expr": "aerospike_node_stats_threads_pool_active{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
           "format": "time_series",
@@ -1926,6 +2000,9 @@
           "refId": "C"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "exemplar": true,
           "expr": "aerospike_node_stats_threads_pool_total{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
           "format": "time_series",
@@ -1938,9 +2015,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Threads",
       "tooltip": {
         "shared": true,
@@ -1949,9 +2024,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -1961,7 +2034,6 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
@@ -1970,23 +2042,22 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
       "aliasColors": {},
       "bars": false,
-      "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Client connections, fabric connections and heartbeat connections",
       "fieldConfig": {
         "defaults": {
@@ -2000,7 +2071,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 43
+        "y": 34
       },
       "hiddenSeries": false,
       "id": 120,
@@ -2025,7 +2096,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "9.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2035,6 +2106,9 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "aerospike_node_stats_client_connections{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
           "format": "time_series",
           "instant": false,
@@ -2044,6 +2118,9 @@
           "refId": "A"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "aerospike_node_stats_fabric_connections{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
           "format": "time_series",
           "intervalFactor": 1,
@@ -2051,6 +2128,9 @@
           "refId": "B"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "aerospike_node_stats_heartbeat_connections{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
           "format": "time_series",
           "intervalFactor": 1,
@@ -2059,9 +2139,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Connections",
       "tooltip": {
         "shared": true,
@@ -2070,9 +2148,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -2082,7 +2158,6 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
@@ -2091,14 +2166,12 @@
           "format": "short",
           "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -2106,9 +2179,10 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
-      "decimals": 0,
-      "description": "Shows per-second average rate of increase in\n\n1. Total reads = client_read_success + client_read_error + client_read_timeout + client_read_not_found + batch_sub_read_success + batch_sub_read_error + batch_sub_read_timeout + batch_sub_read_not_found\n2. Successful reads = client_read_success + batch_sub_read_success\n3. Errored reads = client_read_error + batch_sub_read_error\n4. Timedout reads = client_read_timeout + batch_sub_read_timeout\n5. Not found = client_read_not_found + batch_sub_not_found",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "Client connections, fabric connections and heartbeat connections",
       "fieldConfig": {
         "defaults": {
           "links": []
@@ -2121,18 +2195,18 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 43
+        "y": 34
       },
       "hiddenSeries": false,
-      "hideTimeOverride": false,
-      "id": 177,
-      "interval": "",
+      "id": 227,
       "legend": {
         "alignAsTable": true,
         "avg": true,
         "current": true,
-        "max": true,
-        "min": true,
+        "hideEmpty": true,
+        "hideZero": true,
+        "max": false,
+        "min": false,
         "rightSide": true,
         "show": true,
         "total": false,
@@ -2146,7 +2220,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "9.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2156,54 +2230,41 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum by (job, cluster_name, service) (rate(aerospike_namespace_client_read_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+rate(aerospike_namespace_client_read_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+rate(aerospike_namespace_client_read_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+rate(aerospike_namespace_client_read_not_found{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_read_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_read_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_read_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_read_not_found{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "expr": "aerospike_node_stats_client_connections{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
           "format": "time_series",
           "instant": false,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{service}}: Total",
-          "refId": "B"
-        },
-        {
-          "expr": "sum by (job, cluster_name, service) (rate(aerospike_namespace_client_read_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_read_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "{{service}}: Successful",
+          "legendFormat": "Client Connections",
           "refId": "A"
         },
         {
-          "expr": "sum by (job, cluster_name, service) (rate(aerospike_namespace_client_read_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_read_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "expr": "aerospike_node_stats_fabric_connections{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
           "format": "time_series",
-          "instant": false,
-          "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "{{service}}: Error",
+          "legendFormat": "Fabric Connections",
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "expr": "aerospike_node_stats_heartbeat_connections{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Heartbeat Connections",
           "refId": "C"
-        },
-        {
-          "expr": "sum by (job, cluster_name, service) (rate(aerospike_namespace_client_read_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_read_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
-          "format": "time_series",
-          "instant": false,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{service}}: Timeout",
-          "refId": "D"
-        },
-        {
-          "expr": "sum by (job, cluster_name, service) (rate(aerospike_namespace_client_read_not_found{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_read_not_found{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
-          "format": "time_series",
-          "instant": false,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{service}}: Not Found",
-          "refId": "E"
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
-      "title": "Client Reads (TPS)",
+      "title": "Connections",
       "tooltip": {
         "shared": true,
         "sort": 1,
@@ -2211,9 +2272,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -2221,24 +2280,22 @@
         {
           "decimals": 0,
           "format": "short",
-          "label": "TPS",
+          "label": "Count",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
         {
+          "decimals": 0,
           "format": "short",
-          "label": "TPS",
+          "label": "Count",
           "logBase": 1,
-          "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
       }
     },
     {
@@ -2246,7 +2303,9 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "decimals": 0,
       "description": "Shows per-second average rate of increase in\n\n1. Total writes = client_write_success + client_write_error + client_write_timeout + batch_sub_write_success + batch_sub_write_error + batch_sub_write_timeout\n2. Successful writes = client_write_success + batch_sub_write_success\n3. Errored writes = client_write_error + batch_sub_write_error\n4. Timedout writes = client_write_timeout + batch_sub_write_timeout",
       "fieldConfig": {
@@ -2261,7 +2320,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 43
+        "y": 34
       },
       "hiddenSeries": false,
       "hideTimeOverride": false,
@@ -2286,7 +2345,7 @@
         "alertThreshold": true
       },
       "percentage": false,
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "9.3.2",
       "pointradius": 2,
       "points": false,
       "renderer": "flot",
@@ -2296,6 +2355,9 @@
       "steppedLine": false,
       "targets": [
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "sum by (job, cluster_name, service) (rate(aerospike_namespace_client_write_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+rate(aerospike_namespace_client_write_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+rate(aerospike_namespace_client_write_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
           "format": "time_series",
           "intervalFactor": 1,
@@ -2303,6 +2365,9 @@
           "refId": "B"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "sum by (job, cluster_name, service) (rate(aerospike_namespace_client_write_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
           "format": "time_series",
           "intervalFactor": 1,
@@ -2310,6 +2375,9 @@
           "refId": "A"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "sum by (job, cluster_name, service) (rate(aerospike_namespace_client_write_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
           "format": "time_series",
           "interval": "",
@@ -2318,6 +2386,9 @@
           "refId": "C"
         },
         {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "expr": "sum by (job, cluster_name, service) (rate(aerospike_namespace_client_write_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
           "format": "time_series",
           "intervalFactor": 1,
@@ -2326,9 +2397,7 @@
         }
       ],
       "thresholds": [],
-      "timeFrom": null,
       "timeRegions": [],
-      "timeShift": null,
       "title": "Client Writes (TPS)",
       "tooltip": {
         "shared": true,
@@ -2337,9 +2406,7 @@
       },
       "type": "graph",
       "xaxis": {
-        "buckets": null,
         "mode": "time",
-        "name": null,
         "show": true,
         "values": []
       },
@@ -2349,7 +2416,6 @@
           "format": "short",
           "label": "TPS",
           "logBase": 1,
-          "max": null,
           "min": "0",
           "show": true
         },
@@ -2357,30 +2423,138 @@
           "format": "short",
           "label": "TPS",
           "logBase": 1,
-          "max": null,
-          "min": null,
           "show": true
         }
       ],
       "yaxis": {
-        "align": false,
-        "alignLevel": null
+        "align": false
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "% of quota used by each set by a namespace within this node",
+      "fieldConfig": {
+        "defaults": {
+          "links": []
+        },
+        "overrides": []
+      },
+      "fill": 5,
+      "fillGradient": 5,
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 42
+      },
+      "hiddenSeries": false,
+      "id": 250,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "hideEmpty": true,
+        "hideZero": true,
+        "max": true,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
+      "percentage": false,
+      "pluginVersion": "9.3.2",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "datasource": {
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "\n  (\n  (aerospike_sets_memory_data_bytes{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}+aerospike_sets_device_data_bytes{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})\n  /(aerospike_sets_stop_writes_size{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}!=0) )*100",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{ns}} / {{set}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeRegions": [],
+      "title": "% Set Quota used by Namespace",
+      "tooltip": {
+        "shared": true,
+        "sort": 1,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "mode": "time",
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:2818",
+          "decimals": 0,
+          "format": "short",
+          "label": "% Utilization",
+          "logBase": 1,
+          "min": "0",
+          "show": true
+        },
+        {
+          "$$hashKey": "object:2819",
+          "decimals": 0,
+          "format": "short",
+          "label": "% Utilization",
+          "logBase": 1,
+          "min": "0",
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false
       }
     }
   ],
   "refresh": "1m",
-  "schemaVersion": 27,
+  "schemaVersion": 37,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": [
       {
-        "allValue": null,
-        "current": {},
-        "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+        "current": {
+          "selected": false,
+          "text": "null",
+          "value": "null"
+        },
+        "datasource": {
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
         "definition": "label_values(aerospike_node_up{job=\"$job_name\"},cluster_name)",
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": false,
         "label": "Cluster",
@@ -2396,18 +2570,20 @@
         "skipUrlSync": false,
         "sort": 1,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
       },
       {
-        "allValue": null,
-        "current": {},
-        "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
         "definition": "label_values(aerospike_node_up{job=\"$job_name\", cluster_name=~\"$cluster|$^\"},service)",
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": true,
         "label": "Node",
@@ -2423,18 +2599,20 @@
         "skipUrlSync": false,
         "sort": 1,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
       },
       {
-        "allValue": null,
-        "current": {},
-        "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
         "definition": "label_values(aerospike_namespace_objects{job=\"$job_name\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\" },ns)",
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": true,
         "label": "Namespace",
@@ -2450,18 +2628,20 @@
         "skipUrlSync": false,
         "sort": 1,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
       },
       {
-        "allValue": null,
-        "current": {},
-        "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+        "current": {
+          "selected": false,
+          "text": "ms",
+          "value": "ms"
+        },
+        "datasource": {
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
         "definition": "metrics(aerospike_latencies_)",
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": false,
         "label": "Latency Time Unit",
@@ -2477,7 +2657,6 @@
         "skipUrlSync": false,
         "sort": 0,
         "tagValuesQuery": "",
-        "tags": [],
         "tagsQuery": "",
         "type": "query",
         "useTags": false
@@ -2485,11 +2664,9 @@
       {
         "current": {
           "selected": false,
-          "text": "Aerospike Prometheus",
-          "value": "Aerospike Prometheus"
+          "text": "Prometheus",
+          "value": "Prometheus"
         },
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": false,
         "label": "Datasource",
@@ -2508,7 +2685,9 @@
           "text": "aerospike",
           "value": "aerospike"
         },
-        "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+        "datasource": {
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
         "definition": "label_values(aerospike_node_stats_uptime,job)",
         "hide": 0,
         "includeAll": false,
@@ -2563,5 +2742,6 @@
   "timezone": "",
   "title": "Node Overview",
   "uid": "UcZD2iHAk",
-  "version": 1
+  "version": 7,
+  "weekStart": ""
 }

@@ -1,0 +1,503 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 31,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "panels": [],
+      "title": "Unique Data Usage",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "Display Unique Data Utilization across all  namespaces",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#299c46",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 12,
+        "x": 0,
+        "y": 1
+      },
+      "id": 4,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "expression": "$Q_MEMORY_OBJECTS * $QR_RULE_CAN_SHOW",
+          "hide": false,
+          "refId": "All Master Objects",
+          "type": "math"
+        },
+        {
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "expression": "$Q_USAGE_BYTE * $QR_RULE_CAN_SHOW",
+          "hide": false,
+          "refId": "Unique Data Bytes",
+          "type": "math"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "(sum( # Running individual exporter for each node in a cluster\n    (avg by (ns) ( aerospike_namespace_ns_cluster_size {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"} ))\n    == bool \n    (count by (ns) (aerospike_namespace_ns_cluster_size {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"} ))\n)> bool 0)\n* # migration check with RX metric\n(sum((sum by (ns) (aerospike_namespace_migrate_rx_partitions_remaining + aerospike_namespace_migrate_tx_partitions_remaining) != bool 0))\n== bool 0)\n* # Consistent Effective Replication factor across all nodes\n(sum(\n    min by (ns) (aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}) \n    == bool \n    max by (ns) (aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})\n) > bool 0)",
+          "hide": true,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "QR_RULE_CAN_SHOW"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "(sum((sum((sum ( (((aerospike_namespace_memory_used_data_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"} + aerospike_namespace_memory_used_index_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})\nunless # we pick namespace which are in memory but not using Disk or Pmem\n(aerospike_namespace_device_used_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"} or aerospike_namespace_pmem_used_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"} )\n) \n/aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}\n) \n- ( # begin calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n   sum (\n      aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*\"}*35) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n      group_left(build) (\n        aerospike_node_up{job=\"$job_name\", build=~\"^5.*\"}*35) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build!~\"^5.*\"}*39) ) \n   by (job, cluster_name, instance, service,ns) \n  ) # end of header-byte calculation by aerospike version\n) by (service, ns)) ) by (ns))) \n+\nsum (\n  ( # device-used-bytes + pmem-used-bytes\n    ( # sum disk device used bytes\n      ( sum by (ns) (aerospike_namespace_device_used_bytes{job=\"aerospike\"}) /\n      ( sum by (ns) ( (aerospike_namespace_device_compression_ratio{job=\"aerospike\"} )) \n      *\n      avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"aerospike\"} ))\n    )\n  or\n    ( sum by (ns) (aerospike_namespace_device_used_bytes{job=\"aerospike\"}) /\n    ( avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"aerospike\"} ))\n  )\n) # end devide-used-bytes\nor\n( \n    ( sum by (ns) (aerospike_namespace_pmem_used_bytes{job=\"aerospike\"}) /\n    ( sum by (ns) ( (aerospike_namespace_pmem_compression_ratio{job=\"aerospike\"} ))  \n      * avg by (ns) (aerospike_namespace_effective_replication_factor{job=\"aerospike\"}) ))\nor\n    ( sum by (ns) (aerospike_namespace_pmem_used_bytes{job=\"aerospike\"}) /\n    ( avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"aerospike\"}) ))     \n)\n)\n- ( # begin calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n   sum (\n      aerospike_namespace_master_objects{job=\"aerospike\"} * on (job, cluster_name, service) \n      group_left(build) (\n        aerospike_node_up{job=\"aerospike\", build=~\"^4.*\"}*35) \n      or\n      aerospike_namespace_master_objects{job=\"aerospike\"} * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"aerospike\", build=~\"^5.*\"}*35) \n      or\n      aerospike_namespace_master_objects{job=\"aerospike\"} * on (job, cluster_name, service) \n      group_left(build) (\n        aerospike_node_up{job=\"aerospike\", build!~\"^5.*\"}*39) ) \n   by (ns)\n) # end of header-byte calculation by aerospike version\n) # end of disk+pmem used bytes\n\n) # end paranthesis for whole sum",
+          "hide": true,
+          "legendFormat": "Unique Data Bytes",
+          "range": true,
+          "refId": "Q_USAGE_BYTE"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum (aerospike_namespace_master_objects{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+          "format": "time_series",
+          "hide": true,
+          "instant": false,
+          "legendFormat": "All Master Objects",
+          "range": true,
+          "refId": "Q_MEMORY_OBJECTS"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum (aerospike_namespace_master_objects{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})\n* # above query should work only if the below condition satisfy\n(sum( # Running individual exporter for each node in a cluster\n    (avg by (ns) ( aerospike_namespace_ns_cluster_size {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"} ))\n    == bool \n    (count by (ns) (aerospike_namespace_ns_cluster_size {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"} ))\n)> bool 0)\n* # migration check with RX metric\n(sum((sum by (ns) (aerospike_namespace_migrate_rx_partitions_remaining + aerospike_namespace_migrate_tx_partitions_remaining) != bool 0))\n== bool 0)\n* # Consistent Effective Replication factor across all nodes\n(sum(\n    min by (ns) (aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}) \n    == bool \n    max by (ns) (aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})\n) > bool 0)",
+          "format": "time_series",
+          "hide": true,
+          "instant": false,
+          "legendFormat": "All Master Objects",
+          "range": true,
+          "refId": "Master Object with Rules"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "(sum((sum((sum ( (((aerospike_namespace_memory_used_data_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"} + aerospike_namespace_memory_used_index_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})\nunless\naerospike_namespace_device_used_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}\n) \n/aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}\n) \n- ( # begin calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n   sum (\n      aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*\"}*35) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n      group_left(build) (\n        aerospike_node_up{job=\"$job_name\", build=~\"^5.*\"}*35) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build!~\"^5.*\"}*39) ) \n   by (job, cluster_name, instance, service,ns) \n  ) # end of header-byte calculation by aerospike version\n) by (service, ns)) ) by (ns))) \n+\nsum (\n  (\n( \n sum by (ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}) /\n( sum by (ns) ( (aerospike_namespace_device_compression_ratio{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"} \n)  ) *\navg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}) )\n)\nor\n( \n sum by (ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}) /\n( \navg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}) )\n)\n)\n- ( # begin calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n   sum (\n      aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n      group_left(build) (\n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*\"}*35) !=0\n      or\n      aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^5.*\"}*35) !=0\n      or\n      aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n      group_left(build) (\n        aerospike_node_up{job=\"$job_name\", build=~\"^6.*\"}*39) !=0) \n   by (ns)\n) # end of header-byte calculation by aerospike version\n)\n)\n* # above query should work only if the below condition satisfy\n(sum( # Running individual exporter for each node in a cluster\n    (avg by (ns) ( aerospike_namespace_ns_cluster_size {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"} ))\n    == bool \n    (count by (ns) (aerospike_namespace_ns_cluster_size {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"} ))\n)> bool 0)\n* # migration check with RX metric\n(sum((sum by (ns) (aerospike_namespace_migrate_rx_partitions_remaining + aerospike_namespace_migrate_tx_partitions_remaining) != bool 0))\n== bool 0)\n* # Consistent Effective Replication factor across all nodes\n(sum(\n    min by (ns) (aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}) \n    == bool \n    max by (ns) (aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})\n) > bool 0)",
+          "hide": true,
+          "legendFormat": "Unique Data Bytes",
+          "range": true,
+          "refId": "Usage Bytes with Rules"
+        }
+      ],
+      "title": "Cluster - Unique Data Usage ",
+      "transformations": [],
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "Display Unique Data Utilization by namespaces in bytes",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#299c46",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 8,
+        "x": 0,
+        "y": 5
+      },
+      "id": 6,
+      "links": [],
+      "maxDataPoints": 100,
+      "maxPerRow": 4,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "text": {},
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "9.3.2",
+      "repeat": "namespace",
+      "repeatDirection": "v",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "(sum (aerospike_namespace_master_objects{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}) by (ns) )  ",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "master objects - ",
+          "range": true,
+          "refId": "master objects"
+        },
+        {
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "expression": "$Q_MEMORY_USAGE * $QR_RULE_CAN_SHOW",
+          "hide": false,
+          "refId": "in Memory -",
+          "type": "math"
+        },
+        {
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "expression": "$Q_DISK_USAGE * $QR_RULE_CAN_SHOW",
+          "hide": false,
+          "refId": "bytes on Disk -",
+          "type": "math"
+        },
+        {
+          "datasource": {
+            "name": "Expression",
+            "type": "__expr__",
+            "uid": "__expr__"
+          },
+          "expression": "$Q_PMEM_DISK_USAGE * $QR_RULE_CAN_SHOW",
+          "hide": true,
+          "refId": "on Pmem -",
+          "type": "math"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "# above query should work only if the below condition satisfy\n(sum( # Running individual exporter for each node in a cluster\n    (avg by (ns) ( aerospike_namespace_ns_cluster_size {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}))\n    == bool \n    (count by (ns) (aerospike_namespace_ns_cluster_size {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"} ))\n) by (ns)> bool 0)\n* # migration check with RX + TX metric - for each Namespace\n(\n    (sum (aerospike_namespace_migrate_rx_partitions_remaining {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}+ aerospike_namespace_migrate_tx_partitions_remaining {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}) \nby (ns) == bool 0)\n)\n* # Consistent Effective Replication factor across all nodes\n(sum(\n    min by (ns) (aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}) \n    == bool \n    max by (ns) (aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})\n) by (ns) > bool 0)",
+          "hide": true,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "QR_RULE_CAN_SHOW"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "((\n (sum by (ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"} / aerospike_namespace_device_compression_ratio{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})\n ) /\n(avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}))\nOR\n (sum by (ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"} )\n ) /\n(avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}))\n)- ( # begin calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n   sum (\n    aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n    group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*\"}*35) !=0\n    or\n    aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n    group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^5.*\"}*35) !=0\n    or\n    aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n    group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^6.*\"}*39) !=0) by (ns)\n   ) # end calculation of header-byte by server-version\n)",
+          "format": "time_series",
+          "hide": true,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{service}} {{ns}} - on Disk ",
+          "range": false,
+          "refId": "Q_DISK_USAGE"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "((\n (sum by (ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"} / aerospike_namespace_pmem_compression_ratio{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})\n ) /\n(avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}))\nOR\n (sum by (ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"} )\n ) /\n(avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}))\n)- ( # begin calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n   sum (\n    aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n    group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*\"}*35) !=0\n    or\n    aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n    group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^5.*\"}*35) !=0\n    or\n    aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n    group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^6.*\"}*39) !=0) by (ns)\n   ) # end calculation of header-byte by server-version\n)",
+          "format": "time_series",
+          "hide": true,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{service}} {{ns}} - on Disk ",
+          "range": false,
+          "refId": "Q_PMEM_DISK_USAGE"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "((sum((sum ( ((((aerospike_namespace_memory_used_data_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"} + aerospike_namespace_memory_used_index_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})  )\nunless # We pick up namespace which use memory, but not Disk or Pmem\n(aerospike_namespace_device_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"} or aerospike_namespace_pmem_used_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})\n) \n/aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}\n) \n- ( # calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n  sum (\n    aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n    group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*\"}*35) \n    or\n    aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n    group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^5.*\"}*35) \n    or\n    aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n    group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build!~\"^5.*\"}*39) ) \n  by (job, cluster_name, instance, service,ns)\n  ) \n) by (service, ns)) ) by (ns))\n)",
+          "hide": true,
+          "instant": false,
+          "legendFormat": "{{ns}} - in Memory",
+          "range": true,
+          "refId": "Q_MEMORY_USAGE"
+        }
+      ],
+      "title": "Namespace - $namespace",
+      "transformations": [
+        {
+          "id": "labelsToFields",
+          "options": {}
+        }
+      ],
+      "type": "stat"
+    }
+  ],
+  "schemaVersion": 37,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "null",
+          "value": "null"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
+        "definition": "label_values(aerospike_node_stats_uptime{job=\"aerospike\"},cluster_name)",
+        "description": "displays all aerospike clusters configured within the prometheus",
+        "hide": 0,
+        "includeAll": false,
+        "label": "cluster",
+        "multi": false,
+        "name": "cluster",
+        "options": [],
+        "query": {
+          "query": "label_values(aerospike_node_stats_uptime{job=\"aerospike\"},cluster_name)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "172.17.0.4:3000",
+          "value": "172.17.0.4:3000"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
+        "definition": "label_values(aerospike_node_stats_uptime{job=\"aerospike\", cluster_name=~\"$cluster|$^\"},service)",
+        "description": "displays the list of all aerospike nodes in the selected cluster",
+        "hide": 0,
+        "includeAll": true,
+        "label": "node",
+        "multi": false,
+        "name": "node",
+        "options": [],
+        "query": {
+          "query": "label_values(aerospike_node_stats_uptime{job=\"aerospike\", cluster_name=~\"$cluster|$^\"},service)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "All",
+          "value": "$__all"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
+        "definition": "label_values(aerospike_namespace_objects{job=\"aerospike\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\" },ns)",
+        "description": "displays the list of all namespaces configured across all  aerospike clusters ",
+        "hide": 0,
+        "includeAll": true,
+        "multi": false,
+        "name": "namespace",
+        "options": [],
+        "query": {
+          "query": "label_values(aerospike_namespace_objects{job=\"aerospike\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\" },ns)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "Prometheus",
+          "value": "Prometheus"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Datasource",
+        "multi": false,
+        "name": "DS_AEROSPIKE_PROMETHEUS",
+        "options": [],
+        "query": "prometheus",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "aerospike",
+          "value": "aerospike"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
+        "definition": "label_values(aerospike_node_stats_uptime,job)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "job_name",
+        "multi": false,
+        "name": "job_name",
+        "options": [],
+        "query": {
+          "query": "label_values(aerospike_node_stats_uptime,job)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Unique Data Usage",
+  "uid": "QFY8EJfVk",
+  "version": 9,
+  "weekStart": ""
+}
