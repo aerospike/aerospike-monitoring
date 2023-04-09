@@ -1,4 +1,42 @@
 {
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "9.3.2"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph (old)",
+      "version": ""
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "table",
+      "name": "Table",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -24,7 +62,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 21,
+  "id": null,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -44,6 +82,7 @@
       "panels": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "fieldConfig": {
@@ -59,8 +98,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "#299c46",
-                    "value": null
+                    "color": "#299c46"
                   }
                 ]
               }
@@ -89,6 +127,7 @@
           "targets": [
             {
               "datasource": {
+                "type": "prometheus",
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "expr": "aerospike_node_up{job=\"$job_name\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\"}",
@@ -163,6 +202,7 @@
     },
     {
       "datasource": {
+        "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
       "description": "Aerospike node status",
@@ -235,6 +275,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "aerospike_node_up{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"}",
@@ -251,6 +292,7 @@
     },
     {
       "datasource": {
+        "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
       "description": "Total records and tombstones count",
@@ -309,6 +351,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "sum(aerospike_namespace_objects{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
@@ -321,6 +364,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "sum(aerospike_namespace_tombstones{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
@@ -337,6 +381,7 @@
     },
     {
       "datasource": {
+        "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
       "description": "Total namespace memory size\nTotal namespace memory used\nTotal namespace device size\nTotal namespace device used",
@@ -395,6 +440,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "sum(aerospike_namespace_memory_size{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
@@ -407,6 +453,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "sum(aerospike_namespace_memory_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
@@ -419,6 +466,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "sum(aerospike_namespace_device_total_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
@@ -431,6 +479,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "sum(aerospike_namespace_device_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
@@ -443,6 +492,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "sum(aerospike_namespace_pmem_total_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
@@ -455,6 +505,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "sum(aerospike_namespace_pmem_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
@@ -475,6 +526,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": {
+        "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
       "description": "UDF transactions per second",
@@ -526,6 +578,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "avg(aerospike_latencies_udf_${latencytimeunit}_bucket{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", le=~\"[0-9]*\"}) by (le)",
@@ -538,6 +591,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "avg(aerospike_latencies_udf_${latencytimeunit}_count{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
@@ -583,6 +637,7 @@
     },
     {
       "datasource": {
+        "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
       "description": "Alert count",
@@ -645,6 +700,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "ALERTS{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"}",
@@ -659,6 +715,7 @@
     },
     {
       "datasource": {
+        "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
       "description": "Node failed best practice check",
@@ -732,6 +789,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "exemplar": true,
@@ -749,6 +807,7 @@
     },
     {
       "datasource": {
+        "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
       "description": "Client/Heartbeat/Fabric connections count",
@@ -806,6 +865,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "aerospike_node_stats_client_connections{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"}",
@@ -818,6 +878,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "aerospike_node_stats_heartbeat_connections{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"}",
@@ -830,6 +891,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "aerospike_node_stats_fabric_connections{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"}",
@@ -846,6 +908,7 @@
     },
     {
       "datasource": {
+        "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
       "description": "Minimum of the Namespaces' Memory/Device Free Percentage",
@@ -911,6 +974,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "min(aerospike_namespace_memory_free_pct{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
@@ -923,6 +987,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "min(aerospike_namespace_device_free_pct{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
@@ -935,6 +1000,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "min(aerospike_namespace_pmem_free_pct{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
@@ -955,6 +1021,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": {
+        "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
       "description": "Reads per second",
@@ -1006,6 +1073,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "avg(aerospike_latencies_read_${latencytimeunit}_bucket{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", le=~\"[0-9]*\"}) by (le)",
@@ -1018,6 +1086,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "avg(aerospike_latencies_read_${latencytimeunit}_count{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
@@ -1067,6 +1136,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": {
+        "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
       "description": "Writes per second",
@@ -1118,6 +1188,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "avg(aerospike_latencies_write_${latencytimeunit}_bucket{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", le=~\"[0-9]*\"}) by (le)",
@@ -1130,6 +1201,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "avg(aerospike_latencies_write_${latencytimeunit}_count{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
@@ -1179,6 +1251,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": {
+        "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
       "description": "Proxies per second",
@@ -1230,6 +1303,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "avg(aerospike_latencies_proxy_${latencytimeunit}_bucket{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", le=~\"[0-9]*\"}) by (le)",
@@ -1242,6 +1316,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "avg(aerospike_latencies_proxy_${latencytimeunit}_count{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
@@ -1291,6 +1366,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": {
+        "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
       "description": "Secondary index queries per second",
@@ -1342,6 +1418,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "avg(aerospike_latencies_si_query_${latencytimeunit}_bucket{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", le=~\"[0-9]*\"}) by (le)",
@@ -1354,6 +1431,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "avg(aerospike_latencies_si_query_${latencytimeunit}_count{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
@@ -1403,6 +1481,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": {
+        "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
       "description": "Primary index queries per second",
@@ -1454,6 +1533,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "avg(aerospike_latencies_pi_query_${latencytimeunit}_bucket{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", le=~\"[0-9]*\"}) by (le)",
@@ -1466,6 +1546,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "avg(aerospike_latencies_pi_query_${latencytimeunit}_count{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
@@ -1515,6 +1596,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": {
+        "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
       "description": "Rate of client, heartbeat and fabric connections opened or closed",
@@ -1567,6 +1649,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "exemplar": true,
@@ -1578,6 +1661,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "exemplar": true,
@@ -1589,6 +1673,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "exemplar": true,
@@ -1600,6 +1685,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "exemplar": true,
@@ -1611,6 +1697,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "exemplar": true,
@@ -1622,6 +1709,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "exemplar": true,
@@ -1674,6 +1762,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": {
+        "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
       "description": "Migrations remaining migrate_tx_partitions_remaining (transmit), migrate_rx_partitions_remaining (receive)",
@@ -1724,6 +1813,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "sum(aerospike_namespace_migrate_rx_partitions_remaining{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
@@ -1735,6 +1825,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "sum(aerospike_namespace_migrate_tx_partitions_remaining{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
@@ -1787,6 +1878,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": {
+        "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
       "description": "Master objects, prole objects and tombstones",
@@ -1838,6 +1930,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "aerospike_namespace_master_objects{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
@@ -1850,6 +1943,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "aerospike_namespace_prole_objects{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
@@ -1860,6 +1954,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "aerospike_namespace_tombstones{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
@@ -1911,6 +2006,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": {
+        "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
       "description": "Number of detached server threads currently running.\n\nNumber of joinable server threads currently running.\n\nNumber of currently active threads in the server thread pool.\n\nTotal number of threads in the server thread pool.",
@@ -1962,6 +2058,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "exemplar": true,
@@ -1975,6 +2072,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "exemplar": true,
@@ -1988,6 +2086,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "exemplar": true,
@@ -2001,6 +2100,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "exemplar": true,
@@ -2056,6 +2156,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": {
+        "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
       "description": "Client connections, fabric connections and heartbeat connections",
@@ -2107,6 +2208,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "aerospike_node_stats_client_connections{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
@@ -2119,6 +2221,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "aerospike_node_stats_fabric_connections{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
@@ -2129,6 +2232,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "aerospike_node_stats_heartbeat_connections{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
@@ -2180,6 +2284,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": {
+        "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
       "description": "Client connections, fabric connections and heartbeat connections",
@@ -2231,6 +2336,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "aerospike_node_stats_client_connections{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
@@ -2243,6 +2349,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "aerospike_node_stats_fabric_connections{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
@@ -2253,6 +2360,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "aerospike_node_stats_heartbeat_connections{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}",
@@ -2304,6 +2412,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": {
+        "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
       "decimals": 0,
@@ -2356,6 +2465,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "sum by (job, cluster_name, service) (rate(aerospike_namespace_client_write_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+rate(aerospike_namespace_client_write_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+rate(aerospike_namespace_client_write_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
@@ -2366,6 +2476,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "sum by (job, cluster_name, service) (rate(aerospike_namespace_client_write_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
@@ -2376,6 +2487,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "sum by (job, cluster_name, service) (rate(aerospike_namespace_client_write_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
@@ -2387,6 +2499,7 @@
         },
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "expr": "sum by (job, cluster_name, service) (rate(aerospike_namespace_client_write_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
@@ -2488,6 +2601,7 @@
       "targets": [
         {
           "datasource": {
+            "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
@@ -2546,12 +2660,9 @@
   "templating": {
     "list": [
       {
-        "current": {
-          "selected": false,
-          "text": "null",
-          "value": "null"
-        },
+        "current": {},
         "datasource": {
+          "type": "prometheus",
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
         "definition": "label_values(aerospike_node_up{job=\"$job_name\"},cluster_name)",
@@ -2575,12 +2686,9 @@
         "useTags": false
       },
       {
-        "current": {
-          "selected": false,
-          "text": "All",
-          "value": "$__all"
-        },
+        "current": {},
         "datasource": {
+          "type": "prometheus",
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
         "definition": "label_values(aerospike_node_up{job=\"$job_name\", cluster_name=~\"$cluster|$^\"},service)",
@@ -2604,12 +2712,9 @@
         "useTags": false
       },
       {
-        "current": {
-          "selected": false,
-          "text": "All",
-          "value": "$__all"
-        },
+        "current": {},
         "datasource": {
+          "type": "prometheus",
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
         "definition": "label_values(aerospike_namespace_objects{job=\"$job_name\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\" },ns)",
@@ -2633,12 +2738,9 @@
         "useTags": false
       },
       {
-        "current": {
-          "selected": false,
-          "text": "ms",
-          "value": "ms"
-        },
+        "current": {},
         "datasource": {
+          "type": "prometheus",
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
         "definition": "metrics(aerospike_latencies_)",
@@ -2664,8 +2766,8 @@
       {
         "current": {
           "selected": false,
-          "text": "Prometheus",
-          "value": "Prometheus"
+          "text": "Aerospike Prometheus",
+          "value": "Aerospike Prometheus"
         },
         "hide": 0,
         "includeAll": false,
@@ -2680,12 +2782,9 @@
         "type": "datasource"
       },
       {
-        "current": {
-          "selected": false,
-          "text": "aerospike",
-          "value": "aerospike"
-        },
+        "current": {},
         "datasource": {
+          "type": "prometheus",
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
         "definition": "label_values(aerospike_node_stats_uptime,job)",
@@ -2742,6 +2841,6 @@
   "timezone": "",
   "title": "Node Overview",
   "uid": "UcZD2iHAk",
-  "version": 7,
+  "version": 1,
   "weekStart": ""
 }
