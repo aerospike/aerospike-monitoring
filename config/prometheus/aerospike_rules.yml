@@ -58,12 +58,12 @@ groups:
         description: 'Clock has skewed for namespace {{ $labels.ns }} in node {{ $labels.instance }}'
         summary: Writes will be stopped by Aerospike
     - alert: ClusterSize
-      expr: aerospike_node_stats_cluster_size{job="aerospike"} < 3 # user has to replace 3 here with their desired cluster size.
+      expr: sum by(cluster_name) (aerospike_node_stats_cluster_size{job="aerospike"}) < 3 # user has to replace 3 here with their desired cluster size.
       for: 30s
       labels:
         severity: "1"
       annotations:
-        description: 'Cluster size mismatch for namespace {{ $labels.ns }} in node {{ $labels.instance }}'
+        description: 'Cluster size for {{ $labels.cluster_name }} is < 3'
         summary: Some of the node(s) has gone out of the cluster
     - alert: DeadPartitions
       expr: aerospike_namespace_dead_partitions{job="aerospike"} > 0
