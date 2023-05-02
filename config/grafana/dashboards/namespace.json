@@ -1788,14 +1788,26 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(aerospike_namespace_nsup_cycle_duration{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+          "expr": "avg(aerospike_namespace_nsup_cycle_duration{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "format": "time_series",
           "instant": true,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "Cycle Duration",
+          "legendFormat": "Avg Cycle Duration",
           "range": false,
           "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "max(aerospike_namespace_nsup_cycle_duration{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+          "hide": false,
+          "legendFormat": "Max Cycle Duration",
+          "range": true,
+          "refId": "D"
         },
         {
           "datasource": {
@@ -1808,7 +1820,7 @@
           "instant": true,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "% Cycle Deleted",
+          "legendFormat": "% Avg Cycle Deleted",
           "refId": "A"
         },
         {
@@ -1817,14 +1829,13 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "exemplar": false,
-          "expr": "sum(aerospike_namespace_nsup_cycle_sleep_pct{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+          "expr": "max(aerospike_namespace_nsup_cycle_deleted_pct{cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
           "format": "time_series",
+          "hide": false,
           "instant": true,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "Cycle Sleep %",
-          "range": false,
+          "legendFormat": "% Max Cycle Deleted",
           "refId": "C"
         }
       ],
@@ -8144,6 +8155,6 @@
   "timezone": "",
   "title": "Namespace View",
   "uid": "zGcUKcDZz",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }
