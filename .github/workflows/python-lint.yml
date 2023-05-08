@@ -1,0 +1,31 @@
+name: aerospike dashboard linter
+
+on:
+  push:
+    branches: [ "dev" ]
+  pull_request:
+    branches: [ "dev" ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10' 
+
+    - name: Install 
+      run: pip install jsonschema-cli
+
+    - name: validate all json files against dashboard_schema.json
+      run: |
+         json_files=$(find ./config/grafana/dashboards -type f -name "*.json" -printf "$(realpath -s %p) ")
+         
+         for file in $json_files; do
+           echo "validating file === $file"
+           jsonschema-cli validate build/dashboard_schema.json $file 
+         done
