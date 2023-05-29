@@ -1,0 +1,801 @@
+{
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "geomap",
+      "name": "Geomap",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "9.3.2"
+    },
+    {
+      "type": "panel",
+      "id": "grafana-polystat-panel",
+      "name": "Polystat",
+      "version": "2.0.7"
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            }
+          },
+          "links": [
+            {
+              "targetBlank": false,
+              "title": "View",
+              "url": "/d/Jo2shyU4k/all-cluster-view?orgId=1&refresh=1m&var-cluster=${__data.fields.cluster_name}"
+            }
+          ],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "latitude"
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": true,
+                  "viz": false
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "longitude"
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": false
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Cluster size"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Last Refreshed"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": true
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Value"
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": true,
+                  "tooltip": true,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 11,
+        "w": 13,
+        "x": 5,
+        "y": 0
+      },
+      "id": 2,
+      "links": [
+        {
+          "targetBlank": true,
+          "title": "Cluster View",
+          "url": "/d/W5c01J84k/wip_drilldown-db_1?orgId=1&var-cluster=${__data.fields.cluster_name}"
+        }
+      ],
+      "options": {
+        "basemap": {
+          "config": {},
+          "name": "Layer 0",
+          "type": "default"
+        },
+        "controls": {
+          "mouseWheelZoom": true,
+          "showAttribution": false,
+          "showDebug": false,
+          "showMeasure": false,
+          "showScale": false,
+          "showZoom": true
+        },
+        "layers": [
+          {
+            "config": {
+              "showLegend": false,
+              "style": {
+                "color": {
+                  "field": "Value",
+                  "fixed": "green"
+                },
+                "opacity": 0.6,
+                "rotation": {
+                  "fixed": 0,
+                  "max": 360,
+                  "min": -360,
+                  "mode": "mod"
+                },
+                "size": {
+                  "field": "Value",
+                  "fixed": 5,
+                  "max": 15,
+                  "min": 8
+                },
+                "symbol": {
+                  "field": "",
+                  "fixed": "img/icons/marker/circle.svg",
+                  "mode": "fixed"
+                },
+                "text": {
+                  "fixed": "",
+                  "mode": "fixed"
+                },
+                "textConfig": {
+                  "fontSize": 20,
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "textAlign": "center",
+                  "textBaseline": "top"
+                }
+              }
+            },
+            "filterData": {
+              "id": "byRefId",
+              "options": "clusters"
+            },
+            "location": {
+              "latitude": "Value",
+              "longitude": "Value",
+              "mode": "auto"
+            },
+            "name": "Layer 1",
+            "tooltip": true,
+            "type": "markers"
+          }
+        ],
+        "tooltip": {
+          "mode": "details"
+        },
+        "view": {
+          "allLayers": true,
+          "id": "zero",
+          "lat": 0,
+          "lon": 0,
+          "zoom": 1
+        }
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "\ncount by (latitude, longitude, cluster_name) (aerospike_node_up)\n",
+          "format": "table",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "clusters"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "count by (latitude, longitude, cluster_name) (\n(ALERTS{service!=\"\"})  \n) ",
+          "format": "table",
+          "hide": true,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "alerts"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "count by (latitude, longitude, cluster_name) (ALERTS{service!=\"\"}) * -1\nor\ncount by (latitude, longitude, cluster_name) (aerospike_node_up)\n",
+          "format": "table",
+          "hide": true,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "cluster_and_alerts"
+        }
+      ],
+      "title": "All Clusters ",
+      "transformations": [],
+      "type": "geomap"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "links": [
+            {
+              "targetBlank": true,
+              "title": "Cluster View",
+              "url": "d/dR0dDRHWz/cluster-overview?orgId=1&refresh=1m&${cluster:queryparam}"
+            }
+          ],
+          "mappings": [],
+          "noValue": "Select a cluster",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Alerts"
+            },
+            "properties": [
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 0,
+        "y": 11
+      },
+      "id": 10,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(aerospike_node_up{ cluster_name=~\"$cluster\"})",
+          "instant": true,
+          "legendFormat": "Cluster Size",
+          "range": false,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "count(ALERTS{cluster_name=~\"$cluster\"}) or vector(0)",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "Alerts",
+          "range": false,
+          "refId": "E"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "sum(aerospike_namespace_migrate_rx_partitions_remaining{ cluster_name=~\"$cluster\"}) ",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "RX Migrations",
+          "range": false,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": " sum(aerospike_namespace_migrate_tx_partitions_remaining{cluster_name=~\"$cluster\"})",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "TX Migrations",
+          "range": false,
+          "refId": "C"
+        }
+      ],
+      "title": "$cluster",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": []
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 8,
+        "y": 11
+      },
+      "id": 6,
+      "options": {
+        "autoSizeColumns": true,
+        "autoSizePolygons": true,
+        "autoSizeRows": true,
+        "compositeConfig": {
+          "animationSpeed": "1500",
+          "composites": [],
+          "enabled": true
+        },
+        "ellipseCharacters": 18,
+        "ellipseEnabled": false,
+        "globalAutoScaleFonts": true,
+        "globalClickthrough": "/d/UcZD2iHAk/node-overview?orgId=1&refresh=1m&var-cluster=$cluster&var-node=${__cell_name}",
+        "globalClickthroughNewTabEnabled": true,
+        "globalClickthroughSanitizedEnabled": true,
+        "globalDecimals": 0,
+        "globalDisplayMode": "all",
+        "globalDisplayTextTriggeredEmpty": "Select a cluster",
+        "globalFillColor": "green",
+        "globalFontSize": 12,
+        "globalGradientsEnabled": true,
+        "globalOperator": "sum",
+        "globalPolygonBorderColor": "transparent",
+        "globalPolygonBorderSize": 3,
+        "globalPolygonSize": 25,
+        "globalRegexPattern": "",
+        "globalShape": "hexagon_pointed_top",
+        "globalShowTooltipColumnHeadersEnabled": false,
+        "globalShowValueEnabled": false,
+        "globalTextFontAutoColorEnabled": true,
+        "globalTextFontColor": "#000000",
+        "globalTextFontFamily": "Roboto",
+        "globalThresholdsConfig": [
+          {
+            "color": "#F2495C",
+            "state": 0,
+            "value": 0
+          },
+          {
+            "color": "#299c46",
+            "state": 3,
+            "value": 1
+          }
+        ],
+        "globalTooltipsEnabled": true,
+        "globalTooltipsFontFamily": "Roboto",
+        "globalTooltipsShowTimestampEnabled": false,
+        "globalUnitFormat": "short",
+        "layoutDisplayLimit": 100,
+        "layoutNumColumns": 8,
+        "layoutNumRows": 8,
+        "overrideConfig": {
+          "overrides": []
+        },
+        "sortByDirection": 1,
+        "sortByField": "name",
+        "tooltipDisplayMode": "all",
+        "tooltipDisplayTextTriggeredEmpty": "OK",
+        "tooltipPrimarySortByField": "thresholdLevel",
+        "tooltipPrimarySortDirection": 1,
+        "tooltipSecondarySortByField": "value",
+        "tooltipSecondarySortDirection": 1
+      },
+      "pluginVersion": "2.0.7",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "aerospike_node_up{ cluster_name=\"$cluster\"}",
+          "hide": false,
+          "instant": true,
+          "legendFormat": "{{service}}",
+          "range": false,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "count by ( service, metric_name) \n\n(\ncount by ( service, metric_name) (label_join(aerospike_node_up{cluster_name=\"$cluster\"}, \"metric_name\", \"\", \"__name__\"))\nor\ncount by (service, metric_name) (label_join(ALERTS{cluster_name=\"$cluster\", service!=\"\"}>0, \"metric_name\", \"\", \"__name__\"))\n)",
+          "hide": true,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{service}}",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "$cluster - Nodes",
+      "type": "grafana-polystat-panel"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "links": [
+            {
+              "targetBlank": true,
+              "title": "View",
+              "url": "/d/zGcUKcDZz/namespace-view?orgId=1&refresh=1m&${cluster:queryparam}&var-namespace=${__field.labels.ns}"
+            }
+          ],
+          "mappings": [],
+          "noValue": "Select a cluster",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 8,
+        "x": 16,
+        "y": 11
+      },
+      "id": 14,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value_and_name"
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": " sum by (ns) (aerospike_namespace_objects{cluster_name=\"$cluster\"} )",
+          "hide": false,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{ns}}",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "$cluster - Objects per Namespace",
+      "type": "stat"
+    }
+  ],
+  "refresh": "1m",
+  "schemaVersion": 37,
+  "style": "dark",
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
+        "definition": "label_values(aerospike_node_stats_uptime,latitude)",
+        "description": "latitude",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "latitude",
+        "options": [],
+        "query": {
+          "query": "label_values(aerospike_node_stats_uptime,latitude)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
+        "definition": "label_values(aerospike_node_stats_uptime,longitude)",
+        "description": "longitude",
+        "hide": 2,
+        "includeAll": false,
+        "multi": false,
+        "name": "longitude",
+        "options": [],
+        "query": {
+          "query": "label_values(aerospike_node_stats_uptime,longitude)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "allValue": "No Cluster selected",
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
+        "definition": "label_values(aerospike_node_stats_uptime,cluster_name)",
+        "description": "Displays all the cluster names",
+        "hide": 2,
+        "includeAll": true,
+        "label": "Cluster",
+        "multi": false,
+        "name": "cluster",
+        "options": [],
+        "query": {
+          "query": "label_values(aerospike_node_stats_uptime,cluster_name)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
+        "definition": "label_values(aerospike_node_stats_uptime,service)",
+        "hide": 2,
+        "includeAll": true,
+        "label": "node",
+        "multi": false,
+        "name": "node",
+        "options": [],
+        "query": {
+          "query": "label_values(aerospike_node_stats_uptime,service)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "Aerospike Prometheus",
+          "value": "Aerospike Prometheus"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Datasource",
+        "multi": false,
+        "name": "DS_AEROSPIKE_PROMETHEUS",
+        "options": [],
+        "query": "prometheus",
+        "queryValue": "",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "All Cluster View",
+  "uid": "Jo2shyU4k",
+  "version": 12,
+  "weekStart": ""
+}
