@@ -1,4 +1,36 @@
 {
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "geomap",
+      "name": "Geomap",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "9.3.2"
+    },
+    {
+      "type": "panel",
+      "id": "grafana-polystat-panel",
+      "name": "Polystat",
+      "version": "2.0.7"
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    }
+  ],
   "annotations": {
     "list": [
       {
@@ -24,7 +56,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 11,
+  "id": null,
   "links": [],
   "liveNow": false,
   "panels": [
@@ -38,7 +70,7 @@
       },
       "id": 16,
       "panels": [],
-      "title": "Cluster Locations",
+      "title": "Cluster Geo Locations",
       "type": "row"
     },
     {
@@ -61,9 +93,9 @@
           },
           "links": [
             {
-              "targetBlank": false,
+              "targetBlank": true,
               "title": "View",
-              "url": "/d/Jo2shyU4k/all-cluster-view?orgId=1&refresh=1m&var-cluster=${__data.fields.cluster_name}"
+              "url": "/d/03SlXxlVz/multi-cluster-view?orgId=1&refresh=1m&var-cluster=${__data.fields.cluster_name}"
             }
           ],
           "mappings": [],
@@ -71,8 +103,12 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "red",
                 "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
               }
             ]
           }
@@ -87,7 +123,7 @@
               {
                 "id": "custom.hideFrom",
                 "value": {
-                  "legend": false,
+                  "legend": true,
                   "tooltip": true,
                   "viz": false
                 }
@@ -261,7 +297,7 @@
           "zoom": 1
         }
       },
-      "pluginVersion": "9.5.2",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
           "datasource": {
@@ -270,7 +306,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "\ncount by (latitude, longitude, cluster_name) (aerospike_node_up)\n",
+          "expr": "count by (latitude, longitude, cluster_name) (ALERTS{ns=~\"..*\"}) * -1\nor\ncount by (latitude, longitude, cluster_name) (aerospike_node_up)\n",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -278,40 +314,8 @@
           "legendFormat": "__auto",
           "range": false,
           "refId": "clusters"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "count by (latitude, longitude, cluster_name) (\n(ALERTS{service!=\"\"})  \n) ",
-          "format": "table",
-          "hide": true,
-          "instant": true,
-          "legendFormat": "__auto",
-          "range": false,
-          "refId": "alerts"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "count by (latitude, longitude, cluster_name) (ALERTS{service!=\"\"}) * -1\nor\ncount by (latitude, longitude, cluster_name) (aerospike_node_up)\n",
-          "format": "table",
-          "hide": true,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "__auto",
-          "range": false,
-          "refId": "cluster_and_alerts"
         }
       ],
-      "title": "All Clusters ",
       "transformations": [],
       "type": "geomap"
     },
@@ -327,7 +331,7 @@
       "panels": [],
       "repeat": "cluster",
       "repeatDirection": "h",
-      "title": "Cluster Details",
+      "title": "Cluster Details - $cluster",
       "type": "row"
     },
     {
@@ -382,6 +386,16 @@
                     }
                   ]
                 }
+              },
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "alerts",
+                    "url": "/d/0bMepuvZz/alerts?orgId=1&refresh=1m&${__all_variables}"
+                  }
+                ]
               }
             ]
           }
@@ -408,7 +422,7 @@
         },
         "textMode": "auto"
       },
-      "pluginVersion": "9.5.2",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
           "datasource": {
@@ -421,7 +435,7 @@
           "instant": true,
           "legendFormat": "Cluster Size",
           "range": false,
-          "refId": "A"
+          "refId": "cluster_size"
         },
         {
           "datasource": {
@@ -436,7 +450,7 @@
           "interval": "",
           "legendFormat": "Alerts",
           "range": false,
-          "refId": "E"
+          "refId": "alerts"
         },
         {
           "datasource": {
@@ -451,7 +465,7 @@
           "interval": "",
           "legendFormat": "RX Migrations",
           "range": false,
-          "refId": "B"
+          "refId": "rx_partisions"
         },
         {
           "datasource": {
@@ -465,7 +479,7 @@
           "instant": true,
           "legendFormat": "TX Migrations",
           "range": false,
-          "refId": "C"
+          "refId": "tx_partisions"
         }
       ],
       "title": "$cluster",
@@ -553,7 +567,7 @@
         "tooltipSecondarySortByField": "value",
         "tooltipSecondarySortDirection": 1
       },
-      "pluginVersion": "2.0.8",
+      "pluginVersion": "2.0.7",
       "targets": [
         {
           "datasource": {
@@ -562,27 +576,12 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "aerospike_node_up{ cluster_name=\"$cluster\"}",
+          "expr": "count by (service) (ALERTS{cluster_name=\"$cluster\", service!=\"\"}) * -1\nor\ncount by (service) (aerospike_node_up{ cluster_name=\"$cluster\"})",
           "hide": false,
           "instant": true,
           "legendFormat": "{{service}}",
           "range": false,
-          "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "count by ( service, metric_name) \n\n(\ncount by ( service, metric_name) (label_join(aerospike_node_up{cluster_name=\"$cluster\"}, \"metric_name\", \"\", \"__name__\"))\nor\ncount by (service, metric_name) (label_join(ALERTS{cluster_name=\"$cluster\", service!=\"\"}>0, \"metric_name\", \"\", \"__name__\"))\n)",
-          "hide": true,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{service}}",
-          "range": false,
-          "refId": "A"
+          "refId": "alerts_node"
         }
       ],
       "title": "$cluster - Nodes",
@@ -593,6 +592,7 @@
         "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -611,8 +611,12 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "red",
                 "value": null
+              },
+              {
+                "color": "green",
+                "value": 0
               }
             ]
           },
@@ -639,9 +643,9 @@
           "fields": "",
           "values": false
         },
-        "textMode": "value_and_name"
+        "textMode": "name"
       },
-      "pluginVersion": "9.5.2",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
           "datasource": {
@@ -650,7 +654,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": " sum by (ns) (aerospike_namespace_objects{cluster_name=\"$cluster\"} )",
+          "expr": "count by (ns) (ALERTS{cluster_name=\"$cluster\", ns=~\"..*\"}) * -1 \nor\nsum by (ns) (aerospike_namespace_objects{cluster_name=\"$cluster\"} )",
           "hide": false,
           "instant": true,
           "interval": "",
@@ -659,22 +663,19 @@
           "refId": "A"
         }
       ],
-      "title": "$cluster - Objects per Namespace",
+      "title": "$cluster - Namespaces",
       "type": "stat"
     }
   ],
   "refresh": "1m",
-  "schemaVersion": 38,
+  "revision": 1,
+  "schemaVersion": 37,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": [
       {
-        "current": {
-          "selected": false,
-          "text": "None",
-          "value": ""
-        },
+        "current": {},
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
@@ -697,11 +698,7 @@
         "type": "query"
       },
       {
-        "current": {
-          "selected": false,
-          "text": "None",
-          "value": ""
-        },
+        "current": {},
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
@@ -724,17 +721,13 @@
         "type": "query"
       },
       {
-        "allValue": "",
-        "current": {
-          "selected": false,
-          "text": "All",
-          "value": "$__all"
-        },
+        "allValue": "All",
+        "current": {},
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
-        "definition": "label_values(aerospike_node_stats_uptime,cluster_name)",
+        "definition": "label_values( aerospike_node_stats_uptime,cluster_name)",
         "description": "Displays all the cluster names",
         "hide": 0,
         "includeAll": true,
@@ -743,7 +736,7 @@
         "name": "cluster",
         "options": [],
         "query": {
-          "query": "label_values(aerospike_node_stats_uptime,cluster_name)",
+          "query": "label_values( aerospike_node_stats_uptime,cluster_name)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,
@@ -753,11 +746,7 @@
         "type": "query"
       },
       {
-        "current": {
-          "selected": false,
-          "text": "All",
-          "value": "$__all"
-        },
+        "current": {},
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
@@ -806,8 +795,8 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "Aerospike Overview",
-  "uid": "fa195c23-a79f-4155-be9d-1a37f1c673eb",
-  "version": 3,
+  "title": "Multi Cluster View",
+  "uid": "03SlXxlVz",
+  "version": 15,
   "weekStart": ""
 }
