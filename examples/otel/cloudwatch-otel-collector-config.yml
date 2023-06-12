@@ -1,0 +1,50 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "as_otel_contrib:4317"
+
+  prometheus:
+    config:
+      scrape_configs:
+      - job_name: 'otel_as_demo_server'
+        scrape_interval: 10s
+        static_configs:
+          - targets: ['as_prom_exporter:9145']
+
+exporters:
+  prometheus:
+    endpoint: "as_otel_contrib:30145"
+
+  awsemf:
+    namespace: "otel_dc_as_test"
+    region: "ap-south-1"
+    output_destination: cloudwatch
+    dimension_rollup_option: ZeroAndSingleDimensionRollup
+    detailed_metrics: true
+    retain_initial_value_of_delta_metric: true
+    metric_declarations:
+      - dimensions: [[ns,cluster_name,service,file, file_index,set,module,job_type,trid,sindex_name,sindex,user,dc], []]
+        metric_name_selectors:
+         - "^aerospike"        
+
+  logging:
+
+processors:
+  batch:
+
+extensions:
+  health_check:
+  pprof:
+    endpoint: :1888
+  zpages:
+    endpoint: :55679
+
+service:
+  extensions: [pprof, zpages, health_check]
+  pipelines:
+    metrics:
+      receivers: [prometheus ]
+      processors: [batch]
+      exporters: [logging , prometheus, awsemf]
+

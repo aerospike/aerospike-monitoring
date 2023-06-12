@@ -1,0 +1,41 @@
+version: "3.7"
+services:
+
+  exporter:
+    image: aerospike/aerospike-prometheus-exporter:latest
+    networks:
+      - aerospike_otel_nw
+    container_name: as_prom_exporter
+    environment:
+    - AS_HOST=as_server
+    - AS_PORT=3000
+    - "METRIC_LABELS=type='development',source='aerospike'"
+    extra_hosts:
+    - "host.docker.internal:host-gateway"
+
+  aerospike_ce:
+    image: aerospike/aerospike-server:latest 
+    networks:
+      - aerospike_otel_nw
+    container_name: as_server
+
+  # Collector
+  otel-collector:
+    networks:
+      - aerospike_otel_nw
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: as_otel_contrib
+    privileged: true
+    restart: always
+    volumes:
+    - source: ./multi-otel-collector-config.yml 
+      target: /etc/otel-collector-config.yml 
+      type: bind
+    command: ["--config=/etc/otel-collector-config.yml"]
+
+volumes:
+  otel_prometheus_data: {}
+  otel_data: {}
+networks:
+  aerospike_otel_nw:
+    driver: bridge
