@@ -211,13 +211,7 @@
         "y": 1
       },
       "id": 2,
-      "links": [
-        {
-          "targetBlank": true,
-          "title": "Cluster View",
-          "url": "/d/W5c01J84k/wip_drilldown-db_1?orgId=1&var-cluster=${__data.fields.cluster_name}"
-        }
-      ],
+      "links": [],
       "options": {
         "basemap": {
           "config": {},
@@ -306,7 +300,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count by (latitude, longitude, cluster_name) (ALERTS{ns=~\"..*\"}) * -1\nor\ncount by (latitude, longitude, cluster_name) (aerospike_node_up)\n",
+          "expr": "count by (latitude, longitude, cluster_name) (ALERTS{cluster_name!=\"\"}) * -1\nor\ncount by (latitude, longitude, cluster_name) (aerospike_node_up)\n",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -349,7 +343,7 @@
             {
               "targetBlank": true,
               "title": "Cluster View",
-              "url": "d/dR0dDRHWz/cluster-overview?orgId=1&refresh=1m&${cluster:queryparam}"
+              "url": "/d/dR0dDRHWz/cluster-overview?orgId=1&refresh=1m&${cluster:queryparam}"
             }
           ],
           "mappings": [],
@@ -431,7 +425,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "sum(aerospike_node_up{ cluster_name=~\"$cluster\"})",
+          "expr": "count_values (\"size\", (aerospike_node_stats_cluster_size{cluster_name=\"$cluster\"}) )",
           "instant": true,
           "legendFormat": "Cluster Size",
           "range": false,
@@ -504,6 +498,7 @@
         "y": 16
       },
       "id": 6,
+      "links": [],
       "options": {
         "autoSizeColumns": true,
         "autoSizePolygons": true,
@@ -516,7 +511,7 @@
         "ellipseCharacters": 18,
         "ellipseEnabled": false,
         "globalAutoScaleFonts": true,
-        "globalClickthrough": "/d/UcZD2iHAk/node-overview?orgId=1&refresh=1m&var-cluster=$cluster&var-node=${__cell_name}",
+        "globalClickthrough": "https://",
         "globalClickthroughNewTabEnabled": true,
         "globalClickthroughSanitizedEnabled": true,
         "globalDecimals": 0,
@@ -529,7 +524,7 @@
         "globalPolygonBorderColor": "transparent",
         "globalPolygonBorderSize": 3,
         "globalPolygonSize": 25,
-        "globalRegexPattern": "",
+        "globalRegexPattern": "(.*):.*",
         "globalShape": "hexagon_pointed_top",
         "globalShowTooltipColumnHeadersEnabled": false,
         "globalShowValueEnabled": false,
@@ -556,7 +551,30 @@
         "layoutNumColumns": 8,
         "layoutNumRows": 8,
         "overrideConfig": {
-          "overrides": []
+          "overrides": [
+            {
+              "alias": "",
+              "clickThrough": "/d/UcZD2iHAk/node-overview?orgId=1&refresh=1m&var-cluster=$3&var-node=$1",
+              "clickThroughOpenNewTab": true,
+              "clickThroughSanitize": true,
+              "colors": [
+                "#299c46",
+                "#ed8128",
+                "#f53636",
+                "#0a55a1"
+              ],
+              "decimals": "2",
+              "enabled": true,
+              "label": "url_constructor",
+              "metricName": "(..*)(\\:(.*))",
+              "operatorName": "mean",
+              "order": 0,
+              "prefix": "",
+              "suffix": "",
+              "thresholds": [],
+              "unitFormat": "short"
+            }
+          ]
         },
         "sortByDirection": 1,
         "sortByField": "name",
@@ -576,10 +594,12 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count by (service) (ALERTS{cluster_name=\"$cluster\", service!=\"\"}) * -1\nor\ncount by (service) (aerospike_node_up{ cluster_name=\"$cluster\"})",
+          "expr": "count by (service,cluster_name) (ALERTS{cluster_name=\"$cluster\", service!=\"\"}) * -1\nor\ncount by (service,cluster_name) (aerospike_node_up{ cluster_name=\"$cluster\"})",
+          "format": "time_series",
           "hide": false,
           "instant": true,
-          "legendFormat": "{{service}}",
+          "interval": "",
+          "legendFormat": "{{service}}:{{cluster_name}}",
           "range": false,
           "refId": "alerts_node"
         }
@@ -675,52 +695,6 @@
   "templating": {
     "list": [
       {
-        "current": {},
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-        },
-        "definition": "label_values(aerospike_node_stats_uptime,latitude)",
-        "description": "latitude",
-        "hide": 2,
-        "includeAll": false,
-        "multi": false,
-        "name": "latitude",
-        "options": [],
-        "query": {
-          "query": "label_values(aerospike_node_stats_uptime,latitude)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
-      },
-      {
-        "current": {},
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-        },
-        "definition": "label_values(aerospike_node_stats_uptime,longitude)",
-        "description": "longitude",
-        "hide": 2,
-        "includeAll": false,
-        "multi": false,
-        "name": "longitude",
-        "options": [],
-        "query": {
-          "query": "label_values(aerospike_node_stats_uptime,longitude)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
-      },
-      {
         "allValue": "All",
         "current": {},
         "datasource": {
@@ -797,6 +771,6 @@
   "timezone": "",
   "title": "Multi Cluster View",
   "uid": "03SlXxlVz",
-  "version": 15,
+  "version": 21,
   "weekStart": ""
 }
