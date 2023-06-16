@@ -24,7 +24,8 @@ These examples cover integration of aerospike monitoring with
 > **Note**: You need to update the API Key or Access Key in the respective configuration files.
 
 ## NewRelic 
-### modify newrelic-otel-collector-config.yml and replace <NEWRELIC-API-KEY> with your API key
+### modify newrelic-otel-collector-config.yml and update below key with respective values 
+###### <NEWRELIC-API-KEY> 
 ### To start the stack pointing to NewRelic
 ```
 $ docker-compose -f newrelic-docker-compose.yml up
@@ -36,7 +37,8 @@ $ docker-compose -f newrelic-docker-compose.yml down
 Now simply point your browser at NewRelic cloud https://one.newrelic.com/data-explorer to see Aerospike metrics.
 
 ## Datadog
-### modify datadog-otel-collector-config.yml and replace  <DATADOG-APP-KEY> with your APP key
+### modify datadog-otel-collector-config.yml and update below key with respective values 
+###### <DATADOG-APP-KEY> 
 ### To start the stack pointing to Datadog
 ```
 $ docker-compose -f datadog-docker-compose.yml up
