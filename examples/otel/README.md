@@ -26,7 +26,7 @@ These examples cover integration of aerospike monitoring with
 ## NewRelic 
 ### modify newrelic-otel-collector-config.yml and update below key with respective values 
 ###### <NEWRELIC-API-KEY> 
-### To start the stack pointing to NewRelic
+### To start the stack 
 ```
 $ docker-compose -f newrelic-docker-compose.yml up
 ```
@@ -39,7 +39,7 @@ Now simply point your browser at NewRelic cloud https://one.newrelic.com/data-ex
 ## Datadog
 ### modify datadog-otel-collector-config.yml and update below key with respective values 
 ###### <DATADOG-APP-KEY> 
-### To start the stack pointing to Datadog
+### To start the stack 
 ```
 $ docker-compose -f datadog-docker-compose.yml up
 ```
@@ -55,7 +55,7 @@ Now simply point your browser at Datadog cloud https://app.datadoghq.com/metric/
 ###### AWS_REGION=<AWS_REGION_LOCATION>
 ###### AWS_ACCESS_KEY_ID=<MENTION-YOUR-AWS-CLOUD-WATCH-KEY>
 ###### AWS_SECRET_ACCESS_KEY=<MENTION-YOUR-AWS-CW-SECRET-ACCESS-KEY>
-### To start the stack pointing to AWS Cloudwatch
+### To start the stack 
 ```
 $ docker-compose -f cloudwatch-docker-compose.yml up
 ```
