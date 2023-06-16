@@ -50,9 +50,9 @@ Now simply point your browser at Datadog cloud https://app.datadoghq.com/metric/
 
 ## Cloudwatch
 ### modify cloudwatch-docker-compose.yml and update below keys with respective values 
-##### AWS_REGION=<AWS_REGION_LOCATION>
-##### AWS_ACCESS_KEY_ID=<MENTION-YOUR-AWS-CLOUD-WATCH-KEY>
-##### AWS_SECRET_ACCESS_KEY=<MENTION-YOUR-AWS-CW-SECRET-ACCESS-KEY>
+###### AWS_REGION=<AWS_REGION_LOCATION>
+###### AWS_ACCESS_KEY_ID=<MENTION-YOUR-AWS-CLOUD-WATCH-KEY>
+###### AWS_SECRET_ACCESS_KEY=<MENTION-YOUR-AWS-CW-SECRET-ACCESS-KEY>
 ### To start the stack pointing to AWS Cloudwatch
 ```
 $ docker-compose -f cloudwatch-docker-compose.yml up
