@@ -7,17 +7,11 @@ services:
       - aerospike_otel_nw
     container_name: as_prom_exporter
     environment:
-    - AS_HOST=as_server
+    - AS_HOST=host.docker.internal
     - AS_PORT=3000
-    - "METRIC_LABELS=type='development',source='aerospike'"
+    - "METRIC_LABELS=type='development',source='aerospike', latitude='36.778259', longitude='-119.417931' "
     extra_hosts:
     - "host.docker.internal:host-gateway"
-
-  aerospike_ce:
-    image: aerospike/aerospike-server:latest 
-    networks:
-      - aerospike_otel_nw
-    container_name: as_server
 
   # Collector
   otel-collector:
