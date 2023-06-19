@@ -1,0 +1,47 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: "as_otel_contrib:4317"
+
+  prometheus:
+    config:
+      scrape_configs:
+      - job_name: 'otel_as_demos'
+        scrape_interval: 10s
+        static_configs:
+          - targets: ['as_prom_exporter:9145']
+
+exporters:
+  prometheus:
+    endpoint: "as_otel_contrib:30145"
+
+  otlp:
+    endpoint: https://otlp.nr-data.net:4317 
+    headers:
+      api-key: <NEWRELIC-API-KEY>
+
+  logging:
+
+processors:
+  batch:
+
+extensions:
+  health_check:
+  pprof:
+    endpoint: :1888
+  zpages:
+    endpoint: :55679
+
+service:
+  extensions: [pprof, zpages, health_check]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlp, logging ]
+    metrics:
+      receivers: [prometheus ]
+      processors: [batch]
+      exporters: [otlp,logging , prometheus]
+
