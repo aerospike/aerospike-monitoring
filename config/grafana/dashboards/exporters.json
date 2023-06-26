@@ -4,7 +4,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "7.5.7"
+      "version": "9.3.2"
     },
     {
       "type": "datasource",
@@ -23,24 +23,36 @@
     "list": [
       {
         "builtIn": 1,
-        "datasource": "-- Grafana --",
+        "datasource": {
+          "type": "datasource",
+          "uid": "grafana"
+        },
         "enable": true,
         "hide": true,
         "iconColor": "rgba(0, 211, 255, 1)",
         "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
         "type": "dashboard"
       }
     ]
   },
   "editable": true,
-  "gnetId": null,
+  "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1623784686683,
   "links": [],
+  "liveNow": false,
   "panels": [
     {
-      "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Aerospike Prometheus Exporters' Status",
       "fieldConfig": {
         "defaults": {
@@ -50,24 +62,20 @@
           "custom": {
             "align": "center",
             "displayMode": "color-background",
-            "filterable": false
+            "filterable": false,
+            "inspect": false
           },
           "mappings": [
             {
-              "from": "",
-              "id": 1,
-              "text": "UP",
-              "to": "",
-              "type": 1,
-              "value": "1"
-            },
-            {
-              "from": "",
-              "id": 2,
-              "text": "DOWN",
-              "to": "",
-              "type": 1,
-              "value": "0"
+              "options": {
+                "0": {
+                  "text": "DOWN"
+                },
+                "1": {
+                  "text": "UP"
+                }
+              },
+              "type": "value"
             }
           ],
           "thresholds": {
@@ -100,11 +108,22 @@
       "id": 2,
       "links": [],
       "options": {
+        "footer": {
+          "fields": "",
+          "reducer": [
+            "sum"
+          ],
+          "show": false
+        },
         "showHeader": true
       },
-      "pluginVersion": "7.5.7",
+      "pluginVersion": "9.3.2",
       "targets": [
         {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
           "exemplar": true,
           "expr": "up{job=\"$job_name\"}",
           "format": "table",
@@ -115,8 +134,6 @@
           "refId": "A"
         }
       ],
-      "timeFrom": null,
-      "timeShift": null,
       "title": "Aerospike Prometheus Exporters",
       "transformations": [
         {
@@ -142,7 +159,7 @@
     }
   ],
   "refresh": "1m",
-  "schemaVersion": 27,
+  "schemaVersion": 37,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -153,8 +170,6 @@
           "text": "Aerospike Prometheus",
           "value": "Aerospike Prometheus"
         },
-        "description": null,
-        "error": null,
         "hide": 0,
         "includeAll": false,
         "label": "Datasource",
@@ -168,12 +183,11 @@
         "type": "datasource"
       },
       {
-        "current": {
-          "selected": false,
-          "text": "aerospike",
-          "value": "aerospike"
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
-        "datasource": "${DS_AEROSPIKE_PROMETHEUS}",
         "definition": "label_values(aerospike_node_stats_uptime,job)",
         "hide": 0,
         "includeAll": false,
@@ -228,5 +242,6 @@
   "timezone": "",
   "title": "Exporters View",
   "uid": "UcZD2iHBj",
-  "version": 2
+  "version": 1,
+  "weekStart": ""
 }
