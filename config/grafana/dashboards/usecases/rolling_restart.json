@@ -79,7 +79,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "#\n<p>\n<b>Key metrics (<a href=\"https://docs.aerospike.com\" target=\"blank\"> Metrics Reference </a>) which needs to be monitored during a server activity, like 1. Restart, 2. Software upgrade, 3. Investigation etc.,\nData is shown as stats, error and resources, resource utilization is displayed for the TopK major consumers at a service and namespace level</n>\n</p>\n",
+        "content": "#\n<p>\n<b>Key metrics (<a href=\"https://docs.aerospike.com\" target=\"blank\"> Metrics Reference </a>) which needs to be monitored during a server activity, like 1. Restart, 2. Software upgrade, 3. Investigation etc.,\nData is shown as stats, error and resources, resource utilization is displayed for the TopK major consumers at a service and namespace level</b>\n</p>\n",
         "mode": "markdown"
       },
       "pluginVersion": "9.3.2",
@@ -1148,8 +1148,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1429,8 +1428,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1707,8 +1705,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2114,8 +2111,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2252,8 +2248,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2465,8 +2460,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2679,8 +2673,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2788,8 +2781,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2887,8 +2879,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -2983,8 +2974,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -4527,20 +4517,39 @@
   "templating": {
     "list": [
       {
+        "current": {
+          "selected": false,
+          "text": "Aerospike Prometheus",
+          "value": "Aerospike Prometheus"
+        },
+        "description": "Prometheus data source",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Datasource",
+        "multi": false,
+        "name": "DS_AEROSPIKE_PROMETHEUS",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
         "current": {},
         "datasource": {
           "type": "prometheus",
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
-        "definition": "label_values(aerospike_node_stats_uptime,cluster_name)",
+        "definition": "label_values(aerospike_node_stats_uptime,job)",
         "hide": 0,
         "includeAll": false,
-        "label": "Cluster name",
+        "label": "job_name",
         "multi": false,
-        "name": "cluster",
+        "name": "job_name",
         "options": [],
         "query": {
-          "query": "label_values(aerospike_node_stats_uptime,cluster_name)",
+          "query": "label_values(aerospike_node_stats_uptime,job)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,
@@ -4555,7 +4564,30 @@
           "type": "prometheus",
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
-        "definition": "label_values(aerospike_node_stats_uptime,service)",
+        "definition": "label_values(aerospike_node_stats_uptime{job=\"$job_name\"},cluster_name)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Cluster",
+        "multi": false,
+        "name": "cluster",
+        "options": [],
+        "query": {
+          "query": "label_values(aerospike_node_stats_uptime{job=\"$job_name\"},cluster_name)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
+        "definition": "label_values(aerospike_node_stats_uptime{job=\"$job_name\", cluster_name=~\"$cluster|$^\"},service)",
         "description": "node or service in a cluster",
         "hide": 0,
         "includeAll": true,
@@ -4564,7 +4596,7 @@
         "name": "node",
         "options": [],
         "query": {
-          "query": "label_values(aerospike_node_stats_uptime,service)",
+          "query": "label_values(aerospike_node_stats_uptime{job=\"$job_name\", cluster_name=~\"$cluster|$^\"},service)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,
@@ -4579,7 +4611,7 @@
           "type": "prometheus",
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
-        "definition": "label_values(aerospike_namespace_objects,ns)",
+        "definition": "label_values(aerospike_namespace_objects{job=\"$job_name\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\" },ns)",
         "description": "all namespaces in this cluster",
         "hide": 0,
         "includeAll": true,
@@ -4588,7 +4620,7 @@
         "name": "namespace",
         "options": [],
         "query": {
-          "query": "label_values(aerospike_namespace_objects,ns)",
+          "query": "label_values(aerospike_namespace_objects{job=\"$job_name\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\" },ns)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,
@@ -4714,25 +4746,6 @@
         "query": "15",
         "skipUrlSync": false,
         "type": "textbox"
-      },
-      {
-        "current": {
-          "selected": false,
-          "text": "Aerospike Prometheus",
-          "value": "Aerospike Prometheus"
-        },
-        "description": "Prometheus data source",
-        "hide": 0,
-        "includeAll": false,
-        "label": "Datasource",
-        "multi": false,
-        "name": "DS_AEROSPIKE_PROMETHEUS",
-        "options": [],
-        "query": "prometheus",
-        "refresh": 1,
-        "regex": "",
-        "skipUrlSync": false,
-        "type": "datasource"
       }
     ]
   },
@@ -4744,6 +4757,6 @@
   "timezone": "",
   "title": "Rolling Restarts",
   "uid": "9p1Tc1uVz",
-  "version": 20,
+  "version": 6,
   "weekStart": ""
 }
