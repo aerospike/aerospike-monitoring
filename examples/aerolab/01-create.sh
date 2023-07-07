@@ -1,7 +1,7 @@
 #!/bin/bash
 
-aerolab cluster create -n dc1 -c 9 --instance e2-standard-2 --zone us-central1-a --disk pd-balanced:20 --disk pd-ssd:40 --disk pd-ssd:40
-aerolab cluster create -n dc2 -c 5 --instance  e2-standard-2 --zone us-central1-a --disk pd-balanced:20 --disk pd-ssd:40 --disk pd-ssd:40
+aerolab cluster create -n dc1 -c 3 --instance e2-standard-2 --zone us-central1-a --disk pd-balanced:20 --disk pd-ssd:40 --disk pd-ssd:40
+aerolab cluster create -n dc2 -c 1 --instance  e2-standard-2 --zone us-central1-a --disk pd-balanced:20 --disk pd-ssd:40 --disk pd-ssd:40
 
 aerolab xdr connect -S dc1 -D dc2 -M test,bar
 
