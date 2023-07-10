@@ -1,21 +1,28 @@
 # Aerospike Monitoring Stack
-The Aerospike Monitoring Stack is now **generally available** (GA). If you're an enterprise customer feel free to reach out to support with any questions.
-We appreciate feedback from community members on the [issues](https://github.com/aerospike/aerospike-monitoring/issues).
+This repo contains the contains examples for deploying the [Aerospike Monitoring Stack](https://www.aerospike.com/docs/tools/monitorstack/index.html) including [Grafana dashboards](./config/grafana/) and [Prometheus alerts](./config/prometheus/aerospike_rules.yml).
 
-## Docs
-The [Aerospike Monitoring Stack](https://www.aerospike.com/docs/tools/monitorstack/index.html) documentation has been moved to https://docs.aerospike.com
+For more details about installing Aerospike Monitoring Stack see [Aerospike see the product documentation](https://www.aerospike.com/docs/tools/monitorstack/index.html).
 
-## Examples
 
-### Easy single node Aerospike monitoring stack
+## Examples for Testing
+If you need to test dashboard changes the following examples will setup
+an Aerospike cluster, plus Prometheus, Grafana, and Alert Manager. 
+
+### Easy single node Aerospike cluster
 
 A single command is needed to deploy containers for the entire monitoring stack for a single node cluster.
 ```
-$ cd examples/easy
-$ docker-compose -f easy-compose.yml up
+$ cd examples/docker-compose
+$ docker-compose up
 ```
-See [documentation](examples/easy/).
+See [documentation](examples/docker-compose/).
 
-### Swarm
+### Open Telemetry
 
-Deploy monitoring stack using swarm.  See [documentation](examples/swarm/).
+[Open Telemetry](https://opentelemetry.io/) makes it easier to integrate with partner solutions like Datadog,
+New Relic, or Cloudwatch. See the [OTEL reference architecture](examples/otel/) for
+more details. 
+
+### AeroLab
+
+Deploy monitoring stack using [AeroLab](https://github.com/aerospike/aerolab).  See [documentation](examples/aerolab/).
