@@ -5,6 +5,7 @@ aerolab cluster create -n dc2 -c 1 --customconf="./aerospike.conf" --toolsconf="
 
 
 
+aerolab xdr connect -S dc1 -D dc2 -M test
 aerolab conf adjust -n dc1 set "xdr.dc dc2.auth-mode" internal
 aerolab conf adjust -n dc1 set "xdr.dc dc2.auth-user" user1
 aerolab conf adjust -n dc1 set "xdr.dc dc2.auth-password-file" /etc/password.txt
@@ -57,7 +58,6 @@ aerolab attach asadm \
 
 aerolab aerospike restart -n dc1
 
-aerolab xdr connect -S dc1 -D dc2 -M test
 
 
 aerolab cluster add exporter -n dc1 -o ape1.toml
