@@ -2,6 +2,10 @@ import json
 import argparse
 import os
 
+# global filenames
+filename_baseline_queries = "mockdata/baseline_dashboard.queries"
+filename_mock_queries = "mockdata/mock_dashboard.queries"
+
 def parse_dashboard_json(json_data, output_file, subfolder_name, json_file_name):
     data = json.loads(json_data)
 
@@ -44,34 +48,37 @@ def parse_dashboard_json(json_data, output_file, subfolder_name, json_file_name)
                     if 'expr' in target:
                         expr = target['expr']
                     else:
-                        expr = "No Expression"
-
+                        if panel['type'] == 'row':
+                            expr = "Row No expression"
+                        else:
+                            expr = "Panel No Expression"
                     if 'refId' in target:
                         refid = target['refId']
                     else:
                         refid = "No RefID"
 
                     result = f"{subfolder_name}/{json_file_name}/{dashboard_name}/{row_title}/{row_id}/{panel_title}/{panel_id}/{refid}/{index_counter} = {expr}".replace('\n', ' ')
-                    print(result)
+                    # print(result)
                     out_file.write(result + "\n")
                     index_counter += 1
 
+def parse_files(p_args):
+    out_file = open(filename_mock_queries, 'w')
+
+    for subfolder_name, _, filenames in os.walk(p_args.folder_path):
+        for filename in filenames:
+            if filename.endswith('.json'):
+                print(" processing .... "+filename)
+                json_file_path = os.path.join(subfolder_name, filename)
+                if subfolder_name == p_args.folder_path:
+                    current_subfolder_name = "home"
+                else:
+                    current_subfolder_name = subfolder_name[len( p_args.folder_path) + 1:]  # Get the subfolder name relative to folder_path
+                parse_dashboard_json(open(json_file_path).read(), filename_mock_queries, current_subfolder_name, filename)
+                
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("folder_path", help="Path to the folder containing Grafana JSON files")
     args = parser.parse_args()
+    parse_files( args)
 
-    output_file = "a.txt"
-
-    with open(output_file, 'w') as out_file:
-        out_file.write("Results:\n")
-
-    for subfolder_name, _, filenames in os.walk(args.folder_path):
-        for filename in filenames:
-            if filename.endswith('.json'):
-                json_file_path = os.path.join(subfolder_name, filename)
-                if subfolder_name == args.folder_path:
-                    current_subfolder_name = "home"
-                else:
-                    current_subfolder_name = subfolder_name[len(args.folder_path) + 1:]  # Get the subfolder name relative to folder_path
-                parse_dashboard_json(open(json_file_path).read(), output_file, current_subfolder_name, filename)
