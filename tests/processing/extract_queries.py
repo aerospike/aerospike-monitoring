@@ -2,10 +2,6 @@ import json
 import argparse
 import os
 
-# global filenames
-filename_baseline_queries = "mockdata/baseline_dashboard.queries"
-filename_mock_queries = "mockdata/mock_dashboard.queries"
-
 def parse_dashboard_json(json_data, output_file, subfolder_name, json_file_name):
     data = json.loads(json_data)
 
@@ -56,14 +52,32 @@ def parse_dashboard_json(json_data, output_file, subfolder_name, json_file_name)
                         refid = target['refId']
                     else:
                         refid = "No RefID"
+                    entry = {
+                        "folder": subfolder_name,
+                        "dashboard_file": json_file_name,
+                        "dashboard_name": dashboard_name,
+                        "row_title": row_title,
+                        "row_id": str(row_id),
+                        "panel_name": panel_title,
+                        "panel_id": str(panel_id),
+                        "refid": refid,
+                        "index": str(index_counter),
+                        "expr": expr
+                    }
 
-                    result = f"{subfolder_name}/{json_file_name}/{dashboard_name}/{row_title}/{row_id}/{panel_title}/{panel_id}/{refid}/{index_counter} = {expr}".replace('\n', ' ')
-                    # print(result)
-                    out_file.write(result + "\n")
+                    # Create the entry dictionary
+                    entry_dict = {
+                        "key": f"{subfolder_name}/{json_file_name}/{dashboard_name}/{row_title}/{row_id}/{panel_title}/{panel_id}/{refid}/{index_counter}",
+                        "entry": entry
+                    }
+                    out_file.write(json.dumps(entry_dict) + "\n")
+                    # result = f"{subfolder_name}/{json_file_name}/{dashboard_name}/{row_title}/{row_id}/{panel_title}/{panel_id}/{refid}/{index_counter} = {expr}".replace('\n', ' ')
+                    # # print(result)
+                    # out_file.write(result + "\n")
                     index_counter += 1
 
 def parse_files(p_args):
-    out_file = open(filename_mock_queries, 'w')
+    out_file = open(fn_mock_queries, 'w')
 
     for subfolder_name, _, filenames in os.walk(p_args.folder_path):
         for filename in filenames:
@@ -74,9 +88,11 @@ def parse_files(p_args):
                     current_subfolder_name = "home"
                 else:
                     current_subfolder_name = subfolder_name[len( p_args.folder_path) + 1:]  # Get the subfolder name relative to folder_path
-                parse_dashboard_json(open(json_file_path).read(), filename_mock_queries, current_subfolder_name, filename)
+                parse_dashboard_json(open(json_file_path).read(), fn_mock_queries, current_subfolder_name, filename)
                 
 if __name__ == "__main__":
+    from globals import fn_mock_queries
+
     parser = argparse.ArgumentParser()
     parser.add_argument("folder_path", help="Path to the folder containing Grafana JSON files")
     args = parser.parse_args()

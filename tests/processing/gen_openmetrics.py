@@ -1,8 +1,6 @@
 from datetime import datetime, timezone
 import time
 
-filename_mock_metrics_data = "mockdata/om.csv"
-filename_modified_mock_metrics_data = "mockdata/output_om.csv"
 
 def generate_openmetrics_data(p_orig_csv_file_name, p_output_csv_file_name, p_utc_timestamp):
     inpput_csv_file = open( p_orig_csv_file_name, "r")    
@@ -22,8 +20,10 @@ def generate_openmetrics_data(p_orig_csv_file_name, p_output_csv_file_name, p_ut
         output_csv_file.write( output_line+ "\n")
     output_csv_file.write("# EOF")
 
-utc_timestamp = round(time.time())
 
 # print( utc_timestamp )
 # print( round(time.time()) )
-generate_openmetrics_data( filename_mock_metrics_data, filename_modified_mock_metrics_data, utc_timestamp)
+if __name__ == "__main__":
+    from globals import fn_mock_metrics_data, fn_modified_mock_metrics_data
+    utc_timestamp = round(time.time())
+    generate_openmetrics_data( fn_mock_metrics_data, fn_modified_mock_metrics_data, utc_timestamp)

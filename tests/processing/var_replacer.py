@@ -1,9 +1,6 @@
 import json
 
-# global variables
-filename_mock_variables = "mockdata/mock_variables.json"
-filename_mock_queries = "mockdata/mock_dashboard.queries"
-filename_fullform_queries = "mockdata/queries_to_test.queries"
+from globals import fn_mock_variables, fn_fullform_queries, fn_mock_queries
 
 def load_replacements(file_path):
     with open(file_path) as json_file:
@@ -25,7 +22,7 @@ def apply_replacements(replacements, text_content):
         dashboard_name = get_dashboard_name(line)
 
         # encode every " with \" for query execution
-        line = line.replace('"', '\'')
+        # line = line.replace('"', '\'')
         # print( line)
         
         if dashboard_name in replacements:
@@ -38,20 +35,20 @@ def apply_replacements(replacements, text_content):
 def replace_variable():
 
     # Load replacements from JSON file
-    replacements = load_replacements(filename_mock_variables)
+    replacements = load_replacements(fn_mock_variables)
 
     # Read the content from the text file
-    with open(filename_mock_queries, "r") as file:
+    with open(fn_mock_queries, "r") as file:
         text_content = file.read()
 
     # Apply replacements
     updated_content = apply_replacements(replacements, text_content)
 
     # Save the updated content to a new file
-    with open( filename_fullform_queries, "w") as file:
+    with open( fn_fullform_queries, "w") as file:
         file.write(updated_content)
 
-    print("Replacements applied successfully. Updated content saved to:", filename_fullform_queries)
+    print("Replacements applied successfully. Updated content saved to:", fn_fullform_queries)
 
 if __name__ == "__main__":
     replace_variable()
