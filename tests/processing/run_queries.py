@@ -3,10 +3,9 @@ import json
 import os
 
 # import globals
+from globals import prometheus_url
 
-# from globals import fn_fullform_queries, fn_baseline_results
-
-DEFAULT_PROM_URL = "http://localhost:45880/api/v1/query"
+DEFAULT_PROM_URL = prometheus_url
 prometheus_url_to_get = os.environ.get( "PROMETHEUS_URL" , DEFAULT_PROM_URL)
 
 # list of dashboard-json-filenames, 

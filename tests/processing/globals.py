@@ -11,4 +11,6 @@ fn_fullform_queries = "../mockdata/queries_to_test.queries"
 fn_mock_metrics_data = "../mockdata/om.csv"
 fn_modified_mock_metrics_data = "../mockdata/output_om.csv"
 
+prometheus_url = "http://localhost:45880/api/v1/query"
+
 __all__ = [fn_baseline_queries, fn_baseline_results, fn_mock_queries, fn_mock_variables, fn_mockquery_results, fn_fullform_queries, fn_mock_metrics_data, fn_modified_mock_metrics_data]

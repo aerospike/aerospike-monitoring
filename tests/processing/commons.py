@@ -1,3 +1,4 @@
+import json
 
 #takes the file name as input,extracts all the data from the file,uses parse_queries_to_dict to convert it into a dictionary and then returns the dictionary.
 def read_dashboard_queries(p_filename):
