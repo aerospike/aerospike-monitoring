@@ -40,7 +40,7 @@ def compare_json_elements():
     
     return l_results 
 
-def test_dashboard_entry_counts():
+def test_dashboard_json_entries():
     l_all_baseline_results = read_baseline_query_results()
     l_mock_results = read_mock_data_query_results()
     
@@ -57,4 +57,5 @@ def test_dashboard_entry_counts():
     assert len(l_results)==0, "\nFAILED:\n"+ str( l_results)
     
 # main test-cases
-test_dashboard_entry_counts()    
+if __name__ == "__main__":
+    test_dashboard_json_entries()    
