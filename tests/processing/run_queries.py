@@ -2,10 +2,7 @@ import requests
 import json
 import os
 
-# import globals
-from globals import prometheus_url
-
-DEFAULT_PROM_URL = prometheus_url
+DEFAULT_PROM_URL = "http://localhost:45880/api/v1/query"
 prometheus_url_to_get = os.environ.get( "PROMETHEUS_URL" , DEFAULT_PROM_URL)
 
 # list of dashboard-json-filenames, 
@@ -145,7 +142,8 @@ def run_db_queries(p_entries):
         # print( l_query_key, "\t", l_expr)
         # checking if ignore list here so we can 
         if is_key_query_in_ignorelist(l_expr):
-            map_expr_and_result = {"expr": l_expr, "results_array": "Ignored query as it is in ignore-query-list" }      
+            # no_result_dct = {"metric":{"name":"ignored-expression"}, "value":["0":"Ignored query as it is in ignore-query-list"]}
+            map_expr_and_result = {"expr": l_expr, "results_array": "Ignored query as it is in ignore-query-list"}      
             map_query_to_values[ l_query_key ] = map_expr_and_result
         else:    
             l_query_results = run_query_and_fetch_result_json( l_expr)  
@@ -170,7 +168,7 @@ def run_queries( p_filename):
     for e in g_dashboard_names:
         l_query_results = process_queries_of_db(map_key_and_entries, e )
         l_all_db_query_results.update( l_query_results)
-        print("Completed processing p_dashboardname: ", e, "\t len-of-elements: ", len(l_query_results))
+        # print("Completed processing p_dashboardname: ", e, "\t len-of-elements: ", len(l_query_results))
     
     # if p_savetofile:
     #     outfile = open( fn_mockquery_results, "w")
@@ -181,6 +179,7 @@ def run_queries( p_filename):
 # main execution
 if __name__ == "__main__":
     # use this to generate data for baseline
+    from globals import prometheus_url
     from globals import fn_fullform_queries, fn_baseline_results
 
     l_all_db_query_results = run_queries( fn_fullform_queries)
