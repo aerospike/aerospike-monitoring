@@ -21,36 +21,36 @@ def construct_key(p_entry_dict, p_key_names):
 
 #takes input,constructs a key,and uses this to make set of keys for counting purposes
 def loop_for_count(p_which_dict,p_key_array):
-    l_SET_DICT = set()
+    l_set_dict = set()
     for line in p_which_dict:
         entry = p_which_dict[line]
         key = construct_key(entry,p_key_array)
-        l_SET_DICT.add(key)
-    return l_SET_DICT
+        l_set_dict.add(key)
+    return l_set_dict
 
 #takes input,then constructs a dictionary with the input
 def loop_for_names(p_which_dict,p_key_array,p_entry_element):
-    l_SET_DICT = {}
+    l_set_dict = {}
     for line in p_which_dict:
         entry = p_which_dict[line]
         key = construct_key(entry,p_key_array)
 
-        if key in l_SET_DICT:
-            if entry[p_entry_element] not in l_SET_DICT[key]:
-                updated_tuple = l_SET_DICT[key] + (entry[p_entry_element],)
-                l_SET_DICT[key] = updated_tuple
+        if key in l_set_dict:
+            if entry[p_entry_element] not in l_set_dict[key]:
+                updated_tuple = l_set_dict[key] + (entry[p_entry_element],)
+                l_set_dict[key] = updated_tuple
         else:
-            l_SET_DICT[key] = (entry[p_entry_element],)
-    return l_SET_DICT
+            l_set_dict[key] = (entry[p_entry_element],)
+    return l_set_dict
 
 #takes input dictionaries and compares them in A - B format and returns the result.the answer depends on order of input dictionaries
-def loop_for_comparision( p_Dict_A, p_Dict_B):
-    SET_A_minus_B = {}
-    for key in p_Dict_A:
-        if key in p_Dict_B:
-            value_tuple = tuple(set(p_Dict_A[key]) - set(p_Dict_B[key]))
+def loop_for_comparision( p_dict_A, p_dict_B):
+    set_A_minus_B = {}
+    for key in p_dict_A:
+        if key in p_dict_B:
+            value_tuple = tuple(set(p_dict_A[key]) - set(p_dict_B[key]))
             if value_tuple:
-                SET_A_minus_B[key] = value_tuple
+                set_A_minus_B[key] = value_tuple
         else:
-            SET_A_minus_B[key] = p_Dict_A[key]
-    return SET_A_minus_B
+            set_A_minus_B[key] = p_dict_A[key]
+    return set_A_minus_B
