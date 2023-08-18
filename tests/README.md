@@ -4,47 +4,51 @@ This folder contains test-cases for the dashboards covering dashboard properties
 ## Software and packages required
 these test-cases are python3 based and required json and deepdiff packages to execute
 
-## Test groups
-- Dashboards - Contains testcases involving dashboards.
+## Test cases grouping
+### validating dashboard, panel, rows and expression 
+- Dashboards - contains testcases involving dashboards.
     - test_dashboard_count
-      - compares the count of "dashboard name" (example: Set Dashboard) in a "dashboard file" (example: set.json) with baseline data
+      - matches the number of "dashboards" (example: Set Dashboard) in a "dashboard file" (example: set.json) with baseline, reports if there are any dashboard delete / additions
     - test_dashboard_names
-     -  compares the "dashboard name" in "dashboard file" has been modified with baseline
-- Rows
-  - This file contains the testcases involving rows.this is next in line after dashboards.
+     -  matches each "dashboard name" in "dashboard file" has been modified with baseline
+- Rows - contains testcases involving rows within a dashboard
     - test_row_count
-      - we check the count of number of row_title and row_id to check if the count has modified in latest dashboard
+      - matches the number of rows within a dashboard are same as baseline, reports if there is any delete / additions
     - test_row_names
-      - we check if row_id or row_title has been modified in mock compared to the old and list the list the changes
-- Panels
+      - matches each "row title" in each dashboard with baseline, reports if there are any changes
+- Panels - contains the testcases involving panels in a rows within a dashboard
   - This file contains the testcases involving rows.this is next in line after row.
-    - test_panel_count()
-      - we check the count of number of panel_name and panel_id to check if the count has changed between baseline and mock
-    - test_panel_names()
-      - we check if panel_name or panel_id has been modified in mock compared to the old and list the list the changes
-- Queries
-  - This file contains the testcases involving rows.this is last in hierechy.unlike the previous ones this has four test-cases instead of two.
+    - test_panel_count
+      - matches the number of panels in a row within a dashboard, reports if any difference
+    - test_panel_names
+      - matches each "panel title" in a row within each dashboard with baseline, reports if there are any changes
+- Queries - contains the testcases involving queries in a panel 
     - test_refid_and_index_pair_count
-      - we check the count of number of refid and index to check if the count has changed between baseline and mock
+      - matches count of queries within a panel in a rows within a dashboard, reports if any changes in the queries
     - test_refid_and_index_pair_names
-      we check the refid and index pairs to determine if order has changed or refid has changed.
-    - test_expr_count
-      - we check the count of number of expr to check if the count has changed between baseline and mock
-    - test_compare_expr_in_dicts
-      - we check if any of the expr changed or not
-- Query execution against prometheus db
+      - matches each "query" in a panel within each dashboard with baseline, reports if there are any changes
 
-## Mock data for test-cases
+### Steps to execute the test-cases
+  - there are two methods to run the test cases now:-
+    - run them using standard method like using any python interpreter
+      - example:- python3 test_dashboards.py
+    - run them using pytest
+
+### query/expression validation
+these test-cases are executed against a local prometheus db and the results are compared with a baselined results
+this will highlight if any change in queries or adding new labels cause query execution issue or result in null/no results
+
+#### Mock data for test-cases
 we have a dump of the metrics data which is used as a mock, we tried to simulate different config and combinations 
 these metrics will be imported into a local running prometheus tsdb using promtool
 
-### Step 1 - How to create mock data
+#### Step 1 - How to create mock data
 - generate a latest copy of the mock data, 
   - cd tests/processing
   - python3 gen_openmetrics.py
 - new mock data is generated into a file called "output.openmetrics.dat" with current timestamp with each metric
   
-### Step 2 - How to import the mock data into Prometheus
+#### Step 2 - How to import the mock data into Prometheus
 - goto the prometheus storage location where prometheus software is running
   - example /etc/prometheus/data
 - copy the file "output.openmetrics.dat" to prometheus storage location
@@ -52,9 +56,3 @@ these metrics will be imported into a local running prometheus tsdb using promto
   - promtool tsdb create-blocks-from output.openmetrics.dat /etc/prometheus/data
     - in /etc/prometheus/data folder this will create a sub-folder with an alphanumeric name like "01H7ZNBK9HV1GYTW7Y8RFXCM88"
 
-### Steps to execute the test-cases
-  - first save all the required files in correct locations.
-  - there are two methods to run the test cases now:-
-    - run them using standard method like using any python interpreter
-      - example:- python3 test_dashboards.py
-    - run them using pytest
