@@ -5,16 +5,15 @@ This folder contains test-cases for the dashboards covering dashboard properties
 these test-cases are python3 based and required json and deepdiff packages to execute
 
 ## Test groups
-- Dashboards
-  - This file contains the testcases involving dashboards.this is the first in hierechy and we start with this file but it is not cumpolsury that we need to use dashboards file first,each of them is completely independent from each other.
+- Dashboards - Contains testcases involving dashboards.
     - test_dashboard_count
-      - we check the count of number of dashboard_name and dashboard_file to check if the count has changed between baseline and mock
+      - compares the count of "dashboard name" (example: Set Dashboard) in a "dashboard file" (example: set.json) with baseline data
     - test_dashboard_names
-     - we check if dashboard_name or dashboard_file has been modified in mock compared to the old and list the list the changes
+     -  compares the "dashboard name" in "dashboard file" has been modified with baseline
 - Rows
   - This file contains the testcases involving rows.this is next in line after dashboards.
     - test_row_count
-      - we check the count of number of row_title and row_id to check if the count has changed between baseline and mock
+      - we check the count of number of row_title and row_id to check if the count has modified in latest dashboard
     - test_row_names
       - we check if row_id or row_title has been modified in mock compared to the old and list the list the changes
 - Panels
@@ -35,17 +34,17 @@ these test-cases are python3 based and required json and deepdiff packages to ex
       - we check if any of the expr changed or not
 - Query execution against prometheus db
 
-## Test groupsdata
+## Mock data for test-cases
 we have a dump of the metrics data which is used as a mock, we tried to simulate different config and combinations 
 these metrics will be imported into a local running prometheus tsdb using promtool
 
-### Step 1
+### Step 1 - How to create mock data
 - generate a latest copy of the mock data, 
   - cd tests/processing
   - python3 gen_openmetrics.py
 - new mock data is generated into a file called "output.openmetrics.dat" with current timestamp with each metric
   
-### Step 2
+### Step 2 - How to import the mock data into Prometheus
 - goto the prometheus storage location where prometheus software is running
   - example /etc/prometheus/data
 - copy the file "output.openmetrics.dat" to prometheus storage location
