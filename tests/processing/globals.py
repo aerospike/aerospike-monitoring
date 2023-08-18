@@ -8,8 +8,8 @@ fn_mockquery_results = "../mockdata/mock_query_results.queries"
 
 fn_fullform_queries = "../mockdata/queries_to_test.queries"
 
-fn_mock_metrics_data = "../mockdata/om.csv"
-fn_modified_mock_metrics_data = "../mockdata/output_om.csv"
+fn_mock_metrics_data = "../mockdata/aerospike_metrics.dat"
+fn_modified_mock_metrics_data = "../mockdata/output.openmetrics.dat"
 
 prometheus_url = "http://localhost:45880/api/v1/query"
 
