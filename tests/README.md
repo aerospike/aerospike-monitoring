@@ -50,8 +50,8 @@ these metrics will be imported into a local running prometheus tsdb using promto
   - example /etc/prometheus/data
 - copy the file "output.openmetrics.dat" to prometheus storage location
 - execute command promtool
-  - promtool tsdb create-blocks-from output.openmetrics.dat <TSDB-location-of-local-prometheus>
-    - this will create a folder with an alphanumeric name like "01H7ZNBK9HV1GYTW7Y8RFXCM88"
+  - promtool tsdb create-blocks-from output.openmetrics.dat /etc/prometheus/data
+    - in /etc/prometheus/data folder this will create a sub-folder with an alphanumeric name like "01H7ZNBK9HV1GYTW7Y8RFXCM88"
 
 ### Steps to execute the test-cases
   - first save all the required files in correct locations.
