@@ -63,4 +63,4 @@ if __name__ == "__main__":
     test_refid_and_index_pair_count()
     test_refid_and_index_pair_names()
     test_expr_count()
-    test_compare_expr_in_dicts
+    test_compare_expr_in_dicts()
