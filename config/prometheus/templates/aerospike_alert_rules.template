@@ -31,8 +31,17 @@ groups:
       summary: "{% raw %}Stop writes for {{ $labels.instance }}/{{ $labels.ns }}{% endraw %}"
       description: "{% raw %}Used disk space for namespace {{ $labels.ns }} in node {{ $labels.instance }} is above stop writes limit. {% endraw %}. <a href='localhost:7100' target='_blank'>namespace view </a>"
 
+  - alert: AerospikeAllFlashAverageObjectsPerSprig
+    expr:  ( ((aerospike_namespace_master_objects { job="aerospike", cluster_name="{{ thresholds.cluster }}" }/4096)/aerospike_namespace_partition_tree_sprigs{ job="aerospike", cluster_name="{{ thresholds.cluster }}" } ) and ignoring (index, sindex) ((aerospike_namespace_index_type_mounts_size_limit { job="aerospike", cluster_name="{{ thresholds.cluster }}" }) or (aerospike_namespace_sindex_type_mounts_size_limit { job="aerospike", cluster_name="{{ thresholds.cluster }}" }) ))> {{ thresholds.average_all_flash_objects_per_sprig | default(average_all_flash_objects_per_sprig) }}
+    for: {{ thresholds.aerospike_average_objects_breached_duration | default(aerospike_average_objects_breached_duration) }}
+    labels:
+      severity: warn
+    annotations:
+      summary: "{% raw %}Average Objects per sprig in {{ $labels.instance  }}/{{ $labels.ns }}{% endraw %}"
+      description: "{% raw %}Average objects per sprig has been breached for namespace {{ $labels.ns }} in node {{ $labels.instance }}. {% endraw %}"
+
   - alert: AerospikeAverageObjectsPerSprig
-    expr:  (aerospike_namespace_master_objects {job="aerospike", cluster_name="{{ thresholds.cluster }}"}/4096)/aerospike_namespace_partition_tree_sprigs{job="aerospike", cluster_name="{{ thresholds.cluster }}"} > {{ thresholds.average_objects_per_sprig | default(average_objects_per_sprig) }}
+    expr:  ( ((aerospike_namespace_master_objects { job="aerospike", cluster_name="{{ thresholds.cluster }}" }/4096)/aerospike_namespace_partition_tree_sprigs{ job="aerospike", cluster_name="{{ thresholds.cluster }}" } ) unless ignoring (index, sindex) ((aerospike_namespace_index_type_mounts_size_limit { job="aerospike", cluster_name="{{ thresholds.cluster }}" }) or (aerospike_namespace_sindex_type_mounts_size_limit { job="aerospike", cluster_name="{{ thresholds.cluster }}" }) ))> {{ thresholds.average_objects_per_sprig | default(average_objects_per_sprig) }}
     for: {{ thresholds.aerospike_average_objects_breached_duration | default(aerospike_average_objects_breached_duration) }}
     labels:
       severity: warn
@@ -43,34 +52,34 @@ groups:
   - alert: AerospikeIndexStageSizeWarn
     # Check here: https://docs.aerospike.com/reference/configuration#index-stage-size
     #  <128mb or >4gb -- send warn alert
-    expr:  (aerospike_namespace_index_stage_size{job="aerospike", cluster_name="{{ thresholds.cluster }}"}<{{ thresholds.aerospike_index_size_suggested_min | default(aerospike_index_size_suggested_min) }}) or (aerospike_namespace_index_stage_size{job="aerospike", cluster_name="{{ thresholds.cluster }}"}>{{ thresholds.aerospike_index_size_suggested_max | default(aerospike_index_size_suggested_max) }})  
-    for: {{ thresholds.aerospike_index_size_range_duration | default(aerospike_index_size_range_duration) }}
+    expr:  (aerospike_namespace_index_stage_size{job="aerospike", cluster_name="{{ thresholds.cluster }}"}>{{ thresholds.aerospike_index_stage_size_suggested_max | default(aerospike_index_stage_size_suggested_max) }})  
+    for: {{ thresholds.aerospike_index_stage_size_range_duration | default(aerospike_index_stage_size_range_duration) }}
     labels:
       severity: warn
     annotations:
-      summary: "{% raw %}Index size configuration is not configured according to documentation in {{ $labels.instance  }}/{{ $labels.ns }}{% endraw %}"
-      description: "{% raw %}Index size configuration is not configured according to documentation in {{ $labels.ns }} in node {{ $labels.instance }}. {% endraw %}"
+      summary: "{% raw %}Index stage size configuration is not configured according to documentation in {{ $labels.instance  }}/{{ $labels.ns }}{% endraw %}"
+      description: "{% raw %}Index stage size configuration is not configured according to documentation in {{ $labels.ns }} in node {{ $labels.instance }}. {% endraw %}"
 
   - alert: AerospikeSIndexStageSizeWarn
     # Check here: https://docs.aerospike.com/reference/configuration#sindex-stage-size
     #  <128mb or >4gb -- send warn alert
-    expr:  (aerospike_namespace_sindex_stage_size{job="aerospike", cluster_name="{{ thresholds.cluster }}"}<{{ thresholds.aerospike_sindex_size_suggested_min | default(aerospike_sindex_size_suggested_min) }}) or (aerospike_namespace_sindex_stage_size{job="aerospike", cluster_name="{{ thresholds.cluster }}"}>{{ thresholds.aerospike_sindex_size_suggested_max | default(aerospike_sindex_size_suggested_max) }})  
-    for: {{ thresholds.aerospike_sindex_size_range_duration | default(aerospike_sindex_size_range_duration) }}
+    expr:  (aerospike_namespace_sindex_stage_size{job="aerospike", cluster_name="{{ thresholds.cluster }}"}>{{ thresholds.aerospike_sindex_stage_size_suggested_max | default(aerospike_sindex_stage_size_suggested_max) }})  
+    for: {{ thresholds.aerospike_sindex_stage_size_range_duration | default(aerospike_sindex_stage_size_range_duration) }}
     labels:
       severity: warn
     annotations:
-      summary: "{% raw %}SIndex size configuration is not configured according to documentation in {{ $labels.instance }}/{{ $labels.ns }}{% endraw %}"
-      description: "{% raw %}SIndex size configuration is not configured according to documentation in {{ $labels.ns }} in node {{ $labels.instance }}. {% endraw %}"
+      summary: "{% raw %}SIndex stage size configuration is not configured according to documentation in {{ $labels.instance }}/{{ $labels.ns }}{% endraw %}"
+      description: "{% raw %}SIndex stage size configuration is not configured according to documentation in {{ $labels.ns }} in node {{ $labels.instance }}. {% endraw %}"
 
   - alert: AerospikeIndexPressureDirtyMemoryWarn
     # Check here: https://docs.aerospike.com/reference/info#index-pressure
-    expr:  (aerospike_namespace_index_pressure_dirty_memory{job="aerospike", cluster_name="{{ thresholds.cluster }}"}>{{ thresholds.aerospike_index_pressure_dirty_mem_suggested_limit | default(aerospike_index_pressure_dirty_mem_suggested_limit) }}) 
+    expr: (((aerospike_namespace_index_pressure_dirty_memory{ job="aerospike", cluster_name="{{ thresholds.cluster }}" })/(aerospike_namespace_index_pressure_total_memory{ job="aerospike", cluster_name="{{ thresholds.cluster }}" })*100)>{{ thresholds.aerospike_index_pressure_dirty_mem_suggested_limit | default(aerospike_index_pressure_dirty_mem_suggested_limit) }}) 
     for: {{ thresholds.aerospike_index_pressure_dirty_mem_duration | default(aerospike_index_pressure_dirty_mem_duration) }}
     labels:
       severity: warn
     annotations:
-      summary: "{% raw %}Dirty memory is above configured limit in node {{ $labels.instance }}{% endraw %}"
-      description: "{% raw %}Dirty memory is above configured limit in node {{ $labels.instance }}{% endraw %}"
+      summary: "{% raw %}Dirty memory ratio against the total memory is above configured limit in node {{ $labels.instance }}{% endraw %}"
+      description: "{% raw %}Dirty memory ration against the total memory is above configured limit in node {{ $labels.instance }}{% endraw %}"
       
   - alert: NamespaceDiskCloseToStopWrites
     expr: (aerospike_namespace_device_available_pct{job="aerospike", cluster_name="{{ thresholds.cluster }}"} - aerospike_namespace_storage_engine_min_avail_pct{job="aerospike", cluster_name="{{ thresholds.cluster }}"}) <= 10
