@@ -10,6 +10,7 @@ aerolab cluster add exporter -n dc2 -o ape2.toml
 
 aerolab client create ams -n ams -s dc1,dc2 --instance e2-medium --zone us-central1-a --disk pd-balanced:20 -e 3000:3000
 aerolab client attach  -n ams -- grafana-cli plugins install grafana-polystat-panel
+aerolab client attach  -n ams -- grafana-cli plugins install jdbranham-diagram-panel
 aerolab client attach  -n ams -- service grafana-server restart
 
 
