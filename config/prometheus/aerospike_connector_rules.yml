@@ -1,0 +1,341 @@
+groups:
+- name: connector.rules
+  rules:
+  - alert: AerospikeConnectorsDown
+    expr: up{job="aerospike_connect"} == 0
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Aerospike Connector instance {{ $labels.instance }} in cluster {{$labels.cluster_name}} has been down for more than 30s."
+      description: "Aerospike Connector instance {{ $labels.instance }} in cluster {{$labels.cluster_name}} has been down for more than 30s."
+
+- name: connector.rules > XDR_PROXY
+  rules:
+  - alert: AerospikeConnectorLag
+    expr: aerospike_xdr_proxy_requests_lag{job="aerospike_connect" } > 5000
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Process Request lag increased and is above configured threshold in xdr_proxy connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Process Request lag increased and is above configured threshold in xdr_proxy connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+
+  - alert: AerospikeConnectorErrors
+    expr: ((aerospike_xdr_proxy_requests{job="aerospike_connect",status="error"} *100) / on ( cluster_name, instance, job, ) sum by ( cluster_name, instance, job, )(aerospike_xdr_proxy_requests{job="aerospike_connect",})) > 1
+    for: 30s
+    labels:
+      severity: critical
+      summary: "Request Errors crossed 1% of the total requests processed in xdr_proxy connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+    annotations:
+      description: "Request Errors crossed 1% of the total requests processed in xdr_proxy connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      
+  - alert: AerospikeConnectorJvmProcessCPU
+    expr: aerospike_xdr_proxy_jvm_os_processCpuLoad{job="aerospike_connect" } > 80
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Process CPU load crossed configured threshold of 80% in xdr_proxy connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Process CPU load crossed configured threshold of 80% in xdr_proxy connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+
+  - alert: AerospikeConnectorJvmSystemCPU
+    expr: aerospike_xdr_proxy_jvm_os_systemCpuLoad{job="aerospike_connect" } > 80
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "System CPU load crossed configured threshold of 80% in xdr_proxy connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "System CPU load crossed configured threshold of 80% in xdr_proxy connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+
+  - alert: AerospikeConnectorJvmSystemCPU
+    expr: aerospike_xdr_proxy_jvm_os_systemCpuLoad{job="aerospike_connect" } > 80
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "System CPU load crossed configured threshold of 80% in xdr_proxy connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "System CPU load crossed configured threshold of 80% in xdr_proxy connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+
+  - alert: AerospikeConnectorJvmHeapUsed
+    expr: (aerospike_xdr_proxy_jvm_memory_heap_used{job="aerospike_connect" }*100)/aerospike_xdr_proxy_jvm_memory_heap_max{job="aerospike_connect" } > 80
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "JVM Heap usage crossed 80% of max heap allocated in xdr_proxy connector instance {{ $labels.instance }}"
+      description: "JVM Heap usage crossed 80% of max heap allocated in xdr_proxy connector instance {{ $labels.instance }}"
+  - alert: AerospikeConnectorJvmGC
+    expr: rate(aerospike_xdr_proxy_jvm_gc_time{job="aerospike_connect"}[1m])/ rate(aerospike_xdr_proxy_jvm_gc_count{job="aerospike_connect"}[1m]) > 500
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Average JVM Garbage collection cycle time crossed 500 milliseconds in connector instance {{ $labels.instance }} of {{$labels.cluster_name}}"
+      description: "Average JVM Garbage collection cycle time crossed 500 milliseconds in connector instance {{ $labels.instance }} of {{$labels.cluster_name}}"
+
+      
+- name: connector.rules > ELASTIC_SEARCH_OUTBOUND
+  rules:
+  - alert: AerospikeConnectorLag
+    expr: aerospike_elasticsearch_outbound_requests_lag{job="aerospike_connect" } > 5000
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Process Request lag increased and is above configured threshold in elasticsearch_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Process Request lag increased and is above configured threshold in elasticsearch_outbound instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+  - alert: AerospikeConnectorErrors
+    expr: ((aerospike_elasticsearch_outbound_requests{job="aerospike_connect",status="error"} *100) / on ( cluster_name, instance, job, ) sum by ( cluster_name, instance, job, )(aerospike_elasticsearch_outbound_requests{job="aerospike_connect",})) > 1
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Request Errors crossed 1% of the total requests processed in elasticsearch_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Request Errors crossed 1% of the total requests processed in elasticsearch_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+  - alert: AerospikeConnectorJvmProcessCPU
+    expr: aerospike_elasticsearch_outbound_jvm_os_processCpuLoad{job="aerospike_connect" } > 80
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Process CPU load crossed configured threshold of 80% in elasticsearch_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Process CPU load crossed configured threshold of 80% in elasticsearch_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+
+  - alert: AerospikeConnectorJvmSystemCPU
+    expr: aerospike_elasticsearch_outbound_jvm_os_systemCpuLoad{job="aerospike_connect" } > 80
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "System CPU load crossed configured threshold of 80% in elasticsearch_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "System CPU load crossed configured threshold of 80% in elasticsearch_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+
+  - alert: AerospikeConnectorJvmHeapUsed
+    expr: (aerospike_elasticsearch_outbound_jvm_memory_heap_used{job="aerospike_connect" }*100)/aerospike_elasticsearch_outbound_jvm_memory_heap_max{job="aerospike_connect" } > 10
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "JVM Heap usage crossed 80% of max heap allocated in elasticsearch_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "JVM Heap usage crossed 80% of max heap allocated in elasticsearch_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+  - alert: AerospikeConnectorJvmGC
+    expr: rate(aerospike_elasticsearch_outbound_jvm_gc_time{job="aerospike_connect"}[1m])/ rate(aerospike_elasticsearch_outbound_jvm_gc_count{job="aerospike_connect"}[1m]) > 10
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Average JVM Garbage collection cycle time crossed 500 milliseconds in elasticsearch_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Average JVM Garbage collection cycle time crossed 500 milliseconds elasticsearch_outbound in connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      
+- name: connector.rules > JMS_OUTBOUND
+  rules:
+  - alert: AerospikeConnectorLag
+    expr: aerospike_jms_outbound_requests_lag{job="aerospike_connect" } > 5000
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Process Request lag increased and is above configured threshold in jms_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Process Request lag increased and is above configured threshold in jms_outbound instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+  - alert: AerospikeConnectorErrors
+    expr: ((aerospike_jms_outbound_requests{job="aerospike_connect",status="error"} *100) / on ( cluster_name, instance, job, ) sum by ( cluster_name, instance, job, )(aerospike_jms_outbound_requests{job="aerospike_connect",})) > 1
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Request Errors crossed 1% of the total requests processed in jms_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Request Errors crossed 1% of the total requests processed in jms_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+  - alert: AerospikeConnectorJvmProcessCPU
+    expr: aerospike_jms_outbound_jvm_os_processCpuLoad{job="aerospike_connect" } > 80
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Process CPU load crossed configured threshold of 80% in jms_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Process CPU load crossed configured threshold of 80% in jms_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+  - alert: AerospikeConnectorJvmSystemCPU
+    expr: aerospike_jms_outbound_jvm_os_systemCpuLoad{job="aerospike_connect" } > 80
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "System CPU load crossed configured threshold of 80% in jms_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "System CPU load crossed configured threshold of 80% in jms_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+
+  - alert: AerospikeConnectorJvmHeapUsed
+    expr: (aerospike_jms_outbound_jvm_memory_heap_used{job="aerospike_connect" }*100)/aerospike_jms_outbound_jvm_memory_heap_max{job="aerospike_connect" } > 80
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "JVM Heap usage crossed 80% of max heap allocated in jms_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "JVM Heap usage crossed 80% of max heap allocated in jms_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+  - alert: AerospikeConnectorJvmGC
+    expr: rate(aerospike_jms_outbound_jvm_gc_time{job="aerospike_connect"}[1m])/ rate(aerospike_jms_outbound_jvm_gc_count{job="aerospike_connect"}[1m]) > 500
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Average JVM Garbage collection cycle time crossed 500 milliseconds in jms_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Average JVM Garbage collection cycle time crossed 500 milliseconds in jms_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      
+- name: connector.rules > KAFKA_OUTBOUND
+  rules:
+  - alert: AerospikeConnectorLag
+    expr: aerospike_kafka_outbound_requests_lag{job="aerospike_connect" } > 5000
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Process Request lag increased and is above configured threshold in kafka_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Process Request lag increased and is above configured threshold in kafka_outbound instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+  - alert: AerospikeConnectorErrors
+    expr: ((aerospike_kafka_outbound_requests{job="aerospike_connect",status="error"} *100) / on ( cluster_name, instance, job, ) sum by ( cluster_name, instance, job, )(aerospike_kafka_outbound_requests{job="aerospike_connect",})) > 1
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Request Errors crossed 1% of the total requests processed in kafka_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Request Errors crossed 1% of the total requests processed in kafka_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+  - alert: AerospikeConnectorJvmProcessCPU
+    expr: aerospike_kafka_outbound_jvm_os_processCpuLoad{job="aerospike_connect" } > 80
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Process CPU load crossed configured threshold of 80% in kafka_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Process CPU load crossed configured threshold of 80% in kafka_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+  - alert: AerospikeConnectorJvmSystemCPU
+    expr: aerospike_kafka_outbound_jvm_os_systemCpuLoad{job="aerospike_connect" } > 80
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "System CPU load crossed configured threshold of 80% in kafka_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "System CPU load crossed configured threshold of 80% in kafka_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+
+  - alert: AerospikeConnectorJvmHeapUsed
+    expr: (aerospike_kafka_outbound_jvm_memory_heap_used{job="aerospike_connect" }*100)/aerospike_kafka_outbound_jvm_memory_heap_max{job="aerospike_connect" } > 80
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "JVM Heap usage crossed 80% of max heap allocated in kafka_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "JVM Heap usage crossed 80% of max heap allocated in kafka_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+  - alert: AerospikeConnectorJvmGC
+    expr: rate(aerospike_kafka_outbound_jvm_gc_time{job="aerospike_connect"}[1m])/ rate(aerospike_kafka_outbound_jvm_gc_count{job="aerospike_connect"}[1m]) > 500
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Average JVM Garbage collection cycle time crossed 500 milliseconds in kafka_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Average JVM Garbage collection cycle time crossed 500 milliseconds kafka_outbound in connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      
+
+- name: connector.rules > PULSAR_OUTBOUND
+  rules:
+  - alert: AerospikeConnectorLag
+    expr: aerospike_pulsar_outbound_requests_lag{job="aerospike_connect" } > 5000
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Process Request lag increased and is above configured threshold in pulsar_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Process Request lag increased and is above configured threshold in pulsar_outbound instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+  - alert: AerospikeConnectorErrors
+    expr: ((aerospike_pulsar_outbound_requests{job="aerospike_connect",status="error"} *100) / on ( cluster_name, instance, job, ) sum by ( cluster_name, instance, job, )(aerospike_pulsar_outbound_requests{job="aerospike_connect",})) > 1
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Request Errors crossed 1% of the total requests processed in pulsar_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Request Errors crossed 1% of the total requests processed in pulsar_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+  - alert: AerospikeConnectorJvmProcessCPU
+    expr: aerospike_pulsar_outbound_jvm_os_processCpuLoad{job="aerospike_connect" } > 80
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Process CPU load crossed configured threshold of 80% in pulsar_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Process CPU load crossed configured threshold of 80% in pulsar_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+  - alert: AerospikeConnectorJvmSystemCPU
+    expr: aerospike_pulsar_outbound_jvm_os_systemCpuLoad{job="aerospike_connect" } > 80
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "System CPU load crossed configured threshold of 80% in pulsar_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "System CPU load crossed configured threshold of 80% in pulsar_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+
+  - alert: AerospikeConnectorJvmHeapUsed
+    expr: (aerospike_pulsar_outbound_jvm_memory_heap_used{job="aerospike_connect" }*100)/aerospike_pulsar_outbound_jvm_memory_heap_max{job="aerospike_connect" } > 80
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "JVM Heap usage crossed 80% of max heap allocated in pulsar_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "JVM Heap usage crossed 80% of max heap allocated in pulsar_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+  - alert: AerospikeConnectorJvmGC
+    expr: rate(aerospike_pulsar_outbound_jvm_gc_time{job="aerospike_connect"}[1m])/ rate(aerospike_pulsar_outbound_jvm_gc_count{job="aerospike_connect"}[1m]) > 500
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Average JVM Garbage collection cycle time crossed 500 milliseconds in pulsar_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Average JVM Garbage collection cycle time crossed 500 milliseconds pulsar_outbound in connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      
+
+- name: connector.rules > ESP_OUTBOUND
+  rules:
+  - alert: AerospikeConnectorLag
+    expr: aerospike_esp_outbound_requests_lag{job="aerospike_connect" } > 5000
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Process Request lag increased and is above configured threshold in esp_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Process Request lag increased and is above configured threshold in esp_outbound instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+  - alert: AerospikeConnectorErrors
+    expr: ((aerospike_esp_outbound_requests{job="aerospike_connect",status="error"} *100) / on ( cluster_name, instance, job, ) sum by ( cluster_name, instance, job, )(aerospike_esp_outbound_requests{job="aerospike_connect",})) > 1
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Request Errors crossed 1% of the total requests processed in esp_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Request Errors crossed 1% of the total requests processed in esp_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+  - alert: AerospikeConnectorJvmProcessCPU
+    expr: aerospike_esp_outbound_jvm_os_processCpuLoad{job="aerospike_connect" } > 80
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Process CPU load crossed configured threshold of 80% in esp_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Process CPU load crossed configured threshold of 80% in esp_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+  - alert: AerospikeConnectorJvmSystemCPU
+    expr: aerospike_esp_outbound_jvm_os_systemCpuLoad{job="aerospike_connect" } > 80
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "System CPU load crossed configured threshold of 80% in esp_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "System CPU load crossed configured threshold of 80% in esp_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+
+  - alert: AerospikeConnectorJvmHeapUsed
+    expr: (aerospike_esp_outbound_jvm_memory_heap_used{job="aerospike_connect" }*100)/aerospike_esp_outbound_jvm_memory_heap_max{job="aerospike_connect" } > 80
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "JVM Heap usage crossed 80% of max heap allocated in esp_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "JVM Heap usage crossed 80% of max heap allocated in esp_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+
+  - alert: AerospikeConnectorJvmGC
+    expr: rate(aerospike_esp_outbound_jvm_gc_time{job="aerospike_connect"}[1m])/ rate(aerospike_esp_outbound_jvm_gc_count{job="aerospike_connect"}[1m]) > 500
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Average JVM Garbage collection cycle time crossed 500 milliseconds in esp_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      description: "Average JVM Garbage collection cycle time crossed 500 milliseconds esp_outbound in connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}"
+      
