@@ -3,6 +3,17 @@ This repo contains the contains examples for deploying the [Aerospike Monitoring
 
 For more details about installing Aerospike Monitoring Stack see [Aerospike see the product documentation](https://www.aerospike.com/docs/tools/monitorstack/index.html).
 
+## Plugin depedency
+Some of the dashboard depends on external grafana plugins to render the panels, each dashboard and the plug-in dependency is mentioned below
+### Multi-cluster-view dashboard
+This dashboard uses 2 grafana external plugin 
+#### grafana-polystat-panel
+Reference: https://grafana.com/grafana/plugins/grafana-polystat-panel/
+Installation: grafana-cli plugins install grafana-polystat-panel
+
+#### jdbranham-diagram-panel
+Reference: https://grafana.com/grafana/plugins/jdbranham-diagram-panel/
+Installation: grafana-cli plugins install jdbranham-diagram-panel
 
 ## Examples for Testing
 If you need to test dashboard changes the following examples will setup
