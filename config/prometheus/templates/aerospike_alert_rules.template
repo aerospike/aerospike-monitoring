@@ -127,7 +127,7 @@ groups:
       description: "{% raw %}Active proxies detected for {{ $labels.ns }} on node {{ $labels.instance }}{% endraw %}"
 
   - alert: NamespaceSupervisorFallingBehind
-    expr: aerospike_namespace_nsup_cycle_deleted_pct{job="aerospike", cluster_name="{{ thresholds.cluster }}"} > 1 # (Aerospike 6.3 and later) 
+    expr: aerospike_namespace_objects{job="aerospike", cluster_name="{{ thresholds.cluster }}"}>0 and aerospike_namespace_nsup_cycle_deleted_pct{job="aerospike", cluster_name="{{ thresholds.cluster }}"} > 1 # (Aerospike 6.3 and later) 
     for: {{ thresholds.aerospike_nsup_fall_behind_duration | default(aerospike_nsup_fall_behind_duration) }}
     labels:
       severity: critical
