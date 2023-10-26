@@ -243,7 +243,7 @@ groups:
       summary: "There are unavailable partition, but all roster nodes are present in the cluster."
       description: "{% raw %}Some partitions are dead for namespace {{ $labels.ns }} on node {{ $labels.instance }}. Greater than replication-factor number nodes had an unclean shutdown, and there may be data loss. Will require the use of the revive command to make the partitions available again.{% endraw %}"
   
-  - alert: 7.x_NamespaceDataCloseToStopWrites
+  - alert: NamespaceDataCloseToStopWrites
     expr: (aerospike_namespace_data_avail_pct{job="aerospike", cluster_name="{{ thresholds.cluster }}" } - aerospike_namespace_storage_engine_stop_writes_avail_pct{job="aerospike", cluster_name="{{ thresholds.cluster }}" }) <= 10
     for: {{ thresholds.aerospike_namespace_stop_writes_duration | default(aerospike_namespace_stop_writes_duration) }}
     labels:
@@ -252,7 +252,7 @@ groups:
       summary: "{% raw %}Close to stop writes for {{ $labels.instance }}/{{ $labels.ns }} due to data_avail_pct{% endraw %}"
       description: "{% raw %}data_avail_pct for namespace {{ $labels.ns }} in node {{ $labels.instance }} is close to stop-writes-avail-pct limit.{% endraw %}"
   
-  - alert: 7.x_LowDataAvailWarning
+  - alert: LowDataAvailWarning
     expr: aerospike_namespace_data_avail_pct{job="aerospike", cluster_name="{{ thresholds.cluster }}" } < 55
     for: {{ thresholds.aerospike_low_data_avail_warning_duration | default(aerospike_low_data_avail_warning_duration) }}
     labels:
@@ -261,7 +261,7 @@ groups:
       summary: "{% raw %}Device available warning for {{ $labels.instance }}/{{ $labels.ns }}{% endraw %}"
       description: "{% raw %}Device available has dropped below 55% for namespace {{ $labels.ns }} in node {{ $labels.instance }}. May indicate that defrag is unable to keep up with the current load, and may result in stop writes if it continues to drop.{% endraw %}"
   
-  - alert: 7.x_LowDataAvailCritical
+  - alert: LowDataAvailCritical
     expr: aerospike_namespace_data_avail_pct{job="aerospike", cluster_name="{{ thresholds.cluster }}" } < 25
     for: {{ thresholds.aerospike_low_data_avail_warning_duration | default(aerospike_low_data_avail_warning_duration) }}
     labels:
@@ -270,7 +270,7 @@ groups:
       summary: "{% raw %}Device available critically low for {{ $labels.instance }}/{{ $labels.ns }}{% endraw %}"
       description: "{% raw %}Device available has dropped below 25% for namespace {{ $labels.ns }} in node {{ $labels.instance }}. May indicate that defrag is unable to keep up with the current load, and may result in stop writes if it continues to drop.{% endraw %}"
   
-  - alert: 7.x_HighDataUseNamespaceWarning
+  - alert: HighDataUseNamespaceWarning
     expr: aerospike_namespace_data_used_pct{job="aerospike", cluster_name="{{ thresholds.cluster }}", storage_engine="memory" } > 80
     for: {{ thresholds.aerospike_high_data_namespace_warning_duration | default(aerospike_high_data_namespace_warning_duration) }}
     labels:
@@ -279,7 +279,7 @@ groups:
       summary: "{% raw %}Data utilization warning for {{ $labels.instance }}/{{ $labels.ns }}{% endraw %}"
       description: "{% raw %}Data used has crossed above 80% for namespace {{ $labels.ns }} in node {{ $labels.instance }}. May indicate a need to reduce the object count or increase capacity.{% endraw %}"
   
-  - alert: 7.x_HighDataUseNamespaceCritical
+  - alert: HighDataUseNamespaceCritical
     expr: aerospike_namespace_data_used_pct{job="aerospike", cluster_name="{{ thresholds.cluster }}", storage_engine="memory" } > 85
     for: {{ thresholds.aerospike_high_data_namespace_warning_duration | default(aerospike_high_data_namespace_warning_duration) }}
     labels:
@@ -331,7 +331,7 @@ groups:
     labels:
       severity: critical
     annotations:
-      summary: "Client connections warning"
+      summary: "Client connections critical"
       description: "Client connections are greater than expected peak of {{ thresholds.client_connections_critical | default(aerospike_client_connections_critical_level) }}."
 
   - alert: ClientConnectionChurn
@@ -400,16 +400,16 @@ groups:
 
 - name: aerospike_{{ thresholds.cluster }}.rules > SET
   rules:
-  - alert: NamespaceSetQuotaWarning
+  - alert: pre7x_NamespaceSetQuotaWarning
     expr: (((aerospike_sets_device_data_bytes{job="aerospike", cluster_name="{{ thresholds.cluster }}"} + aerospike_sets_memory_data_bytes{job="aerospike", cluster_name="{{ thresholds.cluster }}"}) / (aerospike_sets_stop_writes_size{job="aerospike", cluster_name="{{ thresholds.cluster }}"} != 0)) * 100) > {{ thresholds.aerospike_set_quota_warning_pct | default(aerospike_set_quota_warning_pct) }}
     for: {{ thresholds.aerospike_set_quota_duration | default(aerospike_set_quota_duration) }}
     labels:
-      severity: critical
+      severity: warn
     annotations:
       description: "{% raw %}Nearing memory quota for {{ $labels.set }} in namespace {{ $labels.ns }} in node {{ $labels.instance }}.{% endraw %}"
       summary: "{% raw %}One of your nodes is at{% endraw %} {{ thresholds.aerospike_set_quota_warning_pct }} {% raw %}% of the quota you have configured on the set.{% endraw %}"
   
-  - alert: NamespaceSetQuotaAlert
+  - alert: pre7x_NamespaceSetQuotaAlertCritical
     expr: (((aerospike_sets_device_data_bytes{job="aerospike", cluster_name="{{ thresholds.cluster }}"} + aerospike_sets_memory_data_bytes{job="aerospike", cluster_name="{{ thresholds.cluster }}"}) / (aerospike_sets_stop_writes_size{job="aerospike", cluster_name="{{ thresholds.cluster }}"} != 0)) * 100) > {{ thresholds.aerospike_set_quota_alert_pct | default(aerospike_set_quota_alert_pct) }}
     for: {{ thresholds.aerospike_set_quota_duration | default(aerospike_set_quota_duration) }}
     labels:
@@ -418,16 +418,16 @@ groups:
       description: "{% raw %}At or Above memory quota for {{ $labels.set }} in namespace {{ $labels.ns }} in node {{ $labels.instance }}.{% endraw %}"
       summary: "{% raw %}One of your nodes is at{% endraw %} {{ thresholds.aerospike_set_quota_alert_pct }}{% raw %}% of the quota you have configured on the set.{% endraw %}"
   
-  - alert: 7.x_NamespaceSetQuotaWarning
+  - alert: NamespaceSetQuotaWarning
     expr: (((aerospike_sets_data_used_bytes{job="aerospike", cluster_name="{{ thresholds.cluster }}" } ) / (aerospike_sets_stop_writes_size{job="aerospike", cluster_name="{{ thresholds.cluster }}" } != 0)) * 100) > 80
     for: {{ thresholds.aerospike_set_quota_duration | default(aerospike_set_quota_duration) }}
     labels:
-      severity: critical
+      severity: warn
     annotations:
       description: "{% raw %}Nearing memory quota for {{ $labels.set }} in namespace {{ $labels.ns }} in node {{ $labels.instance }}.{% endraw %}"
       summary: "{% raw %}One of your nodes is at{% endraw %} {{ thresholds.aerospike_set_quota_alert_pct }}{% raw %}% of the quota you have configured on the set.{% endraw %}"
     
-  - alert: 7.x_NamespaceSetQuotaAlert
+  - alert: NamespaceSetQuotaAlertCritical
     expr: (((aerospike_sets_data_used_bytes{job="aerospike", cluster_name="{{ thresholds.cluster }}" } ) / (aerospike_sets_stop_writes_size{job="aerospike", cluster_name="{{ thresholds.cluster }}" } != 0)) * 100) > 99
     for: {{ thresholds.aerospike_set_quota_duration | default(aerospike_set_quota_duration) }}
     labels:
