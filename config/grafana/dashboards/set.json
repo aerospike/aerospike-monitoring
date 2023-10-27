@@ -170,7 +170,7 @@
             {
               "targetBlank": true,
               "title": "Alerts view dashboard",
-              "url": "/d/hP_Uhx94k/alerts-view?orgId=1&var-node=${node}&var-cluster=${cluster}"
+              "url": "/d/hP_Uhx94k/alerts-view?orgId=1&${node:queryparam}&${cluster:queryparam}"
             }
           ],
           "mappings": [
@@ -433,7 +433,7 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 7,
+        "w": 8,
         "x": 16,
         "y": 1
       },
@@ -605,7 +605,7 @@
       },
       "gridPos": {
         "h": 3,
-        "w": 7,
+        "w": 8,
         "x": 16,
         "y": 4
       },
@@ -727,7 +727,7 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "topk(3,sort_desc((\n  (aerospike_sets_memory_data_bytes{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", set=~\"$set\",}+aerospike_sets_device_data_bytes{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", set=~\"$set\",})\n  /(aerospike_sets_stop_writes_size{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", set=~\"$set\",}!=0) )*100))",
+          "expr": "topk( $set_quota_topk,sort_desc((\n  (aerospike_sets_memory_data_bytes{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", set=~\"$set\",}+aerospike_sets_device_data_bytes{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", set=~\"$set\",})\n  /(aerospike_sets_stop_writes_size{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", set=~\"$set\",}!=0) )*100))",
           "format": "time_series",
           "hide": false,
           "instant": true,
@@ -742,7 +742,7 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "topk( 3, sort_desc((\n  (aerospike_sets_data_used_bytes{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", set=~\"$set\",})\n  /(aerospike_sets_stop_writes_size{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", set=~\"$set\",}!=0) )*100) )",
+          "expr": "topk( $set_quota_topk, sort_desc((\n  (aerospike_sets_data_used_bytes{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", set=~\"$set\",})\n  /(aerospike_sets_stop_writes_size{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\", set=~\"$set\",}!=0) )*100) )",
           "hide": false,
           "legendFormat": "{{service}}",
           "range": true,
@@ -931,7 +931,7 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 7,
+        "w": 8,
         "x": 16,
         "y": 7
       },
@@ -949,7 +949,7 @@
           "fields": "",
           "values": false
         },
-        "textMode": "value_and_name"
+        "textMode": "auto"
       },
       "pluginVersion": "9.3.2",
       "targets": [
@@ -1039,7 +1039,7 @@
           "refId": "A"
         }
       ],
-      "title": "Data stats (bytes) ",
+      "title": "Data used (bytes) ",
       "transformations": [],
       "type": "stat"
     },
@@ -1122,7 +1122,7 @@
           "instant": true,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "Avg.",
+          "legendFormat": "Avg",
           "refId": "master_avg"
         },
         {
@@ -1175,7 +1175,7 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 7,
+        "w": 8,
         "x": 16,
         "y": 11
       },
@@ -1270,7 +1270,7 @@
           "refId": "7_data_bytes_max"
         }
       ],
-      "title": "Data Used (bytes) ",
+      "title": "Data used (bytes) ",
       "transformations": [],
       "type": "bargauge"
     },
@@ -1347,7 +1347,7 @@
       "options": {
         "legend": {
           "calcs": [
-            "lastNotNull",
+            "last",
             "min",
             "max",
             "mean"
@@ -1463,7 +1463,7 @@
       "options": {
         "legend": {
           "calcs": [
-            "lastNotNull",
+            "last",
             "min",
             "max",
             "mean"
@@ -1565,7 +1565,7 @@
           "refId": "A"
         }
       ],
-      "title": "Data Used (bytes) ",
+      "title": "Data used (bytes) ",
       "transformations": [],
       "type": "timeseries"
     },
@@ -1636,7 +1636,7 @@
       "options": {
         "legend": {
           "calcs": [
-            "lastNotNull",
+            "last",
             "min",
             "max",
             "mean"
@@ -1952,17 +1952,37 @@
         "skipUrlSync": false,
         "sort": 1,
         "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "3",
+          "value": "3"
+        },
+        "hide": 2,
+        "label": "Set Quota TopK",
+        "name": "set_quota_topk",
+        "options": [
+          {
+            "selected": true,
+            "text": "3",
+            "value": "3"
+          }
+        ],
+        "query": "3",
+        "skipUrlSync": false,
+        "type": "textbox"
       }
     ]
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-12h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Set Dashboard",
   "uid": "A4YjjqbVk",
-  "version": 4,
+  "version": 15,
   "weekStart": ""
 }
