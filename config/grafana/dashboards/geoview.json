@@ -25,12 +25,6 @@
       "version": "1.7.3"
     },
     {
-      "type": "panel",
-      "id": "piechart",
-      "name": "Pie chart",
-      "version": ""
-    },
-    {
       "type": "datasource",
       "id": "prometheus",
       "name": "Prometheus",
@@ -267,9 +261,8 @@
                   "mode": "fixed"
                 },
                 "text": {
-                  "field": "cluster_name",
                   "fixed": "",
-                  "mode": "field"
+                  "mode": "fixed"
                 },
                 "textConfig": {
                   "fontSize": 20,
@@ -314,7 +307,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count by (latitude, longitude, cluster_name) (ALERTS{cluster_name!=\"\", job=\"aerospike\", severity=~\"warn|info|error|critical\"}) * -1\nor\ncount by (latitude, longitude, cluster_name) (aerospike_node_up)\n",
+          "expr": "count by (latitude, longitude, cluster_name) (ALERTS{cluster_name!=\"\", severity=~\"warn|info|error|critical\"}) * -1\nor\ncount by (latitude, longitude, cluster_name) (aerospike_node_up)\n",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -353,7 +346,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               },
@@ -365,7 +359,7 @@
             "h": 18,
             "w": 24,
             "x": 0,
-            "y": 10
+            "y": 16
           },
           "id": 24,
           "links": [],
@@ -502,7 +496,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 6,
+        "h": 5,
         "w": 4,
         "x": 0,
         "y": 17
@@ -546,125 +540,49 @@
         "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
-      "description": "Alert count",
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            }
+            "mode": "thresholds"
           },
           "links": [
             {
               "targetBlank": true,
-              "title": "Alerts view dashboard",
-              "url": "/d/hP_Uhx94k/alerts-view?orgId=1&${node:queryparam}&${cluster:queryparam}"
+              "title": "Cluster View",
+              "url": "/d/hP_Uhx94k/alerts-view?orgId=1&${__all_variables}"
             }
           ],
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "color": "#299c46",
-                  "index": 0,
-                  "text": "0"
-                }
+          "mappings": [],
+          "noValue": "Select a cluster",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
               },
-              "type": "special"
-            }
-          ],
-          "noValue": "N/A",
-          "unit": "none"
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "critical"
-            },
-            "properties": [
               {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#750310",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "warn"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#e0b400",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "info"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#37872d",
-                  "mode": "fixed"
-                }
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "error"
-            },
-            "properties": [
-              {
-                "id": "color",
-                "value": {
-                  "fixedColor": "#fa6400",
-                  "mode": "fixed"
-                }
+                "color": "red",
+                "value": 1
               }
             ]
           }
-        ]
+        },
+        "overrides": []
       },
       "gridPos": {
-        "h": 6,
+        "h": 5,
         "w": 4,
         "x": 4,
         "y": 17
       },
-      "id": 26,
-      "links": [],
-      "maxDataPoints": 100,
+      "id": 17,
       "options": {
-        "displayLabels": [
-          "name",
-          "value"
-        ],
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "pieType": "pie",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -672,10 +590,7 @@
           "fields": "",
           "values": false
         },
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
+        "textMode": "auto"
       },
       "pluginVersion": "9.3.2",
       "targets": [
@@ -685,16 +600,18 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "count by (severity) (ALERTS{job=\"$job_name\",cluster_name=~\"$cluster\", severity=~\"$severity\"}) or vector(0)",
-          "format": "time_series",
+          "exemplar": false,
+          "expr": "count(ALERTS{cluster_name=~\"$cluster\", severity=~\"$severity\"}) or vector(0)",
+          "hide": false,
           "instant": true,
-          "intervalFactor": 1,
-          "legendFormat": "{{severity}}",
-          "refId": "A"
+          "interval": "",
+          "legendFormat": "Alerts",
+          "range": false,
+          "refId": "alerts"
         }
       ],
-      "title": "Alerts",
-      "type": "piechart"
+      "title": "Alerts - $severity",
+      "type": "stat"
     },
     {
       "datasource": {
@@ -948,7 +865,7 @@
         "h": 5,
         "w": 3,
         "x": 0,
-        "y": 23
+        "y": 22
       },
       "id": 20,
       "options": {
@@ -1030,7 +947,7 @@
         "h": 5,
         "w": 5,
         "x": 3,
-        "y": 23
+        "y": 22
       },
       "id": 18,
       "options": {
@@ -1167,7 +1084,7 @@
           "type": "prometheus",
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
-        "definition": "label_values(aerospike_node_stats_uptime{job=\"$job_name\", cluster_name=~\"$cluster\" },service)",
+        "definition": "label_values(aerospike_node_stats_uptime,service)",
         "hide": 2,
         "includeAll": true,
         "label": "node",
@@ -1175,7 +1092,7 @@
         "name": "node",
         "options": [],
         "query": {
-          "query": "label_values(aerospike_node_stats_uptime{job=\"$job_name\", cluster_name=~\"$cluster\" },service)",
+          "query": "label_values(aerospike_node_stats_uptime,service)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,
@@ -1190,7 +1107,7 @@
           "type": "prometheus",
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
-        "definition": "label_values(ALERTS{job=\"$job_name\", },severity)",
+        "definition": "label_values(ALERTS{job=\"$job_name\",},severity)",
         "hide": 0,
         "includeAll": true,
         "label": "Alert Severity",
@@ -1198,7 +1115,7 @@
         "name": "severity",
         "options": [],
         "query": {
-          "query": "label_values(ALERTS{job=\"$job_name\", },severity)",
+          "query": "label_values(ALERTS{job=\"$job_name\",},severity)",
           "refId": "StandardVariableQuery"
         },
         "refresh": 1,
@@ -1234,13 +1151,13 @@
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Multi Cluster View",
   "uid": "03SlXxlVz",
-  "version": 2,
+  "version": 8,
   "weekStart": ""
 }
