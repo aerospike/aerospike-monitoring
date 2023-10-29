@@ -1,12 +1,6 @@
 {
   "__requires": [
     {
-      "type": "panel",
-      "id": "bargauge",
-      "name": "Bar gauge",
-      "version": ""
-    },
-    {
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
@@ -72,26 +66,7 @@
           "color": {
             "mode": "thresholds"
           },
-          "links": [
-            {
-              "targetBlank": true,
-              "title": "Alerts view dashboard",
-              "url": "/d/hP_Uhx94k/alerts-view?orgId=1&var-node=${node}&var-cluster=${cluster}"
-            }
-          ],
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "color": "#299c46",
-                  "text": "0"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "noValue": "N/A",
+          "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -100,12 +75,11 @@
                 "value": null
               },
               {
-                "color": "dark-red",
-                "value": 5000
+                "color": "red",
+                "value": 50
               }
             ]
-          },
-          "unit": "none"
+          }
         },
         "overrides": []
       },
@@ -115,22 +89,18 @@
         "x": 0,
         "y": 0
       },
-      "id": 82,
-      "links": [],
-      "maxDataPoints": 100,
+      "id": 2,
       "options": {
-        "displayMode": "basic",
-        "minVizHeight": 10,
-        "minVizWidth": 0,
-        "orientation": "vertical",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
         "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
+          "calcs": [],
           "fields": "",
           "values": false
         },
-        "showUnfilled": true
+        "textMode": "value"
       },
       "pluginVersion": "9.3.2",
       "targets": [
@@ -140,44 +110,15 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "min  (\n    (aerospike_namespace_master_objects {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"} / 4096) \n    / \n    (aerospike_namespace_partition_tree_sprigs{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"}!=0)\n)",
-          "format": "time_series",
-          "hide": false,
-          "instant": true,
-          "intervalFactor": 1,
-          "legendFormat": "Min",
-          "refId": "object_per_sprig_min"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
           "expr": "avg  (\n    (aerospike_namespace_master_objects {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"} / 4096) \n    / \n    (aerospike_namespace_partition_tree_sprigs{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"}!=0)\n)",
-          "format": "time_series",
-          "instant": true,
-          "intervalFactor": 1,
-          "legendFormat": "Avg",
-          "refId": "object_per_sprig_avg"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "max  (\n    (aerospike_namespace_master_objects {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"} / 4096) \n    / \n    (aerospike_namespace_partition_tree_sprigs{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"}!=0)\n)",
-          "format": "time_series",
           "hide": false,
-          "instant": true,
-          "intervalFactor": 1,
-          "legendFormat": "Max",
-          "refId": "object_per_sprig_max"
+          "legendFormat": "{{ns}}",
+          "range": true,
+          "refId": "A"
         }
       ],
-      "title": "Objects per Sprig (Primary Index)",
-      "type": "bargauge"
+      "title": "Average Objects per Sprig (Primary Index) - $namespace",
+      "type": "stat"
     },
     {
       "datasource": {
@@ -223,7 +164,7 @@
       },
       "id": 46,
       "options": {
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "auto",
@@ -306,7 +247,7 @@
       },
       "id": 3,
       "options": {
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
@@ -372,7 +313,7 @@
       },
       "id": 11,
       "options": {
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
@@ -454,13 +395,13 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 16,
+        "w": 8,
         "x": 8,
         "y": 4
       },
       "id": 55,
       "options": {
-        "colorMode": "background",
+        "colorMode": "value",
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "auto",
@@ -559,8 +500,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -576,16 +516,15 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 17
+            "y": 9
           },
           "id": 13,
           "options": {
             "legend": {
               "calcs": [
                 "last",
-                "min",
-                "max",
-                "mean"
+                "mean",
+                "max"
               ],
               "displayMode": "table",
               "placement": "right",
@@ -658,8 +597,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -675,16 +613,15 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 17
+            "y": 9
           },
           "id": 9,
           "options": {
             "legend": {
               "calcs": [
                 "last",
-                "min",
-                "max",
-                "mean"
+                "mean",
+                "max"
               ],
               "displayMode": "table",
               "placement": "right",
@@ -756,8 +693,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -773,16 +709,15 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 22
+            "y": 14
           },
           "id": 40,
           "options": {
             "legend": {
               "calcs": [
                 "last",
-                "min",
-                "max",
-                "mean"
+                "mean",
+                "max"
               ],
               "displayMode": "table",
               "placement": "right",
@@ -814,7 +749,7 @@
       "type": "row"
     },
     {
-      "collapsed": true,
+      "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -822,470 +757,434 @@
         "y": 9
       },
       "id": 15,
-      "panels": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              }
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 12,
-            "x": 0,
-            "y": 18
-          },
-          "id": 48,
-          "options": {
-            "legend": {
-              "calcs": [
-                "lastNotNull",
-                "min",
-                "max",
-                "mean"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "avg by (ns) (\n    (aerospike_namespace_master_objects {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"} / 4096) \n    / \n    (aerospike_namespace_partition_tree_sprigs{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"}!=0)\n)",
-              "legendFormat": "{{ns}}",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": "Average Object per Sprig",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "description": "Represents how much used memory is consumed against the High Water Memory configured, the lower it is the better,\nNOTE: no data will be shown if High Water Pct is not configured.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 7,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineStyle": {
-                  "fill": "solid"
-                },
-                "lineWidth": 3,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "max": 100,
-              "noValue": "Not configured",
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "percent"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 12,
-            "x": 12,
-            "y": 18
-          },
-          "id": 60,
-          "options": {
-            "legend": {
-              "calcs": [
-                "last",
-                "min",
-                "max",
-                "mean"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "(((aerospike_namespace_index_flash_used_pct{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"})\n/ on ( job, clusrer_name, service, ns)\naerospike_namespace_index_type_mounts_high_water_pct{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"} !=0)*100\n)",
-              "hide": false,
-              "interval": "",
-              "legendFormat": "{{service}}:{{ns}}",
-              "range": true,
-              "refId": "6_memory_by_high_water_pct"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "(((aerospike_namespace_index_mounts_used_pct{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"})\n/ on ( job, clusrer_name, service, ns)\naerospike_namespace_index_type_evict_mounts_pct{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"} !=0)*100\n)",
-              "hide": false,
-              "interval": "",
-              "legendFormat": "{{service}}:{{ns}}",
-              "range": true,
-              "refId": "7_data_by_evict_mount_pct"
-            }
-          ],
-          "title": "Used Data Pct vs High Water Mark Pct ",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 7,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineStyle": {
-                  "fill": "solid"
-                },
-                "lineWidth": 3,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "percent"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 12,
-            "x": 0,
-            "y": 23
-          },
-          "id": 62,
-          "options": {
-            "legend": {
-              "calcs": [
-                "last",
-                "min",
-                "max",
-                "mean"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "aerospike_namespace_index_flash_alloc_pct{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}",
-              "hide": false,
-              "interval": "",
-              "legendFormat": "{{service}}:{{ns}} : Allocated",
-              "range": true,
-              "refId": "alloc_pct"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "aerospike_namespace_index_flash_used_pct{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}",
-              "hide": false,
-              "interval": "",
-              "legendFormat": "{{service}}:{{ns}} - Used",
-              "range": true,
-              "refId": "6_index_flash_used_pct"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "aerospike_namespace_index_mounts_used_pct{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}",
-              "hide": false,
-              "interval": "",
-              "legendFormat": "{{service}}:{{ns}} - Used",
-              "range": true,
-              "refId": "7_index_mounts_used_pct"
-            }
-          ],
-          "title": "% Index  - Alloc, Used ",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 7,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineStyle": {
-                  "fill": "solid"
-                },
-                "lineWidth": 3,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": true,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green",
-                    "value": null
-                  }
-                ]
-              },
-              "unit": "bytes"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 5,
-            "w": 12,
-            "x": 12,
-            "y": 23
-          },
-          "id": 64,
-          "options": {
-            "legend": {
-              "calcs": [
-                "last",
-                "min",
-                "max",
-                "mean"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "aerospike_namespace_index_flash_alloc_bytes{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}",
-              "hide": false,
-              "interval": "",
-              "legendFormat": "{{service}}:{{ns}} : Allocated",
-              "range": true,
-              "refId": "alloc_bytes"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "aerospike_namespace_index_flash_used_bytes{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}",
-              "hide": false,
-              "interval": "",
-              "legendFormat": "{{service}}:{{ns}} - Used",
-              "range": true,
-              "refId": "6_index_flash_used_bytes"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "aerospike_namespace_index_used_bytes{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}",
-              "hide": false,
-              "interval": "",
-              "legendFormat": "{{service}}:{{ns}} - Used",
-              "range": true,
-              "refId": "7_index_mounts_used_bytes"
-            }
-          ],
-          "title": "Bytes - Alloc, Used",
-          "type": "timeseries"
-        }
-      ],
+      "panels": [],
       "title": "Resources - Primary Index - $namespace",
       "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 0,
+        "y": 10
+      },
+      "id": 48,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "avg by (ns) (\n    (aerospike_namespace_master_objects {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"} / 4096) \n    / \n    (aerospike_namespace_partition_tree_sprigs{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"}!=0)\n)",
+          "legendFormat": "{{ns}}",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "vector(2)",
+          "hide": false,
+          "legendFormat": "Threshold (2)",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Average Object per Sprig",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "Represents how much used memory is consumed against the High Water Memory configured, the lower it is the better,\nNOTE: no data will be shown if High Water Pct is not configured.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 7,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 3,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "max": 100,
+          "noValue": "Not configured",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 12,
+        "y": 10
+      },
+      "id": 17,
+      "options": {
+        "legend": {
+          "calcs": [
+            "last",
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "(((aerospike_namespace_index_flash_used_pct{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"})\n/ on ( job, clusrer_name, service, ns)\naerospike_namespace_index_type_mounts_high_water_pct{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"} !=0)*100\n)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "{{service}}:{{ns}}",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "Used Memory Pct vs High Water Mark Pct",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 7,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 3,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 0,
+        "y": 15
+      },
+      "id": 21,
+      "options": {
+        "legend": {
+          "calcs": [
+            "last",
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "aerospike_namespace_index_flash_alloc_pct{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "{{service}}:{{ns}} : Allocated",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "aerospike_namespace_index_flash_used_pct{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "{{service}}:{{ns}} - Used",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "% Index  - Alloc, Used",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 7,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 3,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 12,
+        "y": 15
+      },
+      "id": 23,
+      "options": {
+        "legend": {
+          "calcs": [
+            "last",
+            "mean",
+            "max"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "aerospike_namespace_index_flash_alloc_bytes{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "{{service}}:{{ns}} : Allocated",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "aerospike_namespace_index_flash_used_bytes{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "{{service}}:{{ns}} - Used",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Bytes - Alloc, Used",
+      "type": "timeseries"
     },
     {
       "collapsed": true,
@@ -1293,7 +1192,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 10
+        "y": 20
       },
       "id": 50,
       "panels": [
@@ -1348,8 +1247,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -1361,16 +1259,15 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 19
+            "y": 11
           },
-          "id": 66,
+          "id": 52,
           "options": {
             "legend": {
               "calcs": [
                 "last",
-                "min",
-                "max",
-                "mean"
+                "mean",
+                "max"
               ],
               "displayMode": "table",
               "placement": "right",
@@ -1393,23 +1290,10 @@
               "interval": "",
               "legendFormat": "{{service}}:{{ns}}",
               "range": true,
-              "refId": "6_flash_used_pct_by_mount_high_water_pct"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "(((aerospike_namespace_sindex_mounts_used_pct{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"})\n/ on (job, cluster, service, ns) \naerospike_namespace_index_type_evict_mounts_pct{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"} !=0)*100\n)",
-              "hide": false,
-              "interval": "",
-              "legendFormat": "{{service}}:{{ns}}",
-              "range": true,
-              "refId": "7_mount_pct_by_evict_mounts_pct"
+              "refId": "C"
             }
           ],
-          "title": "Used Data Pct vs High Water Mark Pct",
+          "title": "Used Memory Pct vs High Water Mark Pct",
           "type": "timeseries"
         },
         {
@@ -1461,8 +1345,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -1474,16 +1357,15 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 19
+            "y": 11
           },
-          "id": 68,
+          "id": 53,
           "options": {
             "legend": {
               "calcs": [
                 "last",
-                "min",
-                "max",
-                "mean"
+                "mean",
+                "max"
               ],
               "displayMode": "table",
               "placement": "right",
@@ -1501,12 +1383,12 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "aerospike_namespace_sindex_flash_used_bytes{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}",
+              "expr": "aerospike_namespace_sindex_flash_alloc_bytes{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}",
               "hide": false,
               "interval": "",
-              "legendFormat": "{{service}}:{{ns}} - Used",
+              "legendFormat": "{{service}}:{{ns}} : Allocated",
               "range": true,
-              "refId": "6_sindex_flash_used_bytes"
+              "refId": "B"
             },
             {
               "datasource": {
@@ -1514,15 +1396,15 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "aerospike_namespace_sindex_used_bytes{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}",
+              "expr": "aerospike_namespace_sindex_flash_used_bytes{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}",
               "hide": false,
               "interval": "",
               "legendFormat": "{{service}}:{{ns}} - Used",
               "range": true,
-              "refId": "7_sindex_mounts_used_bytes"
+              "refId": "A"
             }
           ],
-          "title": "Bytes -  Used ",
+          "title": "Bytes - Alloc, Used",
           "type": "timeseries"
         },
         {
@@ -1574,8 +1456,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   }
                 ]
               },
@@ -1587,16 +1468,15 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 24
+            "y": 16
           },
-          "id": 70,
+          "id": 54,
           "options": {
             "legend": {
               "calcs": [
                 "last",
-                "min",
-                "max",
-                "mean"
+                "mean",
+                "max"
               ],
               "displayMode": "table",
               "placement": "right",
@@ -1614,12 +1494,12 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "aerospike_namespace_sindex_flash_used_pct{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}",
+              "expr": "aerospike_namespace_sindex_flash_alloc_pct{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}",
               "hide": false,
               "interval": "",
-              "legendFormat": "{{service}}:{{ns}} - Used",
+              "legendFormat": "{{service}}:{{ns}} : Allocated",
               "range": true,
-              "refId": "6_sindex_flash_used_pct"
+              "refId": "B"
             },
             {
               "datasource": {
@@ -1627,15 +1507,15 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "aerospike_namespace_sindex_mounts_used_pct{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}",
+              "expr": "aerospike_namespace_sindex_flash_used_pct{job=\"$job_name\", cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}",
               "hide": false,
               "interval": "",
               "legendFormat": "{{service}}:{{ns}} - Used",
               "range": true,
-              "refId": "7_sindex_mounts_used_pct"
+              "refId": "A"
             }
           ],
-          "title": "% SIndex  - Used ",
+          "title": "% SIndex  - Alloc, Used",
           "type": "timeseries"
         }
       ],
@@ -1648,7 +1528,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 11
+        "y": 21
       },
       "id": 44,
       "panels": [
@@ -1697,8 +1577,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1713,17 +1592,12 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 20
+            "y": 12
           },
-          "id": 72,
+          "id": 31,
           "options": {
             "legend": {
-              "calcs": [
-                "lastNotNull",
-                "min",
-                "max",
-                "mean"
-              ],
+              "calcs": [],
               "displayMode": "table",
               "placement": "right",
               "showLegend": true
@@ -1740,8 +1614,8 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "topk($topk_limit, 100 - aerospike_namespace_device_free_pct{cluster_name=\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"} )",
-              "legendFormat": "{{service}}:{{ns}} - Device Used",
+              "expr": "topk($topk_limit, aerospike_namespace_device_free_pct{cluster_name=\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"} )",
+              "legendFormat": "{{service}}:{{ns}} - Device Free",
               "range": true,
               "refId": "device_free"
             },
@@ -1751,7 +1625,7 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "topk($topk_limit, aerospike_namespace_device_available_pct {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"} )",
+              "expr": "topk($topk_limit,aerospike_namespace_device_available_pct {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"} )",
               "hide": false,
               "legendFormat": "{{service}}:{{ns}} - Device Available",
               "range": true,
@@ -1763,9 +1637,9 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "topk($topk_limit,100 - aerospike_namespace_pmem_free_pct {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"})",
+              "expr": "topk($topk_limit,aerospike_namespace_pmem_free_pct {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"})",
               "hide": false,
-              "legendFormat": "{{service}}:{{ns}} - Pmem Used",
+              "legendFormat": "{{service}}:{{ns}} - Pmem Free",
               "range": true,
               "refId": "pmem_free"
             },
@@ -1775,38 +1649,14 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "topk($topk_limit, aerospike_namespace_pmem_available_pct {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"} )",
+              "expr": "topk($topk_limit,aerospike_namespace_pmem_available_pct {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"} )",
               "hide": false,
-              "legendFormat": "{{service}}:{{ns}} - Pmem Available",
+              "legendFormat": "{{service}}:{{ns}} - Device Available",
               "range": true,
               "refId": "pmem_available"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "topk($topk_limit, aerospike_namespace_data_used_pct {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"})",
-              "hide": false,
-              "legendFormat": "{{service}}:{{ns}} - Data Used",
-              "range": true,
-              "refId": "7.0_data_used"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "topk($topk_limit, aerospike_namespace_data_avail_pct {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"} )",
-              "hide": false,
-              "legendFormat": "{{service}}:{{ns}} - Data Available",
-              "range": true,
-              "refId": "7.0_data_available"
             }
           ],
-          "title": "% Data - Used, Available ",
+          "title": "% Device & PMem - Free, Available",
           "type": "timeseries"
         },
         {
@@ -1855,8 +1705,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1872,16 +1721,15 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 20
+            "y": 12
           },
-          "id": 74,
+          "id": 19,
           "options": {
             "legend": {
               "calcs": [
                 "last",
-                "min",
-                "max",
-                "mean"
+                "mean",
+                "max"
               ],
               "displayMode": "table",
               "placement": "right",
@@ -1957,8 +1805,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1974,17 +1821,12 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 25
+            "y": 17
           },
-          "id": 76,
+          "id": 37,
           "options": {
             "legend": {
-              "calcs": [
-                "lastNotNull",
-                "min",
-                "max",
-                "mean"
-              ],
+              "calcs": [],
               "displayMode": "table",
               "placement": "right",
               "showLegend": true
@@ -2092,8 +1934,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2109,17 +1950,12 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 25
+            "y": 17
           },
-          "id": 78,
+          "id": 29,
           "options": {
             "legend": {
-              "calcs": [
-                "lastNotNull",
-                "min",
-                "max",
-                "mean"
-              ],
+              "calcs": [],
               "displayMode": "table",
               "placement": "right",
               "showLegend": true
@@ -2192,8 +2028,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2209,14 +2044,13 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 30
+            "y": 22
           },
-          "id": 80,
+          "id": 39,
           "options": {
             "legend": {
               "calcs": [
                 "last",
-                "min",
                 "max",
                 "mean"
               ],
@@ -2256,7 +2090,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 12
+        "y": 22
       },
       "id": 42,
       "panels": [
@@ -2305,8 +2139,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2321,17 +2154,12 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 21
+            "y": 13
           },
           "id": 36,
           "options": {
             "legend": {
-              "calcs": [
-                "last",
-                "min",
-                "max",
-                "mean"
-              ],
+              "calcs": [],
               "displayMode": "table",
               "placement": "right",
               "showLegend": true
@@ -2403,8 +2231,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2419,17 +2246,12 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 21
+            "y": 13
           },
           "id": 56,
           "options": {
             "legend": {
-              "calcs": [
-                "last",
-                "min",
-                "max",
-                "mean"
-              ],
+              "calcs": [],
               "displayMode": "table",
               "placement": "right",
               "showLegend": true
@@ -2513,8 +2335,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2529,17 +2350,12 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 26
+            "y": 18
           },
           "id": 34,
           "options": {
             "legend": {
-              "calcs": [
-                "last",
-                "min",
-                "max",
-                "mean"
-              ],
+              "calcs": [],
               "displayMode": "list",
               "placement": "bottom",
               "showLegend": true
@@ -2613,8 +2429,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -2629,17 +2444,12 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 26
+            "y": 18
           },
           "id": 38,
           "options": {
             "legend": {
-              "calcs": [
-                "last",
-                "min",
-                "max",
-                "mean"
-              ],
+              "calcs": [],
               "displayMode": "list",
               "placement": "bottom",
               "showLegend": true
@@ -2938,6 +2748,6 @@
   "timezone": "",
   "title": "All Flash",
   "uid": "LkfaTGC4z",
-  "version": 9,
+  "version": 2,
   "weekStart": ""
 }
