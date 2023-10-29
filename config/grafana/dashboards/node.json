@@ -105,8 +105,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "#299c46",
-                    "value": null
+                    "color": "#299c46"
                   }
                 ]
               }
@@ -283,7 +282,7 @@
             {
               "targetBlank": true,
               "title": "Alerts view dashboard",
-              "url": "/d/hP_Uhx94k/alerts-view?orgId=1&var-node=${node}&var-cluster=${cluster}"
+              "url": "/d/hP_Uhx94k/alerts-view?orgId=1&${node.queryparam}&${cluster.queryparam}"
             }
           ],
           "mappings": [
@@ -312,7 +311,7 @@
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "#750310",
+                  "fixedColor": "red",
                   "mode": "fixed"
                 }
               }
@@ -527,9 +526,13 @@
             {
               "options": {
                 "0": {
+                  "color": "red",
+                  "index": 2,
                   "text": "DOWN"
                 },
                 "1": {
+                  "color": "#299c46",
+                  "index": 1,
                   "text": "UP"
                 }
               },
@@ -539,6 +542,7 @@
               "options": {
                 "match": "null",
                 "result": {
+                  "index": 0,
                   "text": "N/A"
                 }
               },
@@ -830,7 +834,7 @@
           "refId": "tx_partitions_active"
         }
       ],
-      "title": "Migrations",
+      "title": "Migrations (total)",
       "type": "stat"
     },
     {
@@ -932,7 +936,7 @@
           "refId": "7_total"
         }
       ],
-      "title": "Data (bytes)",
+      "title": "Data (bytes) (total)",
       "type": "stat"
     },
     {
@@ -1027,7 +1031,7 @@
           "refId": "7_index_used"
         }
       ],
-      "title": "Index Used(bytes)",
+      "title": "Index used (bytes) (total)",
       "type": "stat"
     },
     {
@@ -1122,7 +1126,7 @@
           "refId": "6_flash_alloc_pct"
         }
       ],
-      "title": "Index (Flash) Allocated (bytes)",
+      "title": "Index (Flash) alloc (bytes) (total)",
       "type": "stat"
     },
     {
@@ -1271,7 +1275,7 @@
           "refId": "unreplica"
         }
       ],
-      "title": "Master Objects",
+      "title": "Master Objects (total)",
       "type": "stat"
     },
     {
@@ -1398,7 +1402,7 @@
           "refId": "7_data_used_max"
         }
       ],
-      "title": "Data used stats(bytes)",
+      "title": "Data used stats (bytes)",
       "transparent": true,
       "type": "bargauge"
     },
@@ -1527,7 +1531,7 @@
           "refId": "7_used_pct_max"
         }
       ],
-      "title": "% Data Used",
+      "title": "% Data used",
       "type": "bargauge"
     },
     {
@@ -1670,7 +1674,7 @@
           "instant": true,
           "interval": "",
           "intervalFactor": 1,
-          "legendFormat": "Avg.",
+          "legendFormat": "Avg",
           "refId": "7_index_used_avg"
         },
         {
@@ -1690,7 +1694,7 @@
           "refId": "7_index_used_max"
         }
       ],
-      "title": "Index Used (bytes)",
+      "title": "Index used (bytes)",
       "type": "bargauge"
     },
     {
@@ -1804,7 +1808,7 @@
           "refId": "6_flash_alloc_bytes_max"
         }
       ],
-      "title": "Index (Flash) Alloc (bytes)",
+      "title": "Index (Flash) alloc (bytes)",
       "type": "bargauge"
     },
     {
@@ -1830,7 +1834,7 @@
               }
             ]
           },
-          "unit": "none"
+          "unit": "short"
         },
         "overrides": []
       },
@@ -2037,7 +2041,7 @@
               }
             ]
           },
-          "unit": "none"
+          "unit": "percent"
         },
         "overrides": []
       },
@@ -2093,7 +2097,7 @@
           "refId": "7_set_quota"
         }
       ],
-      "title": "% Set Quota Used (topk)",
+      "title": "% Set Quota used (topk)",
       "type": "bargauge"
     },
     {
@@ -2203,7 +2207,7 @@
               }
             ]
           },
-          "unit": "short"
+          "unit": "none"
         },
         "overrides": []
       },
@@ -2276,7 +2280,7 @@
           "refId": "C"
         }
       ],
-      "title": "Connections (Total)",
+      "title": "Connections (total)",
       "type": "stat"
     },
     {
@@ -2444,7 +2448,7 @@
       "options": {
         "legend": {
           "calcs": [
-            "lastNotNull",
+            "last",
             "min",
             "max",
             "mean"
@@ -2591,7 +2595,7 @@
       "options": {
         "legend": {
           "calcs": [
-            "lastNotNull",
+            "last",
             "min",
             "max",
             "mean"
@@ -2636,51 +2640,6 @@
           "intervalFactor": 1,
           "legendFormat": "{{service}}/{{ns}} : Used",
           "refId": "7_used_pct"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "(aerospike_namespace_memory_free_pct{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\", ns=~\"$namespace|$^\"})",
-          "format": "time_series",
-          "hide": true,
-          "instant": true,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "{{service}}/{{ns}} : Memory",
-          "refId": "6_memory_free_pct"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "min(aerospike_namespace_device_free_pct{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\", ns=~\"$namespace|$^\"})",
-          "format": "time_series",
-          "hide": true,
-          "instant": true,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "Device",
-          "refId": "6_device_free_pct"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "min(aerospike_namespace_pmem_free_pct{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\", ns=~\"$namespace|$^\"})",
-          "format": "time_series",
-          "hide": true,
-          "instant": true,
-          "interval": "",
-          "intervalFactor": 1,
-          "legendFormat": "PMEM",
-          "refId": "6_pmem_free_pct"
         }
       ],
       "title": "% Data (topk)",
@@ -2759,7 +2718,7 @@
       "options": {
         "legend": {
           "calcs": [
-            "lastNotNull",
+            "last",
             "min",
             "max",
             "mean"
@@ -2936,7 +2895,7 @@
       "options": {
         "legend": {
           "calcs": [
-            "lastNotNull",
+            "last",
             "min",
             "max",
             "mean"
@@ -2978,7 +2937,7 @@
           "refId": "read_latency_counts"
         }
       ],
-      "title": "Latency: Reads / sec",
+      "title": "Latency: Reads / sec (max)",
       "type": "timeseries"
     },
     {
@@ -3056,10 +3015,10 @@
       "options": {
         "legend": {
           "calcs": [
-            "mean",
-            "lastNotNull",
+            "last",
+            "min",
             "max",
-            "min"
+            "mean"
           ],
           "displayMode": "table",
           "placement": "right",
@@ -3077,10 +3036,12 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "expr": "sum by (job, cluster_name, service) (rate(aerospike_namespace_client_write_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+rate(aerospike_namespace_client_write_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m])+rate(aerospike_namespace_client_write_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
+          "editorMode": "code",
+          "expr": "sum by (job, cluster_name, service) (rate(aerospike_namespace_client_write_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval])+rate(aerospike_namespace_client_write_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval])+rate(aerospike_namespace_client_write_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]) + rate(aerospike_namespace_batch_sub_write_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]) + rate(aerospike_namespace_batch_sub_write_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]) + rate(aerospike_namespace_batch_sub_write_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "{{service}}: Total",
+          "legendFormat": "{{service}} : Total",
+          "range": true,
           "refId": "client_writes_total"
         },
         {
@@ -3088,10 +3049,12 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "expr": "sum by (job, cluster_name, service) (rate(aerospike_namespace_client_write_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]) + rate(aerospike_namespace_batch_sub_write_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[1m]))",
+          "editorMode": "code",
+          "expr": "sum by (job, cluster_name, service) (rate(aerospike_namespace_client_write_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]) + rate(aerospike_namespace_batch_sub_write_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "{{service}}: Successful",
+          "legendFormat": "{{service}} : Successful",
+          "range": true,
           "refId": "client_writes_success"
         },
         {
@@ -3120,7 +3083,7 @@
           "refId": "client_writes_error"
         }
       ],
-      "title": "Client Writes (TPS)",
+      "title": "Client Writes (TPS) (rate) (total)",
       "type": "timeseries"
     },
     {
@@ -3196,7 +3159,7 @@
       "options": {
         "legend": {
           "calcs": [
-            "lastNotNull",
+            "last",
             "min",
             "max",
             "mean"
@@ -3238,7 +3201,7 @@
           "refId": "write_latency_count"
         }
       ],
-      "title": "Latency: Writes / sec",
+      "title": "Latency: Writes / sec (max)",
       "type": "timeseries"
     },
     {
@@ -3314,7 +3277,7 @@
       "options": {
         "legend": {
           "calcs": [
-            "lastNotNull",
+            "last",
             "min",
             "max",
             "mean"
@@ -3436,7 +3399,7 @@
       "options": {
         "legend": {
           "calcs": [
-            "lastNotNull",
+            "last",
             "min",
             "max",
             "mean"
@@ -3478,7 +3441,7 @@
           "refId": "si_latency_count"
         }
       ],
-      "title": "Latency: Sindex Query / sec",
+      "title": "Latency: Sindex Query / sec (max)",
       "type": "timeseries"
     },
     {
@@ -3554,7 +3517,7 @@
       "options": {
         "legend": {
           "calcs": [
-            "lastNotNull",
+            "last",
             "min",
             "max",
             "mean"
@@ -3687,7 +3650,7 @@
       "options": {
         "legend": {
           "calcs": [
-            "lastNotNull",
+            "last",
             "min",
             "max",
             "mean"
@@ -3729,7 +3692,7 @@
           "refId": "udf_latency_count"
         }
       ],
-      "title": "Latency: UDF / sec",
+      "title": "Latency: UDF / sec (max)",
       "type": "timeseries"
     },
     {
@@ -3805,7 +3768,7 @@
       "options": {
         "legend": {
           "calcs": [
-            "lastNotNull",
+            "last",
             "min",
             "max",
             "mean"
@@ -3948,7 +3911,7 @@
       "options": {
         "legend": {
           "calcs": [
-            "lastNotNull",
+            "last",
             "min",
             "max",
             "mean"
@@ -3990,7 +3953,7 @@
           "refId": "pi_latency_count"
         }
       ],
-      "title": "Latency: Pindex Query / sec",
+      "title": "Latency: Pindex Query / sec (max)",
       "type": "timeseries"
     },
     {
@@ -4066,7 +4029,7 @@
       "options": {
         "legend": {
           "calcs": [
-            "lastNotNull",
+            "last",
             "min",
             "max",
             "mean"
@@ -4220,7 +4183,7 @@
       "options": {
         "legend": {
           "calcs": [
-            "lastNotNull",
+            "last",
             "min",
             "max",
             "mean"
@@ -4262,7 +4225,7 @@
           "refId": "proxy_latency_count"
         }
       ],
-      "title": "Latency: Proxies / sec",
+      "title": "Latency: Proxies / sec (max)",
       "type": "timeseries"
     }
   ],
@@ -4458,6 +4421,6 @@
   "timezone": "",
   "title": "Node Overview",
   "uid": "UcZD2iHAk",
-  "version": 16,
+  "version": 9,
   "weekStart": ""
 }
