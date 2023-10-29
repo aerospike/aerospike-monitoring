@@ -353,7 +353,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   }
                 ]
               },
@@ -365,7 +366,7 @@
             "h": 18,
             "w": 24,
             "x": 0,
-            "y": 10
+            "y": 16
           },
           "id": 24,
           "links": [],
@@ -373,7 +374,7 @@
             "authPassword": "",
             "authUsername": "",
             "composites": [],
-            "content": "graph LR\n%% START Comment\n%% Below line starts with a comma because other IP are coming with a comma becuase of Grafana advanced formatting \"raw\" appending a multi-list variable\n%% END Comment\n,${mermaid_text:raw}",
+            "content": "graph LR\n%% START Comment\n%% Below line starts with a comma because other IP are coming with a comma becuase of Grafana advanced formatting \"raw\" appending a multi-list variable\n%% END Comment\n,${mermaid_text:raw};\n,${servers_mermaid_text:raw};",
             "legend": {
               "asTable": true,
               "displayMode": "table",
@@ -497,7 +498,8 @@
                 "value": null
               }
             ]
-          }
+          },
+          "unit": "none"
         },
         "overrides": []
       },
@@ -592,7 +594,7 @@
               {
                 "id": "color",
                 "value": {
-                  "fixedColor": "#750310",
+                  "fixedColor": "red",
                   "mode": "fixed"
                 }
               }
@@ -709,7 +711,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 10,
+        "h": 11,
         "w": 8,
         "x": 8,
         "y": 17
@@ -738,8 +740,8 @@
         "globalFontSize": 12,
         "globalGradientsEnabled": true,
         "globalOperator": "sum",
-        "globalPolygonBorderColor": "transparent",
-        "globalPolygonBorderSize": 3,
+        "globalPolygonBorderColor": "orange",
+        "globalPolygonBorderSize": 1,
         "globalPolygonSize": 25,
         "globalRegexPattern": "(.*):.*",
         "globalShape": "hexagon_pointed_top",
@@ -763,7 +765,7 @@
         "globalTooltipsEnabled": true,
         "globalTooltipsFontFamily": "Roboto",
         "globalTooltipsShowTimestampEnabled": false,
-        "globalUnitFormat": "short",
+        "globalUnitFormat": "string",
         "layoutDisplayLimit": 100,
         "layoutNumColumns": 8,
         "layoutNumRows": 8,
@@ -862,7 +864,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 10,
+        "h": 11,
         "w": 8,
         "x": 16,
         "y": 17
@@ -974,7 +976,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": " sum(aerospike_xdr_lag{cluster_name=~\"$cluster\"}) ",
+          "expr": " max(aerospike_xdr_lag{cluster_name=~\"$cluster\"}) ",
           "hide": false,
           "instant": true,
           "interval": "",
@@ -983,7 +985,7 @@
           "refId": "xdr_lag"
         }
       ],
-      "title": "XDR Lag",
+      "title": "XDR Lag (max)",
       "type": "stat"
     },
     {
@@ -1022,7 +1024,8 @@
                 "value": 50
               }
             ]
-          }
+          },
+          "unit": "none"
         },
         "overrides": []
       },
@@ -1078,7 +1081,7 @@
           "refId": "read_latency"
         }
       ],
-      "title": "Latencies",
+      "title": "Latencies (total)",
       "type": "stat"
     }
   ],
@@ -1191,7 +1194,7 @@
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
         "definition": "label_values(ALERTS{job=\"$job_name\", },severity)",
-        "hide": 0,
+        "hide": 2,
         "includeAll": true,
         "label": "Alert Severity",
         "multi": true,
@@ -1213,13 +1216,85 @@
           "type": "prometheus",
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
-        "definition": "query_result( label_join(label_join (label_join  (label_join( label_join(label_replace( label_replace( (count_values by (cluster_name, ns, service, dc) ( \"xdr_bytes\", sum by (cluster_name, ns, service,dc) (aerospike_xdr_bytes_shipped{} and aerospike_xdr_dc_namespace_enabled{}==1)  ) + on (cluster_name, ns, service,dc) group_left(xdr_lag) count_values by (cluster_name, ns, service,dc) ( \"xdr_lag\", sum by (cluster_name, ns, service,dc) (aerospike_xdr_lag{} and aerospike_xdr_dc_namespace_enabled{}==1 )  ) + on (cluster_name, service,dc) group_left(xdr_connector) count_values by (cluster_name, service,dc) (\"xdr_connector\", (aerospike_xdr_dc_connector{} and on (dc) aerospike_xdr_dc_namespace_enabled{}==1 )  ) ), \"dc\", \",$1[$1];\", \"dc\", \"(.*)\"), \"cluster_name\", \"$1[$1]\", \"cluster_name\", \"(.*)\")\t\t, \"L1\", \",\", \"cluster_name\"),\"L1\",\"==Namespace: \", \"L1\", \"ns\" ),\"L1\",\"<br>Bytes: \", \"L1\", \"xdr_bytes\" )   ,\"L1\",\"<br>Lag: \", \"L1\", \"xdr_lag\" )  ,\"L1\", \"==>\", \"L1\", \"dc\" ) or label_replace( count_values(\"xdr_data_absent\", (absent(aerospike_xdr_dc_namespace_enabled{}))),\"L1\",\"no-data[no data]\", \"no_data\", \"(.*)\" ))",
+        "definition": "query_result( ( label_join(label_join (label_join  (label_join( label_join(label_replace( label_replace( (count_values by (cluster_name, dc, ns) ( \"xdr_bytes\", sum by (cluster_name, dc, ns) (aerospike_xdr_bytes_shipped{} and aerospike_xdr_dc_namespace_enabled{}==1)  ) + on (cluster_name, dc, ns ) group_left(xdr_lag) count_values by (cluster_name, dc, ns) ( \"xdr_lag\", max by (cluster_name, dc, ns) (aerospike_xdr_lag{} and aerospike_xdr_dc_namespace_enabled{}==1 )  ) ), \"dc\", \",$1[$1];\", \"dc\", \"(.*)\"), \"cluster_name\", \"$1[$1]\", \"cluster_name\", \"(.*)\")\t\t, \"L1\", \",\", \"cluster_name\"),\"L1\",\"==Namespace: \", \"L1\", \"ns\" ),\"L1\",\"<br>Bytes: \", \"L1\", \"xdr_bytes\" )   ,\"L1\",\"<br>Lag: \", \"L1\", \"xdr_lag\" )  ,\"L1\", \"==>\", \"L1\", \"dc\" ) or label_replace( count_values(\"xdr_data_absent\", (absent(aerospike_xdr_dc_namespace_enabled{}))),\"L1\",\"no-data[no data]\", \"no_data\", \"(.*)\" )))",
         "description": "describes and displays the aerospike server topology using mermaid markup-language syntax",
         "hide": 2,
         "includeAll": true,
         "label": "Topology definitions",
         "multi": true,
         "name": "mermaid_text",
+        "options": [],
+        "query": {
+          "query": "query_result( ( label_join(label_join (label_join  (label_join( label_join(label_replace( label_replace( (count_values by (cluster_name, dc, ns) ( \"xdr_bytes\", sum by (cluster_name, dc, ns) (aerospike_xdr_bytes_shipped{} and aerospike_xdr_dc_namespace_enabled{}==1)  ) + on (cluster_name, dc, ns ) group_left(xdr_lag) count_values by (cluster_name, dc, ns) ( \"xdr_lag\", max by (cluster_name, dc, ns) (aerospike_xdr_lag{} and aerospike_xdr_dc_namespace_enabled{}==1 )  ) ), \"dc\", \",$1[$1];\", \"dc\", \"(.*)\"), \"cluster_name\", \"$1[$1]\", \"cluster_name\", \"(.*)\")\t\t, \"L1\", \",\", \"cluster_name\"),\"L1\",\"==Namespace: \", \"L1\", \"ns\" ),\"L1\",\"<br>Bytes: \", \"L1\", \"xdr_bytes\" )   ,\"L1\",\"<br>Lag: \", \"L1\", \"xdr_lag\" )  ,\"L1\", \"==>\", \"L1\", \"dc\" ) or label_replace( count_values(\"xdr_data_absent\", (absent(aerospike_xdr_dc_namespace_enabled{}))),\"L1\",\"no-data[no data]\", \"no_data\", \"(.*)\" )))",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "/.*L1=\"([^\"]+)\".*/",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
+        "definition": "query_result(  label_join(label_replace(  (count_values by (cluster_name, ns) ( \"ns_objects\", sum by (cluster_name, ns) (aerospike_namespace_objects{})) ) , \"cluster_name\", \"$1[($1)];\", \"cluster_name\", \"(.*)\") , \"L1\", \",\", \"cluster_name\"))",
+        "description": "describes and displays the aerospike server topology using mermaid markup-language syntax",
+        "hide": 2,
+        "includeAll": true,
+        "label": "Topology definitions",
+        "multi": true,
+        "name": "servers_mermaid_text",
+        "options": [],
+        "query": {
+          "query": "query_result(  label_join(label_replace(  (count_values by (cluster_name, ns) ( \"ns_objects\", sum by (cluster_name, ns) (aerospike_namespace_objects{})) ) , \"cluster_name\", \"$1[($1)];\", \"cluster_name\", \"(.*)\") , \"L1\", \",\", \"cluster_name\"))",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "/.*L1=\"([^\"]+)\".*/",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
+        "definition": "query_result(  label_join(label_replace(  (count_values by (cluster_name, ns) ( \"xdr_proxy_conns\", sum by (cluster_name, ns) (aerospike_xdr_proxy_connections{})) ) , \"cluster_name\", \"$1{{$1}};\", \"cluster_name\", \"(.*)\") , \"L1\", \",\", \"cluster_name\"))",
+        "description": "describes and displays the aerospike server topology using mermaid markup-language syntax",
+        "hide": 2,
+        "includeAll": true,
+        "label": "Topology definitions",
+        "multi": true,
+        "name": "connector_xdr_proxy_mermaid_text",
+        "options": [],
+        "query": {
+          "query": "query_result(  label_join(label_replace(  (count_values by (cluster_name, ns) ( \"xdr_proxy_conns\", sum by (cluster_name, ns) (aerospike_xdr_proxy_connections{})) ) , \"cluster_name\", \"$1{{$1}};\", \"cluster_name\", \"(.*)\") , \"L1\", \",\", \"cluster_name\"))",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "/.*L1=\"([^\"]+)\".*/",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
+        "definition": "query_result( label_join(label_join (label_join  (label_join( label_join(label_replace( label_replace( (count_values by (cluster_name, ns, service, dc) ( \"xdr_bytes\", sum by (cluster_name, ns, service,dc) (aerospike_xdr_bytes_shipped{} and aerospike_xdr_dc_namespace_enabled{}==1)  ) + on (cluster_name, ns, service,dc) group_left(xdr_lag) count_values by (cluster_name, ns, service,dc) ( \"xdr_lag\", sum by (cluster_name, ns, service,dc) (aerospike_xdr_lag{} and aerospike_xdr_dc_namespace_enabled{}==1 )  ) + on (cluster_name, service,dc) group_left(xdr_connector) count_values by (cluster_name, service,dc) (\"xdr_connector\", (aerospike_xdr_dc_connector{} and on (dc) aerospike_xdr_dc_namespace_enabled{}==1 )  ) ), \"dc\", \",$1[$1];\", \"dc\", \"(.*)\"), \"cluster_name\", \"$1[$1]\", \"cluster_name\", \"(.*)\")\t\t, \"L1\", \",\", \"cluster_name\"),\"L1\",\"==Namespace: \", \"L1\", \"ns\" ),\"L1\",\"<br>Bytes: \", \"L1\", \"xdr_bytes\" )   ,\"L1\",\"<br>Lag: \", \"L1\", \"xdr_lag\" )  ,\"L1\", \"==>\", \"L1\", \"dc\" ) or label_replace( count_values(\"xdr_data_absent\", (absent(aerospike_xdr_dc_namespace_enabled{}))),\"L1\",\"no-data[no data]\", \"no_data\", \"(.*)\" ))",
+        "description": "describes and displays the aerospike server topology using mermaid markup-language syntax",
+        "hide": 2,
+        "includeAll": true,
+        "label": "Topology definitions",
+        "multi": true,
+        "name": "dont_delete_copy_of_mermaid_text",
         "options": [],
         "query": {
           "query": "query_result( label_join(label_join (label_join  (label_join( label_join(label_replace( label_replace( (count_values by (cluster_name, ns, service, dc) ( \"xdr_bytes\", sum by (cluster_name, ns, service,dc) (aerospike_xdr_bytes_shipped{} and aerospike_xdr_dc_namespace_enabled{}==1)  ) + on (cluster_name, ns, service,dc) group_left(xdr_lag) count_values by (cluster_name, ns, service,dc) ( \"xdr_lag\", sum by (cluster_name, ns, service,dc) (aerospike_xdr_lag{} and aerospike_xdr_dc_namespace_enabled{}==1 )  ) + on (cluster_name, service,dc) group_left(xdr_connector) count_values by (cluster_name, service,dc) (\"xdr_connector\", (aerospike_xdr_dc_connector{} and on (dc) aerospike_xdr_dc_namespace_enabled{}==1 )  ) ), \"dc\", \",$1[$1];\", \"dc\", \"(.*)\"), \"cluster_name\", \"$1[$1]\", \"cluster_name\", \"(.*)\")\t\t, \"L1\", \",\", \"cluster_name\"),\"L1\",\"==Namespace: \", \"L1\", \"ns\" ),\"L1\",\"<br>Bytes: \", \"L1\", \"xdr_bytes\" )   ,\"L1\",\"<br>Lag: \", \"L1\", \"xdr_lag\" )  ,\"L1\", \"==>\", \"L1\", \"dc\" ) or label_replace( count_values(\"xdr_data_absent\", (absent(aerospike_xdr_dc_namespace_enabled{}))),\"L1\",\"no-data[no data]\", \"no_data\", \"(.*)\" ))",
@@ -1241,6 +1316,6 @@
   "timezone": "",
   "title": "Multi Cluster View",
   "uid": "03SlXxlVz",
-  "version": 2,
+  "version": 17,
   "weekStart": ""
 }
