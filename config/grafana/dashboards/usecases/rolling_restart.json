@@ -705,11 +705,12 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": " sum ((aerospike_namespace_unavailable_partitions{cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}))",
+          "expr": " sum ((aerospike_namespace_dead_partitions{cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}))",
+          "hide": false,
           "interval": "",
-          "legendFormat": "Unavailable",
+          "legendFormat": "Dead",
           "range": true,
-          "refId": "unavail_partitions"
+          "refId": "dead_partitions"
         },
         {
           "datasource": {
@@ -717,12 +718,11 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": " sum ((aerospike_namespace_dead_partitions{cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}))",
-          "hide": false,
+          "expr": " sum ((aerospike_namespace_unavailable_partitions{cluster_name=\"$cluster\",service=~\"$node|$^\",ns=~\"$namespace|$^\"}))",
           "interval": "",
-          "legendFormat": "Dead",
+          "legendFormat": "Unavailable",
           "range": true,
-          "refId": "dead_partitions"
+          "refId": "unavail_partitions"
         }
       ],
       "title": "Partitions (total)",
@@ -804,9 +804,7 @@
           ],
           "displayMode": "table",
           "placement": "right",
-          "showLegend": true,
-          "sortBy": "Last",
-          "sortDesc": true
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -920,9 +918,7 @@
           ],
           "displayMode": "table",
           "placement": "right",
-          "showLegend": true,
-          "sortBy": "Last",
-          "sortDesc": true
+          "showLegend": true
         },
         "tooltip": {
           "mode": "single",
@@ -1371,9 +1367,7 @@
               ],
               "displayMode": "table",
               "placement": "right",
-              "showLegend": true,
-              "sortBy": "Last",
-              "sortDesc": false
+              "showLegend": true
             },
             "tooltip": {
               "mode": "single",
@@ -4002,7 +3996,7 @@
               "refId": "memory_use_by_size"
             }
           ],
-          "title": "% Memory used (vs Size) (topk) (deprecated",
+          "title": "% Memory used (vs Size) (topk) (deprecated)",
           "type": "timeseries"
         }
       ],
@@ -4223,7 +4217,7 @@
                   }
                 ]
               },
-              "unit": "bytes"
+              "unit": "decbytes"
             },
             "overrides": []
           },
@@ -4789,7 +4783,8 @@
                     "value": 80
                   }
                 ]
-              }
+              },
+              "unit": "decbytes"
             },
             "overrides": []
           },
@@ -4920,21 +4915,9 @@
               "legendFormat": "{{service}} - Meta Receive",
               "range": true,
               "refId": "meta_recv"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "aerospike_node_stats_fabric_bulk_send_rate ",
-              "hide": false,
-              "legendFormat": "__auto",
-              "range": true,
-              "refId": "A"
             }
           ],
-          "title": "Fabric Send & Receive Rates (total)",
+          "title": "Fabric Send & Receive Rates (bytes) (total)",
           "type": "timeseries"
         }
       ],
@@ -5191,6 +5174,6 @@
   "timezone": "",
   "title": "Rolling Restarts",
   "uid": "9p1Tc1uVz",
-  "version": 18,
+  "version": 3,
   "weekStart": ""
 }
