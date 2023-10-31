@@ -147,6 +147,18 @@
                 "value": "Node IP:Port"
               }
             ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Exporter Instance"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Exporter IP:Port"
+              }
+            ]
           }
         ]
       },
@@ -225,7 +237,7 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "description": "Build version",
+          "description": "Build version of Aerospike Server running on this node",
           "fieldConfig": {
             "defaults": {
               "decimals": 0,
@@ -289,7 +301,7 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "description": "Alert count",
+          "description": "Displays total of all alerts by severity ( critical, error, warn and info) across all the selected node and namespaces",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -306,7 +318,7 @@
                 {
                   "targetBlank": true,
                   "title": "Alerts view dashboard",
-                  "url": "/d/hP_Uhx94k/alerts-view?orgId=1&${node.queryparam}&${cluster.queryparam}"
+                  "url": "/d/hP_Uhx94k/alerts-view?orgId=1&var-node=$node&var-cluster=$cluster"
                 }
               ],
               "mappings": [
@@ -444,7 +456,7 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "description": "Node failed best practice check",
+          "description": "Node failed best practice check, best practice check can be verified using below command in aerospike tools :\n<p><h4>asadm show best-practice</h4></p>",
           "fieldConfig": {
             "defaults": {
               "decimals": 1,
@@ -478,7 +490,7 @@
                     "value": null
                   },
                   {
-                    "color": "dark-orange",
+                    "color": "red",
                     "value": 1
                   }
                 ]
@@ -536,7 +548,7 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "description": "Aerospike node status",
+          "description": "Aerospike server running status",
           "fieldConfig": {
             "defaults": {
               "links": [
@@ -638,7 +650,7 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "description": "Namespace stop_writes flag",
+          "description": "Displays sum of namespace stop_writes, clock skew stop writes and high water mark breached flags across all the nodes in selected cluster, a positive value means some issue with resource utilization or configurations \n<p>\n<b>More details about these metrics in below links</b></br>\n<a href=\"https://docs.aerospike.com/reference/metrics#stop_writes\" target=\"about:blank\">STOP_WRITES </a> , \n<a target=\"about:blank\" href=\"https://docs.aerospike.com/reference/metrics#clock_skew_stop_writes\">CLOCK_SKEW_STOP_WRITES</a> , \n<a target=\"about:blank\" href=\"https://docs.aerospike.com/reference/metrics#hwm_breached\">HWM_BREACHED</a>\n</p>",
           "fieldConfig": {
             "defaults": {
               "decimals": 0,
@@ -734,7 +746,7 @@
               "refId": "C"
             }
           ],
-          "title": "Stop Writes / HWM Breached (node count)",
+          "title": "Stop Writes / HWM Breached (total)",
           "type": "stat"
         },
         {
@@ -742,7 +754,7 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "description": "Migrations remaining - migrate_rx_partitions_remaining (transmit) migrate_tx_partitions_remaining (receive)",
+          "description": "Displays sum of partitions Remaining and Active which are Received or Transmitted across selected cluster for the selected nodes and namespaces\n<p>\nMore details about the key metrics displayed can be found in below links </br>\n<a target=\"about:blank\" href=\"$as_metrics_base_url#migrate_rx_partitions_remaining\" > RX_PARTITIONS_REMAINING </a> , \n<a target=\"about:blank\" href=\"$as_metrics_base_url#migrate_rx_partitions_active\" > RX_PARTITIONS_ACTIVE </a> ,\n<a target=\"about:blank\" href=\"$as_metrics_base_url#migrate_tx_partitions_remaining\" > TX_PARTITIONS_REMAINING </a>\n<a target=\"about:blank\" href=\"$as_metrics_base_url#migrate_tx_partitions_active\" > TX_PARTITIONS_ACTIVE </a> ,\n\n</p>",
           "fieldConfig": {
             "defaults": {
               "mappings": [
@@ -866,6 +878,7 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
+          "description": "",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -1158,7 +1171,7 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "description": "Namespace objects (tombstones, master_objects, prole_objects, evicted_objects)",
+          "description": "Total of records in the namespace across all the selected nodes\n<p>\n<b>More details can be found about the key metrics/confings using below links </b> </br>\n<a target=\"about:blank\" href=\"$as_metrics_base_url#master_objects\">MASTER OBJECTS </a> ,\n</p>",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -1840,7 +1853,7 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "description": "Namespace objects (tombstones, master_objects, prole_objects, evicted_objects)",
+          "description": "Displays Minimum, Average and Maximum records in the namespace across all the selected nodes\n<p>\n<b>More details can be found about the key metrics/confings using below links </b> </br>\n<a target=\"about:blank\" href=\"$as_metrics_base_url#master_objects\">MASTER OBJECTS </a> ,\n</p>",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -2022,7 +2035,7 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "description": "Set Quota usage against \"stop write size\" configuration",
+          "description": "Display Quota usage of top 3 SET's in selected namespace against \"stop write size\" configuration defined for the set\n<pre>\n6.x Formula: ((memory_data_bytes + device_data_bytes)/ stop_writes_size)*100 \nOR\n((data_used_bytes)/ stop_writes_size)*100\n</pre>\n<p>\n<b>More details can be found key metrics and configs using below links</b> </br>\n<a target=\"about:blank\" href=\"$as_metrics_base_url#memory_data_bytes\" >MEMORY_DATA_BYTES</a> , \n<a target=\"about:blank\" href=\"$as_metrics_base_url#device_data_bytes\" >DEVICE_DATA_BYTES</a> , \n<a target=\"about:blank\" href=\"$as_configs_base_url#stop-writes-size\" >STOP_WRITES_SIZE</a> , \n<a target=\"about:blank\" href=\"$as_metrics_base_url#data_used_bytes\" >DATA_USED_BYTES</a> , \n</p>",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -2099,13 +2112,15 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
+              "exemplar": false,
               "expr": "topk(3,sort_desc((\n  (aerospike_sets_memory_data_bytes{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}+aerospike_sets_device_data_bytes{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})\n  /(aerospike_sets_stop_writes_size{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}!=0) )*100))",
               "format": "time_series",
               "hide": false,
               "instant": true,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{set}}",
+              "legendFormat": "{{ns}}/{{set}}",
+              "range": false,
               "refId": "6_set_quota"
             },
             {
@@ -2114,10 +2129,12 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "topk( 3, sort_desc((\n  (aerospike_sets_data_used_bytes{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})\n  /(aerospike_sets_stop_writes_size{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}!=0) )*100) )",
+              "exemplar": false,
+              "expr": "topk( 3, (\n  (aerospike_sets_data_used_bytes{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})\n  /(aerospike_sets_stop_writes_size{job=\"$job_name\",cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}!=0) )*100) ",
               "hide": false,
-              "legendFormat": "{{set}}",
-              "range": true,
+              "instant": true,
+              "legendFormat": "{{ns}}/{{set}}",
+              "range": false,
               "refId": "7_set_quota"
             }
           ],
@@ -2200,7 +2217,7 @@
               "refId": "6_mem_total"
             }
           ],
-          "title": "6.x Data (Memory)(deprecated) (bytes) (total)",
+          "title": "6.x Data (Memory) (deprecated) (bytes) (total)",
           "type": "stat"
         },
         {
@@ -2208,7 +2225,7 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "description": "Total Client/Heartbeat/Fabric connections count",
+          "description": "Total Client/Heartbeat/Fabric connections count across all the selected nodes\n<p>\n<b>More details about the key metrics / configs can be found using below links </b></br>\n<a target=\"about:blank\" href=\"$as_metrics_base_url#client_connections\">CLIENT CONNECTIONS </a> ,\n<a target=\"about:blank\" href=\"$as_metrics_base_url#heartbeat_connections\">HEARTBEAT CONNECTIONS </a> ,\n<a target=\"about:blank\" href=\"$as_metrics_base_url#fabric_connections\">FABRIC CONNECTIONS </a> ,\n</p>",
           "fieldConfig": {
             "defaults": {
               "mappings": [
@@ -2396,7 +2413,7 @@
               "refId": "6_mem_free_pct_max"
             }
           ],
-          "title": "6.x % Memory free(deprecated)",
+          "title": "6.x % Memory free (deprecated)",
           "type": "bargauge"
         },
         {
@@ -4418,6 +4435,46 @@
         "tagsQuery": "",
         "type": "query",
         "useTags": false
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "https://docs.aerospike.com/reference/metrics",
+          "value": "https://docs.aerospike.com/reference/metrics"
+        },
+        "description": "Base URL of the Aerospike metrics definition",
+        "hide": 2,
+        "name": "as_metrics_base_url",
+        "options": [
+          {
+            "selected": true,
+            "text": "https://docs.aerospike.com/reference/metrics",
+            "value": "https://docs.aerospike.com/reference/metrics"
+          }
+        ],
+        "query": "https://docs.aerospike.com/reference/metrics",
+        "skipUrlSync": false,
+        "type": "textbox"
+      },
+      {
+        "current": {
+          "selected": true,
+          "text": "https://docs.aerospike.com/reference/configuration",
+          "value": "https://docs.aerospike.com/reference/configuration"
+        },
+        "description": "Base URL of the Aerospike metrics definition",
+        "hide": 2,
+        "name": "as_configs_base_url",
+        "options": [
+          {
+            "selected": true,
+            "text": "https://docs.aerospike.com/reference/configuration",
+            "value": "https://docs.aerospike.com/reference/configuration"
+          }
+        ],
+        "query": "https://docs.aerospike.com/reference/configuration",
+        "skipUrlSync": false,
+        "type": "textbox"
       }
     ]
   },
@@ -4453,6 +4510,6 @@
   "timezone": "",
   "title": "Node Overview",
   "uid": "UcZD2iHAk",
-  "version": 13,
+  "version": 28,
   "weekStart": ""
 }
