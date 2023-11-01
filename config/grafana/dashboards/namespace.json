@@ -292,7 +292,7 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "count by (severity) (ALERTS{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\", ns=~\"$namespace|$^\", severity=~\"warn|critical|info|error\"}) ",
+          "expr": "count by (severity) (ALERTS{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\", ns=~\"$namespace\", severity=~\"warn|critical|info|error\"}) ",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -2703,236 +2703,237 @@
       "type": "timeseries"
     },
     {
-      "collapsed": true,
+      "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 174
+        "y": 29
       },
       "id": 3341,
-      "panels": [
+      "panels": [],
+      "title": "Defrag",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 0,
+        "y": 30
+      },
+      "id": 1283,
+      "options": {
+        "legend": {
+          "calcs": [
+            "last",
+            "min",
+            "max",
+            "mean"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "none"
-            },
-            "overrides": []
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "(\naerospike_namespace_storage_engine_file_defrag_q{job=~\"$job_name|$^\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}  \nor \naerospike_namespace_storage_engine_device_defrag_q{job=~\"$job_name|$^\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}\n)",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "legendFormat": "{{service}}/{{ns}} : Q",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Defrag Q",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
           },
-          "gridPos": {
-            "h": 6,
-            "w": 12,
-            "x": 0,
-            "y": 7
-          },
-          "id": 1283,
-          "options": {
-            "legend": {
-              "calcs": [
-                "last",
-                "min",
-                "max",
-                "mean"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
+          "custom": {
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
             },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
             }
           },
-          "pluginVersion": "9.3.2",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
               },
-              "editorMode": "code",
-              "exemplar": false,
-              "expr": "(\naerospike_namespace_storage_engine_file_defrag_q{job=~\"$job_name|$^\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}  \nor \naerospike_namespace_storage_engine_device_defrag_q{job=~\"$job_name|$^\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}\n)",
-              "hide": false,
-              "instant": false,
-              "interval": "",
-              "legendFormat": "{{service}}/{{ns}} : Q",
-              "range": true,
-              "refId": "A"
-            }
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 30
+      },
+      "id": 1285,
+      "options": {
+        "legend": {
+          "calcs": [
+            "last",
+            "min",
+            "max",
+            "mean"
           ],
-          "title": "Defrag Q",
-          "type": "timeseries"
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "(\naerospike_namespace_storage_engine_file_defrag_reads{job=~\"$job_name|$^\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}  \nor \naerospike_namespace_storage_engine_device_defrag_reads{job=~\"$job_name|$^\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}\n)",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "{{service}}//{{ns}} - Reads",
+          "range": true,
+          "refId": "defrag_reads"
         },
         {
           "datasource": {
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "description": "",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "none"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 6,
-            "w": 12,
-            "x": 12,
-            "y": 7
-          },
-          "id": 1285,
-          "options": {
-            "legend": {
-              "calcs": [
-                "last",
-                "min",
-                "max",
-                "mean"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "pluginVersion": "9.3.2",
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "exemplar": false,
-              "expr": "(\naerospike_namespace_storage_engine_file_defrag_reads{job=~\"$job_name|$^\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}  \nor \naerospike_namespace_storage_engine_device_defrag_reads{job=~\"$job_name|$^\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}\n)",
-              "hide": false,
-              "instant": false,
-              "legendFormat": "{{service}}//{{ns}} - Reads",
-              "range": true,
-              "refId": "defrag_reads"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": " (\naerospike_namespace_storage_engine_file_defrag_writes{job=~\"$job_name|$^\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}  \nor \naerospike_namespace_storage_engine_device_defrag_writes{job=~\"$job_name|$^\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}\n)",
-              "hide": false,
-              "interval": "",
-              "legendFormat": "{{service}}/{{ns}} - Writes",
-              "range": true,
-              "refId": "defrag_writes"
-            }
-          ],
-          "title": "Defrag reads & writes ",
-          "type": "timeseries"
+          "editorMode": "code",
+          "expr": " (\naerospike_namespace_storage_engine_file_defrag_writes{job=~\"$job_name|$^\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}  \nor \naerospike_namespace_storage_engine_device_defrag_writes{job=~\"$job_name|$^\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}\n)",
+          "hide": false,
+          "interval": "",
+          "legendFormat": "{{service}}/{{ns}} - Writes",
+          "range": true,
+          "refId": "defrag_writes"
         }
       ],
-      "title": "Defrag",
-      "type": "row"
+      "title": "Defrag reads & writes ",
+      "type": "timeseries"
     },
     {
       "collapsed": true,
@@ -2944,7 +2945,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 175
+        "y": 36
       },
       "id": 181,
       "panels": [
@@ -3281,7 +3282,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 176
+        "y": 37
       },
       "id": 191,
       "panels": [
@@ -3755,7 +3756,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 177
+        "y": 38
       },
       "id": 1803,
       "panels": [
@@ -4855,7 +4856,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 178
+        "y": 39
       },
       "id": 3339,
       "panels": [
@@ -6433,7 +6434,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 179
+        "y": 40
       },
       "id": 700,
       "panels": [
@@ -7170,7 +7171,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 180
+        "y": 41
       },
       "id": 400,
       "panels": [
@@ -8184,7 +8185,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 181
+        "y": 42
       },
       "id": 500,
       "panels": [
@@ -9198,7 +9199,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 182
+        "y": 43
       },
       "id": 600,
       "panels": [
