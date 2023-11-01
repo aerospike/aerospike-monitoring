@@ -565,7 +565,7 @@
             {
               "targetBlank": true,
               "title": "Alerts view dashboard",
-              "url": "/d/hP_Uhx94k/alerts-view?orgId=1&${node:queryparam}&${cluster:queryparam}"
+              "url": "/d/hP_Uhx94k/alerts-view?orgId=1&var-cluster=$cluster"
             }
           ],
           "mappings": [
@@ -747,18 +747,18 @@
         "globalShape": "hexagon_pointed_top",
         "globalShowTooltipColumnHeadersEnabled": false,
         "globalShowValueEnabled": false,
-        "globalTextFontAutoColorEnabled": true,
-        "globalTextFontColor": "#000000",
+        "globalTextFontAutoColorEnabled": false,
+        "globalTextFontColor": "#ffffff",
         "globalTextFontFamily": "Roboto",
         "globalThresholdsConfig": [
           {
             "color": "#F2495C",
-            "state": 0,
+            "state": 3,
             "value": 0
           },
           {
             "color": "#299c46",
-            "state": 3,
+            "state": 0,
             "value": 1
           }
         ],
@@ -813,7 +813,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count by (service,cluster_name) (ALERTS{cluster_name=\"$cluster\", service!=\"\",severity=~\"$severity\"}) * -1\nor\ncount by (service,cluster_name) (aerospike_node_up{ cluster_name=\"$cluster\"})",
+          "expr": "count by (service,cluster_name) (ALERTS{cluster_name=\"$cluster\", service!=\"\", severity=~\"critical\"}) * -1\nor\ncount by (service,cluster_name) (aerospike_node_up{ cluster_name=\"$cluster\"})",
           "format": "time_series",
           "hide": false,
           "instant": true,
@@ -821,6 +821,22 @@
           "legendFormat": "{{service}}:{{cluster_name}}",
           "range": false,
           "refId": "alerts_node"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "(count by ( service,cluster_name, ) (ALERTS{cluster_name=\"$cluster\", service=~\"$node\",severity=~\"critical\"})> bool 0) * -1\nor \n(count by ( service,cluster_name, ) (ALERTS{cluster_name=\"$cluster\", service=~\"$node\", severity=~\"error\"})> bool 0) * -2\nor \n(count by ( service,cluster_name, ) (ALERTS{cluster_name=\"$cluster\",service=~\"$node\", severity=~\"warn\"})> bool 0) * -3\nor \n(count by ( service,cluster_name, ) (ALERTS{cluster_name=\"$cluster\", service=~\"$node\", severity=~\"info\"})> bool 0) * -4\nor on()\ncount by (service,cluster_name) (aerospike_node_up{ cluster_name=\"$cluster\",})",
+          "format": "time_series",
+          "hide": true,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{service}}:{{cluster_name}}",
+          "range": false,
+          "refId": "testing_alerts_node"
         }
       ],
       "title": "$cluster - Nodes",
@@ -893,13 +909,43 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count by (ns) (ALERTS{cluster_name=\"$cluster\", ns=~\"..*\", severity=~\"$severity|$^\"}) * -1 \nor\nsum by (ns) (aerospike_namespace_objects{cluster_name=\"$cluster\"} )",
+          "expr": "(count by (ns) (ALERTS{cluster_name=\"$cluster\", ns=~\"..*\", severity=~\"critical\"}) * -1 \n* on (ns) group_left\nsum by (ns) (aerospike_namespace_objects{cluster_name=\"$cluster\"} ))\nor\nsum by (ns) (aerospike_namespace_objects{cluster_name=\"$cluster\"} ) ",
           "hide": false,
           "instant": true,
           "interval": "",
           "legendFormat": "{{ns}}",
           "range": false,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "(count_values by(ns) (\"alerts_count\",(count by (ns) (ALERTS{cluster_name=\"$cluster\", ns=~\"..*\", severity=~\"critical\"}) * -1))\n+ on( ns) group_left (ns_objects)\ncount_values by(ns) (\"ns_objects\",sum by (ns) (aerospike_namespace_objects{cluster_name=\"$cluster\"} )))\nor \ncount_values by(ns) (\"ns_objects\",sum by (ns) (aerospike_namespace_objects{cluster_name=\"$cluster\"} ))",
+          "hide": true,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{ns}} - {{ns_objects}}",
+          "range": false,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "count by (ns) (ALERTS{cluster_name=\"$cluster\", ns=~\"..*\", severity=~\"critical\"}) * -1 \nor\nsum by (ns) (aerospike_namespace_objects{cluster_name=\"$cluster\"} )",
+          "hide": true,
+          "instant": true,
+          "interval": "",
+          "legendFormat": "{{ns}}",
+          "range": false,
+          "refId": "C"
         }
       ],
       "title": "$cluster - Namespaces",
@@ -1216,7 +1262,7 @@
           "type": "prometheus",
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
-        "definition": "query_result( ( label_join(label_join (label_join  (label_join( label_join(label_replace( label_replace( ((count_values by (cluster_name, dc, ns) ( \"xdr_bytes\", sum by (cluster_name, dc, ns) (aerospike_xdr_bytes_shipped{} and aerospike_xdr_dc_namespace_enabled{}==1)  ) + on (cluster_name,  dc, ns ) group_left(xdr_lag) count_values by (cluster_name, dc, ns) ( \"xdr_lag\", max by (cluster_name, dc, ns) (aerospike_xdr_lag{} and aerospike_xdr_dc_namespace_enabled{}==1 )  ) + on (cluster_name, ns ) group_left(ns_objects) count_values by (cluster_name, ns) ( \"ns_objects\", sum by (cluster_name, ns) (aerospike_namespace_objects{})) )), \"dc\", \",$1[$1];\", \"dc\", \"(.*)\"), \"cluster_name\", \"$1[$1]\", \"cluster_name\", \"(.*)\")\t\t, \"L1\", \",\", \"cluster_name\"),\"L1\",\"==Namespace: \", \"L1\", \"ns\" ),\"L1\",\"<br>Bytes: \", \"L1\", \"xdr_bytes\" )   ,\"L1\",\"<br>Lag: \", \"L1\", \"xdr_lag\" )  ,\"L1\", \"==>\", \"L1\", \"dc\" ) or on() label_join(label_replace(  (count_values by (cluster_name, ns) ( \"ns_objects\", sum by (cluster_name, ns) (aerospike_namespace_objects{})) ) , \"cluster_name\", \"$1[($1)];\", \"cluster_name\", \"(.*)\") , \"L1\", \",\", \"cluster_name\") or on() label_replace( count_values(\"xdr_data_absent\", (absent(aerospike_xdr_dc_namespace_enabled{}))),\"L1\",\"no-data[no data]\", \"no_data\", \"(.*)\" ) ))",
+        "definition": "query_result( ( label_join(label_join (label_join  (label_join( label_join(label_replace( label_replace( ((count_values by (cluster_name, dc, ns) ( \"xdr_bytes\", sum by (cluster_name, dc, ns) (aerospike_xdr_bytes_shipped{} and aerospike_xdr_dc_namespace_enabled{}==1)  ) + on (cluster_name,  dc, ns ) group_left(xdr_lag) count_values by (cluster_name, dc, ns) ( \"xdr_lag\", max by (cluster_name, dc, ns) (aerospike_xdr_lag{} and aerospike_xdr_dc_namespace_enabled{}==1 )  ) + on (cluster_name, ns ) group_left(ns_objects) count_values by (cluster_name, ns) ( \"ns_objects\", sum by (cluster_name, ns) (aerospike_namespace_objects{})) )), \"dc\", \",$1[$1];\", \"dc\", \"(.*)\"), \"cluster_name\", \"$1[$1]\", \"cluster_name\", \"(.*)\")\t\t, \"L1\", \",\", \"cluster_name\"),\"L1\",\"==Namespace: \", \"L1\", \"ns\" ),\"L1\",\"<br>Bytes: \", \"L1\", \"xdr_bytes\" )   ,\"L1\",\"<br>Max. Lag: \", \"L1\", \"xdr_lag\" )  ,\"L1\", \"==>\", \"L1\", \"dc\" ) or on() label_join(label_replace(  (count_values by (cluster_name, ns) ( \"ns_objects\", sum by (cluster_name, ns) (aerospike_namespace_objects{})) ) , \"cluster_name\", \"$1[($1)];\", \"cluster_name\", \"(.*)\") , \"L1\", \",\", \"cluster_name\") or on() label_replace( count_values(\"xdr_data_absent\", (absent(aerospike_xdr_dc_namespace_enabled{}))),\"L1\",\"no-data[no data]\", \"no_data\", \"(.*)\" ) ))",
         "description": "describes and displays the aerospike server topology using mermaid markup-language syntax",
         "hide": 2,
         "includeAll": true,
@@ -1225,7 +1271,7 @@
         "name": "mermaid_text",
         "options": [],
         "query": {
-          "query": "query_result( ( label_join(label_join (label_join  (label_join( label_join(label_replace( label_replace( ((count_values by (cluster_name, dc, ns) ( \"xdr_bytes\", sum by (cluster_name, dc, ns) (aerospike_xdr_bytes_shipped{} and aerospike_xdr_dc_namespace_enabled{}==1)  ) + on (cluster_name,  dc, ns ) group_left(xdr_lag) count_values by (cluster_name, dc, ns) ( \"xdr_lag\", max by (cluster_name, dc, ns) (aerospike_xdr_lag{} and aerospike_xdr_dc_namespace_enabled{}==1 )  ) + on (cluster_name, ns ) group_left(ns_objects) count_values by (cluster_name, ns) ( \"ns_objects\", sum by (cluster_name, ns) (aerospike_namespace_objects{})) )), \"dc\", \",$1[$1];\", \"dc\", \"(.*)\"), \"cluster_name\", \"$1[$1]\", \"cluster_name\", \"(.*)\")\t\t, \"L1\", \",\", \"cluster_name\"),\"L1\",\"==Namespace: \", \"L1\", \"ns\" ),\"L1\",\"<br>Bytes: \", \"L1\", \"xdr_bytes\" )   ,\"L1\",\"<br>Lag: \", \"L1\", \"xdr_lag\" )  ,\"L1\", \"==>\", \"L1\", \"dc\" ) or on() label_join(label_replace(  (count_values by (cluster_name, ns) ( \"ns_objects\", sum by (cluster_name, ns) (aerospike_namespace_objects{})) ) , \"cluster_name\", \"$1[($1)];\", \"cluster_name\", \"(.*)\") , \"L1\", \",\", \"cluster_name\") or on() label_replace( count_values(\"xdr_data_absent\", (absent(aerospike_xdr_dc_namespace_enabled{}))),\"L1\",\"no-data[no data]\", \"no_data\", \"(.*)\" ) ))",
+          "query": "query_result( ( label_join(label_join (label_join  (label_join( label_join(label_replace( label_replace( ((count_values by (cluster_name, dc, ns) ( \"xdr_bytes\", sum by (cluster_name, dc, ns) (aerospike_xdr_bytes_shipped{} and aerospike_xdr_dc_namespace_enabled{}==1)  ) + on (cluster_name,  dc, ns ) group_left(xdr_lag) count_values by (cluster_name, dc, ns) ( \"xdr_lag\", max by (cluster_name, dc, ns) (aerospike_xdr_lag{} and aerospike_xdr_dc_namespace_enabled{}==1 )  ) + on (cluster_name, ns ) group_left(ns_objects) count_values by (cluster_name, ns) ( \"ns_objects\", sum by (cluster_name, ns) (aerospike_namespace_objects{})) )), \"dc\", \",$1[$1];\", \"dc\", \"(.*)\"), \"cluster_name\", \"$1[$1]\", \"cluster_name\", \"(.*)\")\t\t, \"L1\", \",\", \"cluster_name\"),\"L1\",\"==Namespace: \", \"L1\", \"ns\" ),\"L1\",\"<br>Bytes: \", \"L1\", \"xdr_bytes\" )   ,\"L1\",\"<br>Max. Lag: \", \"L1\", \"xdr_lag\" )  ,\"L1\", \"==>\", \"L1\", \"dc\" ) or on() label_join(label_replace(  (count_values by (cluster_name, ns) ( \"ns_objects\", sum by (cluster_name, ns) (aerospike_namespace_objects{})) ) , \"cluster_name\", \"$1[($1)];\", \"cluster_name\", \"(.*)\") , \"L1\", \",\", \"cluster_name\") or on() label_replace( count_values(\"xdr_data_absent\", (absent(aerospike_xdr_dc_namespace_enabled{}))),\"L1\",\"no-data[no data]\", \"no_data\", \"(.*)\" ) ))",
           "refId": "StandardVariableQuery"
         },
         "refresh": 2,
@@ -1268,6 +1314,6 @@
   "timezone": "",
   "title": "Multi Cluster View",
   "uid": "03SlXxlVz",
-  "version": 7,
+  "version": 12,
   "weekStart": ""
 }
