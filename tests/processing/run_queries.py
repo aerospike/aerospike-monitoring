@@ -12,6 +12,8 @@ g_dashboard_names = [ "home/alerts.json", "home/alertsview.json", "home/exporter
                       "home/namespace.json", "home/node.json", 
                       "home/set.json", "home/sindex.json", "home/uniquedata.json", 
                       "home/users.json", "home/xdr.json", 
+                      "usecases/all_flash.json", "usecases/rolling_restart.json",
+                      "connectors/connectorsview.json", "connectors/connector_jvmview.json",
                      ]
 
 # -- to ignore during executino
@@ -36,27 +38,32 @@ g_ignore_list_queries= ["row no expression", "panel no expression"]
 #                    }
 
 def query_prom_using_get( p_query):
-    http_response = requests.get(prometheus_url_to_get, params={'query': p_query})    
-    data = http_response.json()["data"]
-    return data
+    # print(" running prom-url : ", prometheus_url_to_get)
+    http_response = requests.get(prometheus_url_to_get, params={'query': p_query}, verify=False)    
+    if "data" in http_response.json():
+        data = http_response.json()["data"]
+        return data
+
+    # data = http_response.json()["data"]
+    # return data
+
+    print("unable to find [data] element in response for query: ", p_query,"\n")
+    return ""
 
     # result = data["result"]    
     # print( data)
     # print(" \t\t ", result)
     
 def run_query_and_fetch_result_json(p_query):    
+    # print(p_query)
     l_data = query_prom_using_get(p_query )
     
-    # TODO: we need to check success/failure 
-    return l_data["result"] 
+    if len(l_data)>0:    
+        # TODO: we need to check success/failure 
+        return l_data["result"] 
+    return ""
     
 def is_dashboard_in_ignorelist(p_key):
-    # l_dashboard_filename = fetch_dashboard_name( p_key)
-    # if len(l_dashboard_filename)==0 :
-    #    return True
-   
-    # if ( l_dashboard_filename.lower() in ignore_list_dashboards) : 
-    #     return True
     
     # return False
     return p_key in g_ignore_list_dashboards
@@ -141,9 +148,9 @@ def run_db_queries(p_entries):
         #
         # print( l_query_key, "\t", l_expr)
         # checking if ignore list here so we can 
-        if is_key_query_in_ignorelist(l_expr):
+        if is_key_query_in_ignorelist(l_expr) or len(l_expr)==0:
             # no_result_dct = {"metric":{"name":"ignored-expression"}, "value":["0":"Ignored query as it is in ignore-query-list"]}
-            map_expr_and_result = {"expr": l_expr, "results_array": "Ignored query as it is in ignore-query-list"}      
+            map_expr_and_result = {"expr": l_expr, "results_array": "Ignored query as it is in ignore-query-list or empty"}      
             map_query_to_values[ l_query_key ] = map_expr_and_result
         else:    
             l_query_results = run_query_and_fetch_result_json( l_expr)  
@@ -166,6 +173,7 @@ def run_queries( p_filename):
     l_all_db_query_results = {}
 
     for e in g_dashboard_names:
+        print("run_queries for dashboard: ", e)
         l_query_results = process_queries_of_db(map_key_and_entries, e )
         l_all_db_query_results.update( l_query_results)
         # print("Completed processing p_dashboardname: ", e, "\t len-of-elements: ", len(l_query_results))
