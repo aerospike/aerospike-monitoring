@@ -74,7 +74,7 @@
   "liveNow": false,
   "panels": [
     {
-      "collapsed": false,
+      "collapsed": true,
       "datasource": {
         "type": "prometheus",
         "uid": "bUvST0hVk"
@@ -86,7 +86,131 @@
         "y": 0
       },
       "id": 4,
-      "panels": [],
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "align": "center",
+                "displayMode": "color-background",
+                "filterable": false,
+                "inspect": false
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#299c46",
+                    "value": null
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Time"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hidden",
+                    "value": true
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Aerospike Instance"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Node IP:Port"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Exporter Instance"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Exporter IP:Port"
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 24,
+            "x": 0,
+            "y": 1
+          },
+          "id": 2,
+          "links": [],
+          "options": {
+            "footer": {
+              "enablePagination": true,
+              "fields": "",
+              "reducer": [
+                "sum"
+              ],
+              "show": false
+            },
+            "showHeader": true,
+            "sortBy": []
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "aerospike_node_up{job=\"$job_name\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\"}",
+              "format": "table",
+              "instant": true,
+              "intervalFactor": 1,
+              "legendFormat": "",
+              "range": false,
+              "refId": "A"
+            }
+          ],
+          "transformations": [
+            {
+              "id": "organize",
+              "options": {
+                "excludeByName": {
+                  "Value": true,
+                  "__name__": true,
+                  "job": true
+                },
+                "indexByName": {},
+                "renameByName": {
+                  "Value": "",
+                  "build": "Build",
+                  "cluster_name": "Cluster Name",
+                  "instance": "Exporter Instance",
+                  "service": "Aerospike Instance"
+                }
+              }
+            }
+          ],
+          "type": "table"
+        }
+      ],
       "targets": [
         {
           "datasource": {
@@ -100,135 +224,12 @@
       "type": "row"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "custom": {
-            "align": "center",
-            "displayMode": "color-background",
-            "filterable": false,
-            "inspect": false
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#299c46",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": [
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Time"
-            },
-            "properties": [
-              {
-                "id": "custom.hidden",
-                "value": true
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Aerospike Instance"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Node IP:Port"
-              }
-            ]
-          },
-          {
-            "matcher": {
-              "id": "byName",
-              "options": "Exporter Instance"
-            },
-            "properties": [
-              {
-                "id": "displayName",
-                "value": "Exporter IP:Port"
-              }
-            ]
-          }
-        ]
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 24,
-        "x": 0,
-        "y": 1
-      },
-      "id": 2,
-      "links": [],
-      "options": {
-        "footer": {
-          "enablePagination": true,
-          "fields": "",
-          "reducer": [
-            "sum"
-          ],
-          "show": false
-        },
-        "showHeader": true,
-        "sortBy": []
-      },
-      "pluginVersion": "9.3.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "aerospike_node_up{job=\"$job_name\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\"}",
-          "format": "table",
-          "instant": true,
-          "intervalFactor": 1,
-          "legendFormat": "",
-          "range": false,
-          "refId": "A"
-        }
-      ],
-      "transformations": [
-        {
-          "id": "organize",
-          "options": {
-            "excludeByName": {
-              "Value": true,
-              "__name__": true,
-              "job": true
-            },
-            "indexByName": {},
-            "renameByName": {
-              "Value": "",
-              "build": "Build",
-              "cluster_name": "Cluster Name",
-              "instance": "Exporter Instance",
-              "service": "Aerospike Instance"
-            }
-          }
-        }
-      ],
-      "type": "table"
-    },
-    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 10
+        "y": 1
       },
       "id": 6,
       "panels": [],
@@ -264,7 +265,7 @@
         "h": 6,
         "w": 6,
         "x": 0,
-        "y": 11
+        "y": 2
       },
       "id": 8,
       "links": [],
@@ -409,7 +410,7 @@
         "h": 6,
         "w": 4,
         "x": 6,
-        "y": 11
+        "y": 2
       },
       "id": 148,
       "links": [],
@@ -508,7 +509,7 @@
         "h": 3,
         "w": 3,
         "x": 10,
-        "y": 11
+        "y": 2
       },
       "id": 10,
       "links": [],
@@ -611,7 +612,7 @@
         "h": 3,
         "w": 3,
         "x": 13,
-        "y": 11
+        "y": 2
       },
       "id": 12,
       "links": [],
@@ -684,7 +685,7 @@
         "h": 3,
         "w": 8,
         "x": 16,
-        "y": 11
+        "y": 2
       },
       "id": 16,
       "links": [],
@@ -794,7 +795,7 @@
         "h": 3,
         "w": 14,
         "x": 10,
-        "y": 14
+        "y": 5
       },
       "id": 293,
       "links": [],
@@ -883,7 +884,7 @@
         "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
-      "description": "",
+      "description": "Displays sum of all device or memory used by data (without index) and the sum of allocated bytes",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -908,7 +909,7 @@
         "h": 4,
         "w": 10,
         "x": 0,
-        "y": 17
+        "y": 8
       },
       "id": 295,
       "links": [],
@@ -986,7 +987,7 @@
         "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
-      "description": "",
+      "description": "Displays sum of all device or memory used by index, sindex and set-index",
       "fieldConfig": {
         "defaults": {
           "mappings": [
@@ -1018,7 +1019,7 @@
         "h": 4,
         "w": 6,
         "x": 10,
-        "y": 17
+        "y": 8
       },
       "id": 369,
       "links": [],
@@ -1113,7 +1114,7 @@
         "h": 4,
         "w": 4,
         "x": 16,
-        "y": 17
+        "y": 8
       },
       "id": 42,
       "links": [],
@@ -1201,7 +1202,7 @@
         "h": 4,
         "w": 4,
         "x": 20,
-        "y": 17
+        "y": 8
       },
       "id": 24,
       "links": [],
@@ -1325,6 +1326,7 @@
         "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
+      "description": "Displays minimum, average and maximum of all device or memory used by data (without index) across all namespaces",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1350,7 +1352,7 @@
         "h": 5,
         "w": 5,
         "x": 0,
-        "y": 21
+        "y": 12
       },
       "id": 28,
       "links": [],
@@ -1444,7 +1446,7 @@
           "refId": "7_data_used_max"
         }
       ],
-      "title": "Data used stats (bytes)",
+      "title": "Data used (bytes)",
       "transparent": true,
       "type": "bargauge"
     },
@@ -1453,6 +1455,7 @@
         "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
+      "description": "Displays minimum , average  and maximum  device or memory used % by data (without index) ",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1482,7 +1485,7 @@
         "h": 5,
         "w": 5,
         "x": 5,
-        "y": 21
+        "y": 12
       },
       "id": 30,
       "options": {
@@ -1581,7 +1584,7 @@
         "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
-      "description": "",
+      "description": "Displays minimum, average and maximum device or memory used by index, sindex and set-index across all namespaces",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -1618,7 +1621,7 @@
         "h": 5,
         "w": 6,
         "x": 10,
-        "y": 21
+        "y": 12
       },
       "id": 36,
       "links": [],
@@ -1780,7 +1783,7 @@
         "h": 5,
         "w": 4,
         "x": 16,
-        "y": 21
+        "y": 12
       },
       "id": 46,
       "links": [],
@@ -1884,7 +1887,7 @@
         "h": 5,
         "w": 4,
         "x": 20,
-        "y": 21
+        "y": 12
       },
       "id": 32,
       "links": [],
@@ -2091,7 +2094,7 @@
         "h": 9,
         "w": 8,
         "x": 0,
-        "y": 26
+        "y": 17
       },
       "id": 34,
       "links": [],
@@ -2151,7 +2154,7 @@
         "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
-      "description": "",
+      "description": "Displays sum of storage memory used by data (without index) across all the namespaces, \n<pre>\nNOTE: this panel is deprecated from 7.0 onwards as this metric is merged into common data metrics\n</pre>",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2176,7 +2179,7 @@
         "h": 4,
         "w": 4,
         "x": 8,
-        "y": 26
+        "y": 17
       },
       "id": 38,
       "links": [],
@@ -2261,7 +2264,7 @@
         "h": 4,
         "w": 12,
         "x": 12,
-        "y": 26
+        "y": 17
       },
       "id": 26,
       "links": [],
@@ -2334,7 +2337,7 @@
         "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
-      "description": "",
+      "description": "Displays minimuim, average and maximum memory available for storage across all the namespaces, \n<pre>\nNOTE: this panel is deprecated from 7.0 onwards as this metric is merged into common data metrics\n</pre>",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -2360,7 +2363,7 @@
         "h": 5,
         "w": 4,
         "x": 8,
-        "y": 30
+        "y": 21
       },
       "id": 44,
       "links": [],
@@ -2487,7 +2490,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 30
+        "y": 21
       },
       "id": 50,
       "links": [],
@@ -2612,7 +2615,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "#EAB839",
@@ -2632,7 +2636,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 35
+        "y": 26
       },
       "id": 60,
       "links": [],
@@ -2739,7 +2743,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2755,7 +2760,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 35
+        "y": 26
       },
       "id": 48,
       "links": [],
@@ -2915,7 +2920,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -2931,7 +2937,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 40
+        "y": 31
       },
       "id": 54,
       "links": [],
@@ -3032,7 +3038,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -3048,7 +3055,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 40
+        "y": 31
       },
       "hideTimeOverride": false,
       "id": 56,
@@ -3195,7 +3202,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 45
+        "y": 36
       },
       "id": 58,
       "links": [],
@@ -3312,7 +3319,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 45
+        "y": 36
       },
       "id": 64,
       "links": [],
@@ -3433,7 +3440,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 50
+        "y": 41
       },
       "id": 62,
       "links": [],
@@ -3550,7 +3557,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 50
+        "y": 41
       },
       "id": 76,
       "links": [],
@@ -3682,7 +3689,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 55
+        "y": 46
       },
       "id": 66,
       "links": [],
@@ -3799,7 +3806,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 55
+        "y": 46
       },
       "id": 74,
       "links": [],
@@ -3941,7 +3948,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 60
+        "y": 51
       },
       "id": 68,
       "links": [],
@@ -4058,7 +4065,7 @@
         "h": 5,
         "w": 12,
         "x": 12,
-        "y": 60
+        "y": 51
       },
       "id": 72,
       "links": [],
@@ -4211,7 +4218,7 @@
         "h": 5,
         "w": 12,
         "x": 0,
-        "y": 65
+        "y": 56
       },
       "id": 70,
       "links": [],
@@ -4496,6 +4503,6 @@
   "timezone": "",
   "title": "Node Overview",
   "uid": "UcZD2iHAk",
-  "version": 31,
+  "version": 2,
   "weekStart": ""
 }
