@@ -314,7 +314,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count by (latitude, longitude, cluster_name) (ALERTS{cluster_name!=\"\", job=\"aerospike\", severity=~\"warn|info|error|critical\"}) * -1\nor\ncount by (latitude, longitude, cluster_name) (aerospike_node_up)\n",
+          "expr": "count by (latitude, longitude, cluster_name) (ALERTS{cluster_name!=\"\", job=\"aerospike\", severity=~\"critical|warn\"}) * -1\nor\ncount by (latitude, longitude, cluster_name) (aerospike_node_up)\n",
           "format": "table",
           "hide": false,
           "instant": true,
@@ -812,7 +812,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count by (service,cluster_name) (ALERTS{cluster_name=\"$cluster\", service!=\"\", severity=~\"critical|warn|error\"}) * -1\nor\ncount by (service,cluster_name) (aerospike_node_up{ cluster_name=\"$cluster\"})",
+          "expr": "count by (service,cluster_name) (ALERTS{cluster_name=\"$cluster\", service!=\"\", severity=~\"critical|warn\"}) * -1\nor\ncount by (service,cluster_name) (aerospike_node_up{ cluster_name=\"$cluster\"})",
           "format": "time_series",
           "hide": false,
           "instant": true,
@@ -820,22 +820,6 @@
           "legendFormat": "{{service}}:{{cluster_name}}",
           "range": false,
           "refId": "alerts_node"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "(count by ( service,cluster_name, ) (ALERTS{cluster_name=\"$cluster\", service=~\"$node\",severity=~\"critical\"})> bool 0) * -1\nor \n(count by ( service,cluster_name, ) (ALERTS{cluster_name=\"$cluster\", service=~\"$node\", severity=~\"error\"})> bool 0) * -2\nor \n(count by ( service,cluster_name, ) (ALERTS{cluster_name=\"$cluster\",service=~\"$node\", severity=~\"warn\"})> bool 0) * -3\nor \n(count by ( service,cluster_name, ) (ALERTS{cluster_name=\"$cluster\", service=~\"$node\", severity=~\"info\"})> bool 0) * -4\nor on()\ncount by (service,cluster_name) (aerospike_node_up{ cluster_name=\"$cluster\",})",
-          "format": "time_series",
-          "hide": true,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{service}}:{{cluster_name}}",
-          "range": false,
-          "refId": "testing_alerts_node"
         }
       ],
       "title": "$cluster - Nodes",
@@ -908,43 +892,13 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "(count by (ns) (ALERTS{cluster_name=\"$cluster\", ns=~\"..*\", severity=~\"critical|warn|error\"}) * -1 \n* on (ns) group_left\nsum by (ns) (aerospike_namespace_objects{cluster_name=\"$cluster\"} ))\nor\nsum by (ns) (aerospike_namespace_objects{cluster_name=\"$cluster\"} ) \n",
+          "expr": "(count by (ns) (ALERTS{cluster_name=\"$cluster\", ns=~\"..*\", severity=~\"critical|warn\"}) * -1 \n* on (ns) group_left\nsum by (ns) (aerospike_namespace_objects{cluster_name=\"$cluster\"} ))\nor\nsum by (ns) (aerospike_namespace_objects{cluster_name=\"$cluster\"} ) \n",
           "hide": false,
           "instant": true,
           "interval": "",
           "legendFormat": "{{ns}}",
           "range": false,
           "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "(count_values by(ns) (\"alerts_count\",(count by (ns) (ALERTS{cluster_name=\"$cluster\", ns=~\"..*\", severity=~\"critical\"}) * -1))\n+ on( ns) group_left (ns_objects)\ncount_values by(ns) (\"ns_objects\",sum by (ns) (aerospike_namespace_objects{cluster_name=\"$cluster\"} )))\nor \ncount_values by(ns) (\"ns_objects\",sum by (ns) (aerospike_namespace_objects{cluster_name=\"$cluster\"} ))",
-          "hide": true,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{ns}} - {{ns_objects}}",
-          "range": false,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "count by (ns) (ALERTS{cluster_name=\"$cluster\", ns=~\"..*\", severity=~\"critical\"}) * -1 \nor\nsum by (ns) (aerospike_namespace_objects{cluster_name=\"$cluster\"} )",
-          "hide": true,
-          "instant": true,
-          "interval": "",
-          "legendFormat": "{{ns}}",
-          "range": false,
-          "refId": "C"
         }
       ],
       "title": "$cluster - Namespaces",
