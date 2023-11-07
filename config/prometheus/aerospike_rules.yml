@@ -127,7 +127,7 @@ groups:
       description: "Active proxies detected for {{ $labels.ns }} on node {{ $labels.instance }}"
 
   - alert: NamespaceSupervisorFallingBehind
-    expr: aerospike_namespace_nsup_cycle_deleted_pct{job="aerospike" } > 1 # (Aerospike 6.3 and later) 
+    expr: aerospike_namespace_objects{job="aerospike"}>0 and aerospike_namespace_nsup_cycle_deleted_pct{job="aerospike" } > 1 # (Aerospike 6.3 and later) 
     for: 30s
     labels:
       severity: critical
@@ -163,7 +163,7 @@ groups:
       description: "Device available has dropped below 25% for namespace {{ $labels.ns }} in node {{ $labels.instance }}. May indicate that defrag is unable to keep up with the current load, and may result in stop writes if it continues to drop."
 
   - alert: ClientTimeouts
-    expr: rate(aerospike_namespace_client_read_timeout{job="aerospike"}[1m]) > 1 or rate(aerospike_namespace_client_write_timeout{job="aerospike" }[1m]) > 1 or rate(aerospike_namespace_client_tsvc_timeout{job="aerospike" }[1m]) > 1
+    expr: rate(aerospike_namespace_client_read_timeout{job="aerospike" }[1m]) > 1 or rate(aerospike_namespace_client_write_timeout{job="aerospike" }[1m]) > 1 or rate(aerospike_namespace_client_tsvc_timeout{job="aerospike" }[1m]) > 1
     for: 1m
     labels:
       severity: critical
@@ -243,6 +243,51 @@ groups:
       summary: "There are unavailable partition, but all roster nodes are present in the cluster."
       description: "Some partitions are dead for namespace {{ $labels.ns }} on node {{ $labels.instance }}. Greater than replication-factor number nodes had an unclean shutdown, and there may be data loss. Will require the use of the revive command to make the partitions available again."
   
+  - alert: NamespaceDataCloseToStopWrites
+    expr: (aerospike_namespace_data_avail_pct{job="aerospike"  } - aerospike_namespace_storage_engine_stop_writes_avail_pct{job="aerospike"  }) <= 10
+    for: 30s
+    labels:
+      severity: warn
+    annotations:
+      summary: "Close to stop writes for {{ $labels.instance }}/{{ $labels.ns }} due to data_avail_pct"
+      description: "data_avail_pct for namespace {{ $labels.ns }} in node {{ $labels.instance }} is close to stop-writes-avail-pct limit."
+  
+  - alert: LowDataAvailWarning
+    expr: aerospike_namespace_data_avail_pct{job="aerospike"  } < 55
+    for: 30s
+    labels:
+      severity: warn
+    annotations:
+      summary: "Device available warning for {{ $labels.instance }}/{{ $labels.ns }}"
+      description: "Device available has dropped below 55% for namespace {{ $labels.ns }} in node {{ $labels.instance }}. May indicate that defrag is unable to keep up with the current load, and may result in stop writes if it continues to drop."
+  
+  - alert: LowDataAvailCritical
+    expr: aerospike_namespace_data_avail_pct{job="aerospike"  } < 25
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Device available critically low for {{ $labels.instance }}/{{ $labels.ns }}"
+      description: "Device available has dropped below 25% for namespace {{ $labels.ns }} in node {{ $labels.instance }}. May indicate that defrag is unable to keep up with the current load, and may result in stop writes if it continues to drop."
+  
+  - alert: HighDataUseNamespaceWarning
+    expr: aerospike_namespace_data_used_pct{job="aerospike" , storage_engine="memory" } > 80
+    for: 30s
+    labels:
+      severity: warn
+    annotations:
+      summary: "Data utilization warning for {{ $labels.instance }}/{{ $labels.ns }}"
+      description: "Data used has crossed above 80% for namespace {{ $labels.ns }} in node {{ $labels.instance }}. May indicate a need to reduce the object count or increase capacity."
+  
+  - alert: HighDataUseNamespaceCritical
+    expr: aerospike_namespace_data_used_pct{job="aerospike" , storage_engine="memory" } > 85
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Data utilization critically high for {{ $labels.instance }}/{{ $labels.ns }}"
+      description: "Data used has crossed above 85% for namespace {{ $labels.ns }} in node {{ $labels.instance }}. May indicate a need to reduce the object count or increase capacity."
+
 - name: aerospike_aerospike.rules > NODE
   rules:
   - alert: PrometheusNodeExporterNotPresent
@@ -286,7 +331,7 @@ groups:
     labels:
       severity: critical
     annotations:
-      summary: "Client connections warning"
+      summary: "Client connections critical"
       description: "Client connections are greater than expected peak of 10000."
 
   - alert: ClientConnectionChurn
@@ -355,24 +400,42 @@ groups:
 
 - name: aerospike_aerospike.rules > SET
   rules:
-    - alert: NamespaceSetQuotaWarning
-      expr: (((aerospike_sets_device_data_bytes{job="aerospike" } + aerospike_sets_memory_data_bytes{job="aerospike" }) / (aerospike_sets_stop_writes_size{job="aerospike" } != 0)) * 100) > 80
-      for: 30s
-      labels:
-        severity: critical
-      annotations:
-        description: "Nearing memory quota for {{ $labels.set }} in namespace {{ $labels.ns }} in node {{ $labels.instance }}."
-        summary: "One of your nodes is at  % of the quota you have configured on the set."
+  - alert: pre7x_NamespaceSetQuotaWarning
+    expr: (((aerospike_sets_device_data_bytes{job="aerospike" } + aerospike_sets_memory_data_bytes{job="aerospike" }) / (aerospike_sets_stop_writes_size{job="aerospike" } != 0)) * 100) > 80
+    for: 30s
+    labels:
+      severity: warn
+    annotations:
+      description: "Nearing memory quota for {{ $labels.set }} in namespace {{ $labels.ns }} in node {{ $labels.instance }}."
+      summary: "One of your nodes is at  % of the quota you have configured on the set."
   
-    - alert: NamespaceSetQuotaAlert
-      expr: (((aerospike_sets_device_data_bytes{job="aerospike" } + aerospike_sets_memory_data_bytes{job="aerospike" }) / (aerospike_sets_stop_writes_size{job="aerospike" } != 0)) * 100) > 99
-      for: 30s
-      labels:
-        severity: critical
-      annotations:
-        description: "At or Above memory quota for {{ $labels.set }} in namespace {{ $labels.ns }} in node {{ $labels.instance }}."
-        summary: "One of your nodes is at % of the quota you have configured on the set."
+  - alert: pre7x_NamespaceSetQuotaAlertCritical
+    expr: (((aerospike_sets_device_data_bytes{job="aerospike" } + aerospike_sets_memory_data_bytes{job="aerospike" }) / (aerospike_sets_stop_writes_size{job="aerospike" } != 0)) * 100) > 99
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      description: "At or Above memory quota for {{ $labels.set }} in namespace {{ $labels.ns }} in node {{ $labels.instance }}."
+      summary: "One of your nodes is at % of the quota you have configured on the set."
   
+  - alert: NamespaceSetQuotaWarning
+    expr: (((aerospike_sets_data_used_bytes{job="aerospike"  } ) / (aerospike_sets_stop_writes_size{job="aerospike"  } != 0)) * 100) > 80
+    for: 30s
+    labels:
+      severity: warn
+    annotations:
+      description: "Nearing memory quota for {{ $labels.set }} in namespace {{ $labels.ns }} in node {{ $labels.instance }}."
+      summary: "One of your nodes is at % of the quota you have configured on the set."
+    
+  - alert: NamespaceSetQuotaAlertCritical
+    expr: (((aerospike_sets_data_used_bytes{job="aerospike"  } ) / (aerospike_sets_stop_writes_size{job="aerospike"  } != 0)) * 100) > 99
+    for: 30s
+    labels:
+      severity: critical
+    annotations:
+      description: "At or Above memory quota for {{ $labels.set }} in namespace {{ $labels.ns }} in node {{ $labels.instance }}."
+      summary: "One of your nodes is at % of the quota you have configured on the set."
+            
 - name: aerospike_aerospike.rules > LATENCIES
   rules:
   - alert: ReadLatencyP95Warning
@@ -434,7 +497,7 @@ groups:
   rules:
 
   - alert: XDRTimelag
-    expr: aerospike_xdr_lag{job="aerospike"  } > 5
+    expr: aerospike_xdr_lag{job="aerospike" } > 5
     for: 2m
     labels:
       severity: warn
@@ -450,7 +513,7 @@ groups:
       summary: "Abandoned records detected for XDR on node {{ $labels.instance }} to DC {{ $labels.dc }}"
       description: "Records abandoned at a destination cluster may indicate a configuration mismatch for the namespace between source and destination."
   - alert: XDRRetryNoNode
-    expr: rate(aerospike_xdr_retry_no_node{job="aerospike" , }[1m]) > 0
+    expr: rate(aerospike_xdr_retry_no_node{job="aerospike" }[1m]) > 0
     for: 30s
     labels:
       severity: warn
@@ -459,7 +522,7 @@ groups:
       description: "XDR cannot determine which destination node is the master."
 
   - alert: XDRRetryConnReset
-    expr: rate(aerospike_xdr_retry_conn_reset{job="aerospike" , }[1m]) > 2
+    expr: rate(aerospike_xdr_retry_conn_reset{job="aerospike" }[1m]) > 2
     for: 2m
     labels:
       severity: warn
@@ -468,7 +531,7 @@ groups:
       description: "XDR retries occuring due to due to timeouts, network problems, or destination node restarts."
 
   - alert: XDRRetryDest
-    expr: rate(aerospike_xdr_retry_dest{job="aerospike" ,}[1m]) > 5
+    expr: rate(aerospike_xdr_retry_dest{job="aerospike" }[1m]) > 5
     for: 2m
     labels:
       severity: warn
@@ -477,7 +540,7 @@ groups:
       description: "XDR retries due to errors returned by the destination node, u.e. key busy or device overload."
 
   - alert: XDRLatencyWarning
-    expr: aerospike_xdr_latency_ms{job="aerospike" , } > 100
+    expr: aerospike_xdr_latency_ms{job="aerospike" } > 100
     for: 30s
     labels:
       severity: warn
@@ -486,7 +549,7 @@ groups:
       description: "Network latency between XDR source and destination over the last 30s is higher than expected."
 
   - alert: XDRLap
-    expr: aerospike_xdr_lap_us{job="aerospike" , } > 75000
+    expr: aerospike_xdr_lap_us{job="aerospike" } > 75000
     for: 30s
     labels:
       severity: warn
@@ -495,7 +558,7 @@ groups:
       description: "The XDR processing cycle time (lap_us) is approaching the configured period-ms value."
 
   - alert: XDRRecoveries
-    expr: increase(aerospike_xdr_recoveries{job="aerospike" , }[1m]) > 0
+    expr: increase(aerospike_xdr_recoveries{job="aerospike" }[1m]) > 0
     for:  2m
     labels:
       severity: critical
