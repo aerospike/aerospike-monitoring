@@ -50,6 +50,21 @@ $ docker-compose -f datadog-docker-compose.yml down
 ```
 Now simply point your browser at Datadog cloud https://app.datadoghq.com/metric/explorer to see Aerospike metrics.
 
+## DynaTrace 
+### modify dynatrace-otel-collector-config.yml and update below key with respective values 
+###### <DYNATRACE-API-TOKEN> 
+### To start the stack 
+```
+$ docker-compose -f dynatrace-docker-compose.yml up
+```
+## To stop the stack
+```
+$ docker-compose -f dynatrace-docker-compose.yml down
+```
+Now simply point your browser at DynaTrace cloud https://<YOUR-ENVIRONMENT-ID>.apps.dynatrace.com/ui/apps/dynatrace.classic.metrics/ui/metrics to see Aerospike metrics.
+
+See [OTel-DynaTrace-documentation](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/exporter/dynatraceexporter/README.md)
+
 ## Cloudwatch
 ### modify cloudwatch-docker-compose.yml and update below keys with respective values 
 ###### AWS_REGION=<AWS_REGION_LOCATION>
