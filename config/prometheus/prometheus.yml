@@ -21,9 +21,10 @@ rule_files:
   # new severities are info, warn, error, critical in the increasing order of severity
   #   these priority are updates in aerospike_rules.yml
   #
-  - "/etc/prometheus/deprecated_aerospike_rules.yml"
+  # - "/etc/prometheus/deprecated_aerospike_rules.yml"
   - "/etc/prometheus/aerospike_rules.yml"
   - "/etc/prometheus/aerospike_connector_rules.yml"
+  - "/etc/prometheus/node_exporter_alerts.yml"
 
 # A scrape configuration containing exactly one endpoint to scrape:
 # Here it's Prometheus itself.
@@ -36,3 +37,11 @@ scrape_configs:
 
     static_configs:
       - targets: ['172.17.0.2:9145', '172.17.0.3:9145', '172.17.0.4:9145']
+
+  - job_name: 'node-exporter'
+
+    # metrics_path defaults to '/metrics'
+    # scheme defaults to 'http'.
+
+    static_configs:
+      - targets: ['172.17.0.2:9100', '172.17.0.3:9100', '172.17.0.4:9100']
