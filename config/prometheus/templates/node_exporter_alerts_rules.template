@@ -1,0 +1,274 @@
+groups:
+- name: node_exporter_alerts
+  rules:
+  - alert: HostNodeExporterDownCritical
+    expr: up{job="node-exporter"} == 0
+    for: {{ node_down_critical_duration }}
+    labels:
+      severity: critical
+    annotations:
+      summary: "{% raw %}Host ({{ $labels.instance }}) is down in cluster {{ $labels.cluster_name }} {% endraw %}"
+      description: "Failed to scrape{% raw %} ({{ $labels.job }}) on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }} {% endraw %} for more than {{ node_down_critical_duration }} and node-exporter seems down."
+
+  - alert: HostMemoryFillingUpWarn
+    expr: 100 - (node_memory_MemAvailable_bytes{job="node-exporter"} / node_memory_MemTotal_bytes{job="node-exporter"} * 100 ) > {{ node_warn_memory_pct }}
+    for: {{ node_warn_outofmemory_duration }}
+    labels:
+      severity: warn
+    annotations:
+      summary: "{% raw %}Host memory filling up on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "Memory is filling up (> {{ node_warn_memory_pct }}%) {% raw %}on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }} VALUE = {{ $value }}{% endraw %} "
+
+  - alert: HostMemoryFillingUpCritical
+    expr: 100 - (node_memory_MemAvailable_bytes{job="node-exporter"} / node_memory_MemTotal_bytes{job="node-exporter"} * 100 ) > {{ node_critical_memory_pct }}
+    for: {{ node_critical_outofmemory_duration }}
+    labels:
+      severity: critical
+    annotations:
+      summary: "{% raw %}Host memory filling up on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "Node memory is filling up (> {{ node_critical_memory_pct }}%) {% raw %}on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }}{% endraw %} "
+
+  - alert: HostDiskSpaceFillingUpWarn
+    expr: 100 - (node_filesystem_avail_bytes{job="node-exporter"} * 100) / node_filesystem_size_bytes{job="node-exporter"} > {{ node_warn_OutOfdisk_pct }} and ON (instance, device, mountpoint) node_filesystem_readonly{job="node-exporter"} == 0
+    for: {{ node_warn_outOfDisk_duration }}
+    labels:
+      severity: warn
+    annotations:
+      summary: "{% raw %}Host disk space is filling up on ({{ $labels.instance }})of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "Disk is crossing (> {{ node_warn_OutOfdisk_pct }}% ) {% raw %}on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }} VALUE = {{ $value }}{% endraw %} "
+
+  - alert: HostDiskSpaceFillingUpCritical
+    expr: 100 - (node_filesystem_avail_bytes{job="node-exporter"} * 100) / node_filesystem_size_bytes{job="node-exporter"} > {{ node_critical_OutOfdisk_pct }} and ON (instance, device, mountpoint) node_filesystem_readonly{job="node-exporter"} == 0
+    for: {{ node_critical_outOfDisk_duration }}
+    labels:
+      severity: critical
+    annotations:
+      summary: "{% raw %}Host disk space is filling up on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "Disk is crossing (> {{ node_critical_OutOfdisk_pct }}% ) {% raw %}on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }}{% endraw %} "
+
+  - alert: HostInodesFillingUpWarn
+    expr: 100 - node_filesystem_files_free{job="node-exporter"} / node_filesystem_files{job="node-exporter"} * 100 > {{ node_warn_OutOfInodes_pct }} and ON (instance, device, mountpoint) node_filesystem_readonly{job="node-exporter"} == 0
+    for: {{ node_warn_outOfInodes_duration }}
+    labels:
+      severity: warn
+    annotations:
+      summary: "{% raw %}Host inodes filling Up on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "Disk is running out of available inodes (> {{ node_warn_OutOfInodes_pct }}%) {% raw %}on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }} VALUE = {{ $value }} {% endraw %}"
+
+  - alert: HostInodesFillingUpCritical
+    expr: 100 - node_filesystem_files_free{job="node-exporter"} / node_filesystem_files{job="node-exporter"} * 100 > {{ node_critical_OutOfInodes_pct }} and ON (instance, device, mountpoint) node_filesystem_readonly{job="node-exporter"} == 0
+    for: {{ node_critical_outOfInodes_duration }}
+    labels:
+      severity: critical
+    annotations:
+      summary: "{% raw %}Host inodes filling Up on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "Disk is running out of available inodes (> {{ node_critical_OutOfInodes_pct }}%) {% raw %}on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }} {% endraw %}"
+
+  - alert: HostUnusualDiskReadLatencyWarn
+    expr: (node_disk_read_time_seconds_total{job="node-exporter"}) / (node_disk_reads_completed_total{job="node-exporter"})  > {{ node_warn_unusual_disklatency_time }}  and (node_disk_reads_completed_total{job="node-exporter"}) > 0
+    for: {{ node_warn_unusual_diskRead_latency_duration }}
+    labels:
+      severity: warn
+    annotations:
+      summary: "{% raw %}Host unusual disk read latency on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "Disk read latency is increasing (read operations > {{ node_warn_unusual_disklatency_time }}s)  {% raw %}on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }} VALUE = {{ $value }}{% endraw %} "
+
+  - alert: HostUnusualDiskReadLatencyCritical
+    expr: (node_disk_read_time_seconds_total{job="node-exporter"}) / (node_disk_reads_completed_total{job="node-exporter"})  > {{ node_critical_unusual_disklatency_time }}  and (node_disk_reads_completed_total{job="node-exporter"}) > 0
+    for: {{ node_critical_unusual_diskRead_latency_duration }}
+    labels:
+      severity: critical
+    annotations:
+      summary: "{% raw %}Host unusual disk read latency on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "Disk read latency is increasing (read operations > {{ node_critical_unusual_disklatency_time }}s) {% raw %}on host {{ $labels.instance }}  of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }}{% endraw %} "
+
+  - alert: HostUnusualDiskWriteLatencyWarn
+    expr: (node_disk_write_time_seconds_total{job="node-exporter"}) / (node_disk_writes_completed_total{job="node-exporter"})  > {{ node_warn_unusual_disklatency_time }} and (node_disk_writes_completed_total{job="node-exporter"}) > 0
+    for: {{ node_warn_unusual_diskWrite_latency_duration }}
+    labels:
+      severity: warn
+    annotations:
+      summary: "{% raw %}Host unusual disk write latency on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "Disk write latency is increasing (write operations > {{ node_warn_unusual_disklatency_time }}s) {% raw %}on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }}{% endraw %}"
+
+  - alert: HostUnusualDiskWriteLatencyCritical
+    expr: (node_disk_write_time_seconds_total{job="node-exporter"}) / (node_disk_writes_completed_total{job="node-exporter"})  > {{ node_critical_unusual_disklatency_time }} and (node_disk_writes_completed_total{job="node-exporter"}) > 0
+    for: {{ node_critical_unusual_diskWrite_latency_duration }}
+    labels:
+      severity: critical
+    annotations:
+      summary: "{% raw %}Host unusual disk write latency ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "Disk write latency is increasing (write operations > {{ node_critical_unusual_disklatency_time }}s) {% raw %}on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }}{% endraw %}"
+
+  - alert: HostHighCpuUtilizationWarn(Host)
+    expr: sum by (instance) (node_cpu_seconds_total{mode!="idle", job="node-exporter"}) / on(instance) group_left sum by (instance)((node_cpu_seconds_total{job="node-exporter"})) * 100 > {{ node_warn_highCPU_pct }}
+    for: {{ node_high_cpuload_threshold_duration }}
+    labels:
+      severity: warn
+    annotations:
+      summary: "{% raw %}Host high CPU load on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "CPU utilization is crossing (> {{ node_warn_highCPU_pct }}%) {% raw %}on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }}{% endraw %}"
+
+  - alert: HostHighCpuUtilizationCritical(Host)
+    expr: sum by (instance) (node_cpu_seconds_total{mode!="idle", job="node-exporter"}) / on(instance) group_left sum by (instance)((node_cpu_seconds_total{job="node-exporter"})) * 100 > {{ node_critical_highCPU_pct }}
+    for: {{ node_high_cpuload_threshold_duration }}
+    labels:
+      severity: critical
+    annotations:
+      summary: "{% raw %}Host high CPU load on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "CPU utilization is crossing (> {{ node_critical_highCPU_pct }}%) {% raw %}on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }}{% endraw %}"
+
+  - alert: HostHighCpuUtilizationWarn(Core)
+    expr: sum by (instance, cpu) (node_cpu_seconds_total{mode!="idle", job="node-exporter"}) / on(instance) group_left sum by (instance)((node_cpu_seconds_total{job="node-exporter"})) * 100 > {{ node_warn_highCPU_pct }}
+    for: {{ node_high_cpuload_threshold_duration }}
+    labels:
+      severity: warn
+    annotations:
+      summary: "{% raw %}Host high CPU load on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "CPU utilization is crossing (> {{ node_warn_highCPU_pct }}%) {% raw %}for ({{ $labels.cpu }}) on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }}{% endraw %}"
+
+  - alert: HostHighCpuUtilizationCritical(Core)
+    expr: sum by (instance, cpu) (node_cpu_seconds_total{mode!="idle", job="node-exporter"}) / on(instance) group_left sum by (instance)((node_cpu_seconds_total{job="node-exporter"})) * 100 > {{ node_critical_highCPU_pct }}
+    for: {{ node_high_cpuload_threshold_duration }}
+    labels:
+      severity: critical
+    annotations:
+      summary: "{% raw %}Host high CPU load on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "CPU utilization is crossing (> {{ node_critical_highCPU_pct }}%) {% raw %}for ({{ $labels.cpu }}) on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }}{% endraw %}"
+
+  - alert: HostCpuStealWarn(Host)
+    expr: sum by (instance)(node_cpu_seconds_total{mode="steal", job="node-exporter"})  / on(instance) group_left sum by (instance)((node_cpu_seconds_total{job="node-exporter"})) * 100 > {{ node_warn_cpu_steal_pct }}
+    for: {{ node_cpu_steal_threshold_duration }}
+    labels:
+      severity: warn
+    annotations:
+      summary: "{% raw %}Host CPU steal on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "CPU steal is > {{ node_warn_cpu_steal_pct }}% {% raw %}on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }}{% endraw %}. A noisy neighbor is killing VM performances or a spot instance may be out of credit. "
+
+  - alert: HostCpuStealCritical(Host)
+    expr: sum by (instance)(node_cpu_seconds_total{mode="steal", job="node-exporter"})  / on(instance) group_left sum by (instance)((node_cpu_seconds_total{job="node-exporter"})) * 100 > {{ node_critical_cpu_steal_pct }}
+    for: {{ node_cpu_steal_threshold_duration }}
+    labels:
+      severity: critical
+    annotations:
+      summary: "{% raw %}Host CPU steal on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "CPU steal is (> {{ node_critical_cpu_steal_pct }}%) {% raw %}on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }}{% endraw %}. A noisy neighbor is killing VM performances or a spot instance may be out of credit. "
+
+  - alert: HostCpuStealWarn(Core)
+    expr: sum by (instance, cpu)(node_cpu_seconds_total{mode="steal", job="node-exporter"})  / on(instance) group_left sum by (instance)((node_cpu_seconds_total{job="node-exporter"})) * 100 > {{ node_warn_cpu_steal_pct }}
+    for: {{ node_cpu_steal_threshold_duration }}
+    labels:
+      severity: warn
+    annotations:
+      summary: "{% raw %}Host CPU steal on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "CPU steal is (> {{ node_warn_cpu_steal_pct }}%) {% raw %}for ({{ $labels.cpu }}) on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }}{% endraw %}. A noisy neighbor is killing VM performances or a spot instance may be out of credit. "
+
+  - alert: HostCpuStealCritical(Core)
+    expr: sum by (instance ,cpu)(node_cpu_seconds_total{mode="steal", job="node-exporter"})  / on(instance) group_left sum by (instance)((node_cpu_seconds_total{job="node-exporter"})) * 100 > {{ node_critical_cpu_steal_pct }}
+    for: {{ node_cpu_steal_threshold_duration }}
+    labels:
+      severity: critical
+    annotations:
+      summary: "{% raw %}Host CPU steal on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "CPU steal is (> {{ node_critical_cpu_steal_pct }}%) {% raw %}for ({{ $labels.cpu }}) on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }}{% endraw %}. A noisy neighbor is killing VM performances or a spot instance may be out of credit. "
+
+  - alert: HostNetworkReceiveErrorsWarn
+    expr: ((node_network_receive_errs_total{job="node-exporter"}) / (node_network_receive_packets_total{job="node-exporter"})) * 100 > {{ node_warn_network_err }}
+    for: {{ node_network_receiveError_duration }}
+    labels:
+      severity: warn
+    annotations:
+      summary: "{% raw %}Host Network Receive Errors on ({{ $labels.instance }}:{{ $labels.device }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "{% raw %}Instance interface has encountered {{ $value }} receive errors for {{ $labels.device }} on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }} {% endraw %}"
+
+  - alert: HostNetworkReceiveErrorsCritical
+    expr: ((node_network_receive_errs_total{job="node-exporter"}) / (node_network_receive_packets_total{job="node-exporter"})) * 100 > {{ node_critical_network_err }}
+    for: {{ node_network_receiveError_duration }}
+    labels:
+      severity: critical
+    annotations:
+      summary: "{% raw %}Host Network Receive Errors on ({{ $labels.instance }}:{{ $labels.device }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "{% raw %}Instance interface has encountered {{ $value }} receive errors for {{ $labels.device }} on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }} {% endraw %}"
+
+  - alert: HostNetworkTransmitErrorsWarn
+    expr:  ((node_network_transmit_errs_total{job="node-exporter"}) / (node_network_transmit_packets_total{job="node-exporter"})) * 100 > {{ node_warn_network_err }}
+    for: {{ node_network_transmitError_duration }}
+    labels:
+      severity: warn
+    annotations:
+      summary: "{% raw %}Host Network Transmit Errors on ({{ $labels.instance }}:{{ $labels.device }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "{% raw %}Instance has encountered {{ $value }} transmit errors for {{ $labels.device }} on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }}{% endraw %}"
+
+  - alert: HostNetworkTransmitErrorsCritical
+    expr:  ((node_network_transmit_errs_total{job="node-exporter"}) / (node_network_transmit_packets_total{job="node-exporter"})) * 100 > {{ node_critical_network_err }}
+    for: {{ node_network_transmitError_duration }}
+    labels:
+      severity: critical
+    annotations:
+      summary: "{% raw %}Host Network Transmit Errors on ({{ $labels.instance }}:{{ $labels.device }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "{% raw %}Instance has encountered {{ $value }} transmit errors for {{ $labels.device }} on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }}{% endraw %}"
+
+  - alert: HostNetworkInterfaceSaturatedWarn
+    expr: ((node_network_receive_bytes_total{job="node-exporter"}) + (node_network_transmit_bytes_total{job="node-exporter"})) / (node_network_speed_bytes{job="node-exporter"}) > {{ node_warn_network_interface_saturation }}
+    for: {{ node_network_interface_saturated_duration }}
+    labels:
+      severity: warn
+    annotations:
+      summary: "{% raw %}Host Network Interface Saturated ({{ $labels.instance }}:{{ $labels.interface }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "The network interface is getting overloaded (> {{ node_warn_network_interface_saturation }}) on host {% raw %} {{ $labels.instance }} of cluster {{ $labels.cluster_name }} {{ $value }}.  VALUE = {{ $value }}{% endraw %}"
+
+  - alert: HostNetworkInterfaceSaturatedCritical
+    expr: ((node_network_receive_bytes_total{job="node-exporter"}) + (node_network_transmit_bytes_total{job="node-exporter"})) / (node_network_speed_bytes{job="node-exporter"}) > {{ node_critical_network_interface_saturation }}
+    for: {{ node_network_interface_saturated_duration }}
+    labels:
+      severity: critical
+    annotations:
+      summary: "{% raw %}Host Network Interface Saturated on ({{ $labels.instance }}:{{ $labels.interface }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "The network interface is getting overloaded (> {{ node_critical_network_interface_saturation }}) {% raw %}{{ $value }} on host {{ $labels.instance }}:{{ $labels.interface }} of cluster {{ $labels.cluster_name }}.  VALUE = {{ $value }}{% endraw %}"
+
+  - alert: HostClockNotSynchronisingWarn
+    expr: min_over_time(node_timex_sync_status{job="node-exporter"}[{{ node_clock_notsync_duration }}]) == 0 and node_timex_maxerror_seconds{job="node-exporter"} >= {{ node_warn_clock_duration }}
+    for: {{ node_clock_notsync_duration }}
+    labels:
+      severity: warn
+    annotations:
+      summary: "{% raw %}Host clock not synchronising on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "{% raw %}Clock not synchronising on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}.  VALUE = {{ $value }}{% endraw %}"
+      
+  - alert: HostSwapInWarn
+    expr: (node_vmstat_pswpin{job="node-exporter"})  > {{ node_warn_swapPages_count }}
+    for: {{ node_warn_swap_in_duration }}
+    labels:
+      severity: warn
+    annotations:
+      summary: "{% raw %}Host PageSwapIn value is too high on {{ $labels.instance }} of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "PageSwapIn(data from swap space on disk back into the physical memory (RAM)) value exceeds {{ node_warn_swapPages_count }} on host {% raw %}{{ $labels.instance }}  of cluster {{ $labels.cluster_name }}. Current value is {{ $value }}.{% endraw %}"
+
+  - alert: HostSwapInCritical
+    expr: (node_vmstat_pswpin{job="node-exporter"})  > {{ node_critical_swapPages_count }}
+    for: {{ node_critical_swap_in_duration }}
+    labels:
+      severity: critical
+    annotations:
+      summary: "{% raw %}Host PageSwapIn value is too high on {{ $labels.instance }} of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "PageSwapIn(data from swap space on disk back into the physical memory (RAM)) value exceeds {{ node_critical_swapPages_count }} on host {% raw %}{{ $labels.instance }} of cluster {{ $labels.cluster_name }}. Current value is {{ $value }}.{% endraw %}"
+
+  - alert: HostSwapOutWarn
+    expr: (node_vmstat_pswpout{job="node-exporter"}) > {{ node_warn_swapPages_count }}
+    for: {{ node_warn_swap_out_duration }}
+    labels:
+      severity: warn
+    annotations:
+      summary: "{% raw %}Host PageSwapOut value is too high on {{ $labels.instance }} of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "PageSwapOut(move data from RAM to swap space on disk to free up space in memory) value exceeds {{ node_warn_swapPages_count }} on host {% raw %}{{ $labels.instance }}  of cluster {{ $labels.cluster_name }}. Current value is {{ $value }}.{% endraw %}"
+
+  - alert: HostSwapOutCritical
+    expr: (node_vmstat_pswpout{job="node-exporter"}) > {{ node_critical_swapPages_count }}
+    for: {{ node_critical_swap_out_duration }}
+    labels:
+      severity: critical
+    annotations:
+      summary: "{% raw %}Host PageSwapOut value is too high on {{ $labels.instance }} of cluster {{ $labels.cluster_name }}{% endraw %}"
+      description: "PageSwapOut(move data from RAM to swap space on disk to free up space in physical memory) value exceeds {{ node_critical_swapPages_count }} on host {% raw %}{{ $labels.instance }} of cluster {{ $labels.cluster_name }}. Current value is {{ $value }}.{% endraw %}"
+
+
