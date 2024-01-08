@@ -4,7 +4,7 @@ The otel deploy Aerospike Monitoring Stack is a docker compose configuration
 which creates the following containers running on the same host as a single-node
 Aerospike cluster:
 1. aerospike-prometheus-exporter latest version
-1. otel collector contrib latest version
+1. OTel collector contrib latest version
 
 A prerequisite is that you have a single-node cluster, with the service port
 accessible from port 3000 of the host where the monitoring stack is deployed.  If you
@@ -15,11 +15,15 @@ in a container using:
 $ docker run -tid --name aerospike -p 3000:3000 -p 3001:3001 -p 3002:3002 aerospike/aerospike-server:latest
 ```
 
+# Deployment model
+![Deployment Topology](assets/aerospike_exporter_otel_collector.png)
+
 These examples cover integration of aerospike monitoring with 
 
 1. NewRelic
-1. Datadog
-1. AWS Cloudwatch
+2. Datadog
+3. AWS Cloudwatch
+4. Dynatrace
 
 > **Note**: You need to update the API Key or Access Key in the respective configuration files.
 
