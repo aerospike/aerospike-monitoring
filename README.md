@@ -29,7 +29,7 @@ A single command is needed to deploy containers for the entire monitoring stack 
 $ cd examples/docker-compose
 $ docker-compose up
 ```
-See [documentation](examples/docker-compose/).
+See [documentation](examples/docker/).
 
 ### Open Telemetry
 
