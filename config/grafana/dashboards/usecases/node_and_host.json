@@ -50,6 +50,7 @@
   "description": "Host & Aerospike Node Dashboard helps to analyse and fix errors by comparing performance of key aerospike metrics with relevant host metrics",
   "editable": true,
   "fiscalYearStartMonth": 0,
+  "gnetId": 20279,
   "graphTooltip": 0,
   "id": null,
   "links": [],
@@ -401,8 +402,8 @@
                 "scaleDistribution": {
                   "type": "linear"
                 },
-                "showPoints": "always",
-                "spanNulls": true,
+                "showPoints": "auto",
+                "spanNulls": false,
                 "stacking": {
                   "group": "A",
                   "mode": "none"
@@ -915,7 +916,7 @@
                 "max"
               ],
               "displayMode": "table",
-              "placement": "bottom",
+              "placement": "right",
               "showLegend": true
             },
             "tooltip": {
@@ -930,7 +931,7 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "topk($topk_limit, (rate(node_disk_write_time_seconds_total{job=~\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]) / rate(node_disk_writes_completed_total{job=~\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]) and rate(node_disk_writes_completed_total{job=~\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]) > 0 ))",
+              "expr": "topk($topk_limit, (rate(node_disk_write_time_seconds_total{job=~\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]) / rate(node_disk_writes_completed_total{job=~\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]) and rate(node_disk_writes_completed_total{job=~\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]) > 0))",
               "hide": false,
               "legendFormat": "{{instance}}/{{device}} - Write",
               "range": true,
@@ -1040,7 +1041,7 @@
               },
               "editorMode": "code",
               "expr": "topk($topk_limit, (rate(node_disk_written_bytes_total{job=~\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval])))",
-              "legendFormat": "{{instance}} - Write",
+              "legendFormat": "{{instance}} / {{device}} - Write",
               "range": true,
               "refId": "A"
             },
@@ -1052,7 +1053,7 @@
               "editorMode": "code",
               "expr": "topk($topk_limit, (rate(node_disk_read_bytes_total{job=~\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval])))",
               "hide": false,
-              "legendFormat": "{{instance}} - Read",
+              "legendFormat": "{{instance}} / {{device}} - Read",
               "range": true,
               "refId": "B"
             }
@@ -1149,8 +1150,8 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg by (instance)(rate(node_filesystem_avail_bytes{job=~\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]) * 100 / node_filesystem_size_bytes{job=~\"$job_name\", cluster_name=~\"$cluster\"})",
-              "legendFormat": "{{instance}}",
+              "expr": "avg by (instance, device)(rate(node_filesystem_avail_bytes{job=~\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]) * 100 / node_filesystem_size_bytes{job=~\"$job_name\", cluster_name=~\"$cluster\"})",
+              "legendFormat": "{{instance}} {{device}}",
               "range": true,
               "refId": "A"
             }
@@ -1508,7 +1509,7 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum (irate(node_netstat_Tcp_RetransSegs{instance=~\"$node.*\",job=~\"$job_name\",cluster_name=~\"$cluster\"}[$__rate_interval] ))",
+              "expr": "sum by (instance)(irate(node_netstat_Tcp_RetransSegs{instance=~\"$node.*\",job=~\"$job_name\",cluster_name=~\"$cluster\"}[$__rate_interval] ))",
               "format": "stat",
               "interval": "",
               "intervalFactor": 1,
@@ -1568,8 +1569,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1698,8 +1698,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1797,8 +1796,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -1899,7 +1897,7 @@
                 "axisPlacement": "auto",
                 "barAlignment": 0,
                 "drawStyle": "line",
-                "fillOpacity": 50,
+                "fillOpacity": 20,
                 "gradientMode": "opacity",
                 "hideFrom": {
                   "legend": false,
@@ -1907,12 +1905,12 @@
                   "viz": false
                 },
                 "lineInterpolation": "linear",
-                "lineWidth": 1,
+                "lineWidth": 3,
                 "pointSize": 5,
                 "scaleDistribution": {
                   "type": "linear"
                 },
-                "showPoints": "never",
+                "showPoints": "auto",
                 "spanNulls": false,
                 "stacking": {
                   "group": "A",
@@ -1947,7 +1945,7 @@
             "h": 6,
             "w": 16,
             "x": 0,
-            "y": 10
+            "y": 4
           },
           "id": 104,
           "links": [],
@@ -2090,7 +2088,7 @@
             "h": 6,
             "w": 8,
             "x": 16,
-            "y": 10
+            "y": 4
           },
           "hideTimeOverride": false,
           "id": 90,
@@ -2222,7 +2220,7 @@
             "h": 6,
             "w": 8,
             "x": 0,
-            "y": 16
+            "y": 10
           },
           "id": 92,
           "links": [],
@@ -2339,7 +2337,7 @@
             "h": 6,
             "w": 8,
             "x": 8,
-            "y": 16
+            "y": 10
           },
           "id": 94,
           "links": [],
@@ -2455,7 +2453,7 @@
             "h": 6,
             "w": 8,
             "x": 16,
-            "y": 16
+            "y": 10
           },
           "id": 98,
           "links": [],
@@ -2571,7 +2569,7 @@
             "h": 6,
             "w": 8,
             "x": 0,
-            "y": 22
+            "y": 16
           },
           "id": 91,
           "options": {
@@ -2649,7 +2647,7 @@
                 "axisPlacement": "auto",
                 "barAlignment": 0,
                 "drawStyle": "line",
-                "fillOpacity": 0,
+                "fillOpacity": 20,
                 "gradientMode": "none",
                 "hideFrom": {
                   "legend": false,
@@ -2657,8 +2655,8 @@
                   "viz": false
                 },
                 "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
+                "lineWidth": 3,
+                "pointSize": 7,
                 "scaleDistribution": {
                   "type": "linear"
                 },
@@ -2687,38 +2685,13 @@
                 ]
               }
             },
-            "overrides": [
-              {
-                "__systemRef": "hideSeriesFrom",
-                "matcher": {
-                  "id": "byNames",
-                  "options": {
-                    "mode": "exclude",
-                    "names": [
-                      "10.0.2.15:3000 - Lag"
-                    ],
-                    "prefix": "All except:",
-                    "readOnly": true
-                  }
-                },
-                "properties": [
-                  {
-                    "id": "custom.hideFrom",
-                    "value": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": true
-                    }
-                  }
-                ]
-              }
-            ]
+            "overrides": []
           },
           "gridPos": {
             "h": 6,
             "w": 8,
             "x": 0,
-            "y": 11
+            "y": 5
           },
           "id": 22,
           "options": {
@@ -2770,7 +2743,7 @@
                 "axisPlacement": "auto",
                 "barAlignment": 0,
                 "drawStyle": "line",
-                "fillOpacity": 50,
+                "fillOpacity": 20,
                 "gradientMode": "opacity",
                 "hideFrom": {
                   "legend": false,
@@ -2778,12 +2751,12 @@
                   "viz": false
                 },
                 "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
+                "lineWidth": 3,
+                "pointSize": 7,
                 "scaleDistribution": {
                   "type": "linear"
                 },
-                "showPoints": "never",
+                "showPoints": "auto",
                 "spanNulls": false,
                 "stacking": {
                   "group": "A",
@@ -2817,7 +2790,7 @@
             "h": 6,
             "w": 8,
             "x": 8,
-            "y": 11
+            "y": 5
           },
           "id": 27,
           "options": {
@@ -2870,7 +2843,7 @@
                 "axisPlacement": "auto",
                 "barAlignment": 0,
                 "drawStyle": "line",
-                "fillOpacity": 50,
+                "fillOpacity": 20,
                 "gradientMode": "opacity",
                 "hideFrom": {
                   "legend": false,
@@ -2878,12 +2851,12 @@
                   "viz": false
                 },
                 "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
+                "lineWidth": 3,
+                "pointSize": 7,
                 "scaleDistribution": {
                   "type": "linear"
                 },
-                "showPoints": "never",
+                "showPoints": "auto",
                 "spanNulls": false,
                 "stacking": {
                   "group": "A",
@@ -2916,7 +2889,7 @@
             "h": 6,
             "w": 8,
             "x": 16,
-            "y": 11
+            "y": 5
           },
           "id": 23,
           "options": {
@@ -3027,7 +3000,7 @@
             "h": 6,
             "w": 8,
             "x": 0,
-            "y": 17
+            "y": 11
           },
           "id": 108,
           "links": [],
@@ -3058,7 +3031,7 @@
               "expr": "irate(node_network_receive_drop_total{instance=~\"$node.*\",job=~\"$job_name\",cluster_name=~\"$cluster\"}[$__rate_interval])",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{device}} - Receive",
+              "legendFormat": "{{instance}} - {{device}} - Receive",
               "range": true,
               "refId": "A",
               "step": 240
@@ -3072,13 +3045,13 @@
               "expr": "irate(node_network_transmit_drop_total{instance=~\"$node.*\",job=~\"$job_name\",cluster_name=~\"$cluster\"}[$__rate_interval])",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "{{device}} - Transmit",
+              "legendFormat": "{{instance }} - {{device}} - Transmit",
               "range": true,
               "refId": "B",
               "step": 240
             }
           ],
-          "title": "Network Traffic Drop (packets) (rate)",
+          "title": "Host Network Traffic Drop (packets) (rate)",
           "type": "timeseries"
         },
         {
@@ -3144,7 +3117,7 @@
             "h": 6,
             "w": 8,
             "x": 8,
-            "y": 17
+            "y": 11
           },
           "id": 107,
           "links": [],
@@ -3171,7 +3144,7 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum (irate(node_netstat_Tcp_RetransSegs{instance=~\"$node.*\",job=~\"$job_name\",cluster_name=~\"$cluster\"}[$__rate_interval] ))",
+              "expr": "sum by (instance)(irate(node_netstat_Tcp_RetransSegs{instance=~\"$node.*\",job=~\"$job_name\",cluster_name=~\"$cluster\"}[$__rate_interval] ))",
               "format": "stat",
               "interval": "",
               "intervalFactor": 1,
@@ -3209,12 +3182,12 @@
                   "viz": false
                 },
                 "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
+                "lineWidth": 3,
+                "pointSize": 7,
                 "scaleDistribution": {
                   "type": "linear"
                 },
-                "showPoints": "never",
+                "showPoints": "auto",
                 "spanNulls": false,
                 "stacking": {
                   "group": "A",
@@ -3260,7 +3233,7 @@
             "h": 6,
             "w": 8,
             "x": 16,
-            "y": 17
+            "y": 11
           },
           "id": 68,
           "links": [],
@@ -3273,6 +3246,8 @@
               "displayMode": "table",
               "placement": "right",
               "showLegend": true,
+              "sortBy": "Last",
+              "sortDesc": true,
               "width": 300
             },
             "tooltip": {
@@ -3516,6 +3491,6 @@
   "timezone": "",
   "title": "Aerospike Node & Host view",
   "uid": "fNjDw2KSk",
-  "version": 5,
+  "version": 7,
   "weekStart": ""
 }
