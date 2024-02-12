@@ -133,7 +133,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 6,
+        "h": 4,
         "w": 4,
         "x": 0,
         "y": 1
@@ -177,13 +177,12 @@
         "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
-      "description": "Busy state of all CPU cores together",
+      "description": "Total number of CPU cores",
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
-          "decimals": 1,
           "mappings": [
             {
               "options": {
@@ -195,39 +194,37 @@
               "type": "special"
             }
           ],
-          "max": 100,
-          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "rgba(50, 172, 45, 0.97)",
+                "color": "green",
                 "value": null
               },
               {
-                "color": "rgba(237, 129, 40, 0.89)",
-                "value": 85
-              },
-              {
-                "color": "rgba(245, 54, 54, 0.9)",
-                "value": 95
+                "color": "red",
+                "value": 80
               }
             ]
           },
-          "unit": "percent"
+          "unit": "short"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 6,
-        "w": 14,
+        "h": 4,
+        "w": 5,
         "x": 4,
         "y": 1
       },
-      "id": 360,
+      "id": 321,
       "links": [],
+      "maxDataPoints": 100,
       "options": {
-        "orientation": "auto",
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
         "reduceOptions": {
           "calcs": [
             "last"
@@ -235,8 +232,7 @@
           "fields": "",
           "values": false
         },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
+        "textMode": "auto"
       },
       "pluginVersion": "9.3.2",
       "targets": [
@@ -246,14 +242,172 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "exemplar": false,
-          "expr": " min(sum by( instance) (irate(node_cpu_seconds_total{job=\"$job\", cluster_name=\"$cluster_name\",instance=~\"$node\", mode!=\"idle\"}[$__rate_interval])) / scalar(sum ( irate(node_cpu_seconds_total{job=\"$job\", cluster_name=\"$cluster_name\",instance=~\"$node\", }[$__rate_interval]) ))*100 ) ",
+          "expr": "sum( count by (instance) (count by (cpu, instance) (node_cpu_seconds_total{job=\"$job\",cluster_name=\"$cluster_name\"}) ))",
+          "legendFormat": "Total CPU cores",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "CPU Cores (total)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "Total number of CPU cores",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 5,
+        "x": 9,
+        "y": 1
+      },
+      "id": 356,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": " min(count by (instance) (count by (cpu, instance) (node_cpu_seconds_total{}) ))",
+          "legendFormat": "Min",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": " avg(count by (instance) (count by (cpu, instance) (node_cpu_seconds_total{}) ))",
           "hide": false,
-          "instant": true,
+          "legendFormat": "Avg",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": " max(count by (instance) (count by (cpu, instance) (node_cpu_seconds_total{}) ))",
+          "hide": false,
+          "legendFormat": "Max",
+          "range": true,
+          "refId": "C"
+        }
+      ],
+      "title": "CPU Cores ",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "links": [],
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 14,
+        "y": 1
+      },
+      "id": 346,
+      "links": [],
+      "options": {
+        "displayMode": "basic",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "valueMode": "color"
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "min  (node_memory_MemTotal_bytes{job=\"$job\",cluster_name=\"$cluster_name\"})",
+          "format": "time_series",
+          "hide": false,
           "intervalFactor": 1,
           "legendFormat": "Min ",
-          "range": false,
-          "refId": "A",
+          "range": true,
+          "refId": "min_free",
           "step": 240
         },
         {
@@ -262,14 +416,13 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "exemplar": false,
-          "expr": " avg(sum by( instance) (irate(node_cpu_seconds_total{job=\"$job\", cluster_name=\"$cluster_name\",instance=~\"$node\", mode!=\"idle\"}[$__rate_interval])) / scalar(sum ( irate(node_cpu_seconds_total{job=\"$job\", cluster_name=\"$cluster_name\",instance=~\"$node\", }[$__rate_interval]) ))*100 ) ",
+          "expr": "avg(node_memory_MemTotal_bytes{job=\"$job\",cluster_name=\"$cluster_name\"})",
+          "format": "time_series",
           "hide": false,
-          "instant": true,
           "intervalFactor": 1,
           "legendFormat": "Avg",
-          "range": false,
-          "refId": "B",
+          "range": true,
+          "refId": "avg_free",
           "step": 240
         },
         {
@@ -278,19 +431,18 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "exemplar": false,
-          "expr": " max(sum by( instance) (irate(node_cpu_seconds_total{job=\"$job\", cluster_name=\"$cluster_name\",instance=~\"$node\", mode!=\"idle\"}[$__rate_interval])) / scalar(sum ( irate(node_cpu_seconds_total{job=\"$job\", cluster_name=\"$cluster_name\",instance=~\"$node\", }[$__rate_interval]) ))*100 ) ",
+          "expr": "max(node_memory_MemTotal_bytes{job=\"$job\",cluster_name=\"$cluster_name\"})",
+          "format": "time_series",
           "hide": false,
-          "instant": true,
           "intervalFactor": 1,
           "legendFormat": "Max",
-          "range": false,
-          "refId": "C",
+          "range": true,
+          "refId": "A",
           "step": 240
         }
       ],
-      "title": "% CPU Utilization (rate)",
-      "type": "gauge"
+      "title": "Total Memory (bytes) ",
+      "type": "bargauge"
     },
     {
       "datasource": {
@@ -320,9 +472,9 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 18,
+        "h": 4,
+        "w": 4,
+        "x": 20,
         "y": 1
       },
       "id": 358,
@@ -403,6 +555,126 @@
         "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
+      "description": "Busy state of all CPU cores together",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "decimals": 1,
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "rgba(50, 172, 45, 0.97)",
+                "value": null
+              },
+              {
+                "color": "rgba(237, 129, 40, 0.89)",
+                "value": 85
+              },
+              {
+                "color": "rgba(245, 54, 54, 0.9)",
+                "value": 95
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 9,
+        "x": 0,
+        "y": 5
+      },
+      "id": 360,
+      "links": [],
+      "options": {
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": " min(sum by( instance) (irate(node_cpu_seconds_total{job=\"$job\", cluster_name=\"$cluster_name\",instance=~\"$node\", mode!=\"idle\"}[$__rate_interval])) / scalar(sum ( irate(node_cpu_seconds_total{job=\"$job\", cluster_name=\"$cluster_name\",instance=~\"$node\", }[$__rate_interval]) ))*100 ) ",
+          "hide": false,
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "Min ",
+          "range": false,
+          "refId": "A",
+          "step": 240
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": " avg(sum by( instance) (irate(node_cpu_seconds_total{job=\"$job\", cluster_name=\"$cluster_name\",instance=~\"$node\", mode!=\"idle\"}[$__rate_interval])) / scalar(sum ( irate(node_cpu_seconds_total{job=\"$job\", cluster_name=\"$cluster_name\",instance=~\"$node\", }[$__rate_interval]) ))*100 ) ",
+          "hide": false,
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "Avg",
+          "range": false,
+          "refId": "B",
+          "step": 240
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": " max(sum by( instance) (irate(node_cpu_seconds_total{job=\"$job\", cluster_name=\"$cluster_name\",instance=~\"$node\", mode!=\"idle\"}[$__rate_interval])) / scalar(sum ( irate(node_cpu_seconds_total{job=\"$job\", cluster_name=\"$cluster_name\",instance=~\"$node\", }[$__rate_interval]) ))*100 ) ",
+          "hide": false,
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "Max",
+          "range": false,
+          "refId": "C",
+          "step": 240
+        }
+      ],
+      "title": "% CPU Utilization (rate)",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "",
       "fieldConfig": {
         "defaults": {
@@ -426,10 +698,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 6,
-        "x": 0,
-        "y": 7
+        "h": 4,
+        "w": 5,
+        "x": 9,
+        "y": 5
       },
       "id": 345,
       "links": [],
@@ -496,10 +768,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 6,
-        "x": 6,
-        "y": 7
+        "h": 4,
+        "w": 4,
+        "x": 14,
+        "y": 5
       },
       "id": 305,
       "links": [],
@@ -566,10 +838,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
+        "h": 4,
         "w": 6,
-        "x": 12,
-        "y": 7
+        "x": 18,
+        "y": 5
       },
       "id": 320,
       "links": [],
@@ -669,10 +941,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
+        "h": 4,
         "w": 6,
         "x": 18,
-        "y": 7
+        "y": 9
       },
       "id": 355,
       "links": [],
@@ -788,10 +1060,10 @@
         ]
       },
       "gridPos": {
-        "h": 5,
-        "w": 8,
+        "h": 3,
+        "w": 24,
         "x": 0,
-        "y": 12
+        "y": 13
       },
       "id": 60,
       "links": [],
@@ -907,10 +1179,10 @@
         ]
       },
       "gridPos": {
-        "h": 5,
-        "w": 8,
-        "x": 8,
-        "y": 12
+        "h": 3,
+        "w": 24,
+        "x": 0,
+        "y": 16
       },
       "id": 308,
       "links": [],
@@ -1026,10 +1298,10 @@
         ]
       },
       "gridPos": {
-        "h": 5,
-        "w": 8,
-        "x": 16,
-        "y": 12
+        "h": 3,
+        "w": 24,
+        "x": 0,
+        "y": 19
       },
       "id": 354,
       "links": [],
@@ -1085,292 +1357,6 @@
       "type": "stat"
     },
     {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 17
-      },
-      "id": 348,
-      "panels": [],
-      "title": "Configs comparision",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-      },
-      "description": "Total number of CPU cores",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [
-            {
-              "options": {
-                "match": "null",
-                "result": {
-                  "text": "N/A"
-                }
-              },
-              "type": "special"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 5,
-        "x": 0,
-        "y": 18
-      },
-      "id": 321,
-      "links": [],
-      "maxDataPoints": 100,
-      "options": {
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "horizontal",
-        "reduceOptions": {
-          "calcs": [
-            "last"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "9.3.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "sum( count by (instance) (count by (cpu, instance) (node_cpu_seconds_total{job=\"$job\",cluster_name=\"$cluster_name\"}) ))",
-          "legendFormat": "Total CPU cores",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "CPU Cores (total)",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-      },
-      "description": "Total number of CPU cores",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 5,
-        "x": 5,
-        "y": 18
-      },
-      "id": 356,
-      "links": [],
-      "maxDataPoints": 100,
-      "options": {
-        "displayMode": "lcd",
-        "minVizHeight": 10,
-        "minVizWidth": 0,
-        "orientation": "vertical",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true,
-        "valueMode": "text"
-      },
-      "pluginVersion": "9.3.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": " min(count by (instance) (count by (cpu, instance) (node_cpu_seconds_total{}) ))",
-          "legendFormat": "Min",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": " avg(count by (instance) (count by (cpu, instance) (node_cpu_seconds_total{}) ))",
-          "hide": false,
-          "legendFormat": "Avg",
-          "range": true,
-          "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": " max(count by (instance) (count by (cpu, instance) (node_cpu_seconds_total{}) ))",
-          "hide": false,
-          "legendFormat": "Max",
-          "range": true,
-          "refId": "C"
-        }
-      ],
-      "title": "CPU Cores ",
-      "type": "bargauge"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-      },
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "links": [],
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "bytes"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 10,
-        "y": 18
-      },
-      "id": 346,
-      "links": [],
-      "options": {
-        "displayMode": "basic",
-        "minVizHeight": 10,
-        "minVizWidth": 0,
-        "orientation": "vertical",
-        "reduceOptions": {
-          "calcs": [
-            "last"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showUnfilled": true,
-        "valueMode": "color"
-      },
-      "pluginVersion": "9.3.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "min  (node_memory_MemTotal_bytes{job=\"$job\",cluster_name=\"$cluster_name\"})",
-          "format": "time_series",
-          "hide": false,
-          "intervalFactor": 1,
-          "legendFormat": "Min ",
-          "range": true,
-          "refId": "min_free",
-          "step": 240
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "avg(node_memory_MemTotal_bytes{job=\"$job\",cluster_name=\"$cluster_name\"})",
-          "format": "time_series",
-          "hide": false,
-          "intervalFactor": 1,
-          "legendFormat": "Avg",
-          "range": true,
-          "refId": "avg_free",
-          "step": 240
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "max(node_memory_MemTotal_bytes{job=\"$job\",cluster_name=\"$cluster_name\"})",
-          "format": "time_series",
-          "hide": false,
-          "intervalFactor": 1,
-          "legendFormat": "Max",
-          "range": true,
-          "refId": "A",
-          "step": 240
-        }
-      ],
-      "title": "Total Memory (bytes) ",
-      "type": "bargauge"
-    },
-    {
       "collapsed": true,
       "datasource": {
         "type": "prometheus",
@@ -1380,7 +1366,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 22
       },
       "id": 309,
       "panels": [
@@ -1427,7 +1413,7 @@
             "h": 5,
             "w": 5,
             "x": 0,
-            "y": 25
+            "y": 3
           },
           "id": 350,
           "links": [],
@@ -1496,7 +1482,7 @@
             "h": 5,
             "w": 5,
             "x": 5,
-            "y": 25
+            "y": 3
           },
           "id": 352,
           "links": [],
@@ -1566,7 +1552,7 @@
             "h": 5,
             "w": 5,
             "x": 10,
-            "y": 25
+            "y": 3
           },
           "id": 353,
           "links": [],
@@ -1636,7 +1622,7 @@
             "h": 5,
             "w": 7,
             "x": 15,
-            "y": 25
+            "y": 3
           },
           "id": 349,
           "links": [],
@@ -1740,7 +1726,7 @@
             "h": 5,
             "w": 24,
             "x": 0,
-            "y": 30
+            "y": 8
           },
           "id": 319,
           "links": [],
@@ -1949,7 +1935,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 35
+            "y": 13
           },
           "id": 77,
           "links": [],
@@ -2204,7 +2190,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 35
+            "y": 13
           },
           "id": 311,
           "links": [],
@@ -2610,7 +2596,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 41
+            "y": 19
           },
           "id": 175,
           "links": [],
@@ -3042,7 +3028,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 41
+            "y": 19
           },
           "id": 314,
           "links": [],
@@ -3261,7 +3247,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 47
+            "y": 25
           },
           "id": 176,
           "links": [],
@@ -3387,7 +3373,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 47
+            "y": 25
           },
           "id": 22,
           "links": [],
@@ -3814,7 +3800,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 53
+            "y": 31
           },
           "id": 9,
           "links": [],
@@ -4240,7 +4226,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 53
+            "y": 31
           },
           "id": 33,
           "links": [],
@@ -4668,7 +4654,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 59
+            "y": 37
           },
           "id": 313,
           "links": [],
@@ -5087,7 +5073,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 59
+            "y": 37
           },
           "id": 35,
           "links": [],
@@ -5219,7 +5205,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 65
+            "y": 43
           },
           "id": 312,
           "links": [],
@@ -5626,7 +5612,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 65
+            "y": 43
           },
           "id": 36,
           "links": [],
@@ -5742,7 +5728,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 71
+            "y": 49
           },
           "id": 43,
           "links": [],
@@ -5873,7 +5859,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 71
+            "y": 49
           },
           "id": 315,
           "links": [],
@@ -6014,7 +6000,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 77
+            "y": 55
           },
           "id": 318,
           "links": [],
@@ -6152,7 +6138,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 77
+            "y": 55
           },
           "id": 85,
           "links": [],
@@ -6342,7 +6328,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 83
+            "y": 61
           },
           "id": 316,
           "links": [],
@@ -6533,7 +6519,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 83
+            "y": 61
           },
           "id": 317,
           "links": [],
@@ -6664,7 +6650,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 89
+            "y": 67
           },
           "id": 146,
           "links": [],
@@ -6779,7 +6765,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 89
+            "y": 67
           },
           "id": 142,
           "links": [],
@@ -6906,7 +6892,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 95
+            "y": 73
           },
           "id": 143,
           "links": [],
@@ -7033,7 +7019,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 95
+            "y": 73
           },
           "id": 361,
           "links": [],
@@ -7139,7 +7125,7 @@
           "type": "prometheus",
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
-        "definition": "",
+        "definition": "label_values(node_uname_info,job)",
         "hide": 0,
         "includeAll": false,
         "label": "Job",
@@ -7147,8 +7133,8 @@
         "name": "job",
         "options": [],
         "query": {
-          "query": "label_values(node_uname_info, job)",
-          "refId": "Prometheus-job-Variable-Query"
+          "query": "label_values(node_uname_info,job)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
         "regex": "",
@@ -7286,6 +7272,6 @@
   "timezone": "browser",
   "title": "Aerospike Host View",
   "uid": "U5PWhoNIZ",
-  "version": 4,
+  "version": 10,
   "weekStart": ""
 }
