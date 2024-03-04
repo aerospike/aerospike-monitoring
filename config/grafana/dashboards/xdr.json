@@ -105,7 +105,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "#299c46",
+                "color": "dark-green",
                 "value": null
               }
             ]
@@ -198,9 +198,11 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
+          "editorMode": "code",
           "expr": "sum(aerospike_xdr_throughput{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"})",
           "interval": "",
           "legendFormat": "Total Throughput",
+          "range": true,
           "refId": "A"
         },
         {
@@ -290,22 +292,18 @@
           "color": {
             "mode": "thresholds"
           },
-          "decimals": 1,
+          "decimals": 0,
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#299c46",
+                "color": "red",
                 "value": null
               },
               {
-                "color": "red",
-                "value": 0
-              },
-              {
-                "color": "#299c46",
-                "value": 3
+                "color": "dark-green",
+                "value": 1
               }
             ]
           },
@@ -342,6 +340,7 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
+          "editorMode": "code",
           "expr": "avg(aerospike_xdr_nodes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\", dc=~\"$dc\"}) by (dc)",
           "format": "time_series",
           "instant": true,
@@ -355,7 +354,300 @@
       "type": "stat"
     },
     {
-      "collapsed": false,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 9
+      },
+      "id": 41,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum (irate(aerospike_sysinfo_netstat_tcp_activeopens{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}[$__rate_interval] ))",
+          "legendFormat": "Open",
+          "range": true,
+          "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum (irate(aerospike_sysinfo_netstat_tcp_currestab{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}[$__rate_interval] ))",
+          "hide": false,
+          "legendFormat": "Established",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Host TCP Connections (total)(rate)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 7,
+        "x": 6,
+        "y": 9
+      },
+      "id": 39,
+      "links": [],
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "legend": {
+          "calcs": [
+            "last",
+            "mean",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "width": 300
+        },
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum (irate(aerospike_sysinfo_netstat_tcp_retranssegs{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}[$__rate_interval] ))",
+          "format": "stat",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{instance}}",
+          "range": true,
+          "refId": "A",
+          "step": 240
+        }
+      ],
+      "title": "Host Network Traffic - retransmit (packets) (total) (rate)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "dark-green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "binBps"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "receive_packets_eth0"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#7EB26D",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "receive_packets_lo"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#E24D42",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 11,
+        "x": 13,
+        "y": 9
+      },
+      "id": 43,
+      "links": [],
+      "options": {
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "legend": {
+          "calcs": [
+            "last",
+            "mean",
+            "max",
+            "min"
+          ],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "width": 300
+        },
+        "orientation": "vertical",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto",
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum (irate(aerospike_sysinfo_network_receive_bytes_total{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\", }[$__rate_interval]))",
+          "format": "stat",
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "Received",
+          "range": true,
+          "refId": "A",
+          "step": 240
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum (irate(aerospike_sysinfo_network_transfer_bytes_total{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\", }[$__rate_interval]))",
+          "hide": false,
+          "legendFormat": "Transmitted",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "Host Network Traffic (bytes) (total) (rate)",
+      "type": "stat"
+    },
+    {
+      "collapsed": true,
       "datasource": {
         "type": "prometheus",
         "uid": "yBPESELVz"
@@ -364,10 +656,1803 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 14
       },
       "id": 32,
-      "panels": [],
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "XDR throughput",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "XDR THROUGHPUT",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 18
+          },
+          "id": 2,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "expr": "aerospike_xdr_throughput{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}",
+              "legendFormat": "Throughput {{service}} {{dc}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Throughput",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Number of records successfully shipped",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "XDR  SHIP SUCCESS",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 18
+          },
+          "id": 4,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_xdr_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[1m])",
+              "legendFormat": "Success {{service}} {{dc}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Success",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Number of ships abandoned",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "XDR  SHIP ABANDONED",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 26
+          },
+          "id": 17,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_xdr_abandoned{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[$__rate_interval])",
+              "legendFormat": "Abandoned {{service}} {{dc}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Abandoned (rate)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Number of XDR local read not found",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "XDR NOT FOUND",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 26
+          },
+          "id": 18,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_xdr_not_found{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[$__rate_interval])",
+              "legendFormat": "Not found {{service}} {{dc}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Not Found (rate)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "How many records are skipped after XDR reading the record locally but before putting them on wire",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "XDR  FILTERED OUT",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 34
+          },
+          "id": 19,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_xdr_filtered_out{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[$__rate_interval])",
+              "legendFormat": "Filtered out {{service}} {{dc}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Filtered Out (rate)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Number of retries due to connection reset",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "XDR  RETRY CONN RESET",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 34
+          },
+          "id": 22,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_xdr_retry_conn_reset{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[$__rate_interval])",
+              "legendFormat": "Retry Conn Reset {{service}} {{dc}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Retry Connection Reset (rate)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Number of retries due to temporary error from destination",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "XDR  RETRY DESTINATION",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 42
+          },
+          "id": 21,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_xdr_retry_dest{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[$__rate_interval])",
+              "legendFormat": "Retry Destination {{service}} {{dc}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Retry Destination (rate)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Number of times a record write is skipped from processing because that record is already pending processing",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "XDR HOT KEYS",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 42
+          },
+          "id": 24,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_xdr_hot_keys{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[$__rate_interval])",
+              "legendFormat": "Hot keys {{service}} {{dc}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Hot Keys (rate)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Number of XDR processing record in progress",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "XDR IN-PROGRESS",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 50
+          },
+          "id": 14,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "aerospike_xdr_in_progress{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}",
+              "legendFormat": "In Progress {{service}} {{dc}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "In Progress",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Number of records waiting to be processed in in-memory transaction queue",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "XDR IN-QUEUE",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 50
+          },
+          "id": 12,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "expr": "aerospike_xdr_in_queue{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}",
+              "legendFormat": "In queue {{service}} {{dc}}",
+              "refId": "A"
+            }
+          ],
+          "title": "In Queue",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "It signifies how much behind the destination is compared to the source. In other words, so much time worth of data is yet to be shipped from source to destination",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "XDR LAG",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 58
+          },
+          "id": 16,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "expr": "aerospike_xdr_lag{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}",
+              "legendFormat": "Lag {{service}} {{dc}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Lag",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Time taken to process records across partitions in one lap. A higher number indicates slowness of source in processing the records.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "XDR LAP μS",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 58
+          },
+          "id": 25,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "expr": "aerospike_xdr_lap_us{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}",
+              "legendFormat": "Lap μs {{service}} {{dc}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Lap μs",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Number of partitions that are recovered by reducing the primary index of that partition",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "XDR  RECOVERIES",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 66
+          },
+          "id": 20,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_xdr_recoveries{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[$__rate_interval])",
+              "legendFormat": "Recoveries {{service}} {{dc}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Recoveries (rate)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Number of recoveries that are currently pending",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "XDR RECOVERIES PENDING",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 66
+          },
+          "id": 23,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "expr": "aerospike_xdr_recoveries_pending{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}",
+              "legendFormat": "Recoveries pending {{service}} {{dc}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Recoveries Pending",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Average network latency for the successfully shipped records",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "XDR AVG SHIP LATENCY MS",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 74
+          },
+          "id": 26,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "expr": "aerospike_xdr_latency_ms{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}",
+              "legendFormat": "Latency ms {{service}} {{dc}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Latency ms",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Average XDR compression ratio",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "XDR AVG COMPRESSION RATIO",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 74
+          },
+          "id": 27,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "expr": "aerospike_xdr_compression_ratio{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}",
+              "legendFormat": "Avg compression ratio {{service}} {{dc}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Avg Compression Ratio",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "How much % of records are not compressed because they are below the compression threshold",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "XDR AVG UNCOMPRESSED PCT",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 82
+          },
+          "id": 28,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "expr": "aerospike_xdr_uncompressed_pct{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}",
+              "legendFormat": "Uncompressed pct {{service}} {{dc}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Uncompressed Pct",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Number of bytes shipped for a namespace to a DC by XDR.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "XDR AVG UNCOMPRESSED PCT",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "links": [],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 82
+          },
+          "id": 37,
+          "options": {
+            "legend": {
+              "calcs": [
+                "mean",
+                "lastNotNull",
+                "max",
+                "min"
+              ],
+              "displayMode": "table",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_xdr_bytes_shipped{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[$__rate_interval])",
+              "legendFormat": " {{service}} {{dc}} ",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Bytes Shipped (rate)",
+          "type": "timeseries"
+        }
+      ],
       "targets": [
         {
           "datasource": {
@@ -381,110 +2466,23 @@
       "type": "row"
     },
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-      },
-      "description": "XDR throughput",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "XDR THROUGHPUT",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
+      "collapsed": false,
       "gridPos": {
-        "h": 8,
-        "w": 12,
+        "h": 1,
+        "w": 24,
         "x": 0,
-        "y": 10
+        "y": 15
       },
-      "id": 2,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "asc"
-        }
-      },
-      "pluginVersion": "9.3.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "expr": "aerospike_xdr_throughput{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}",
-          "legendFormat": "Throughput {{service}} {{dc}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Throughput",
-      "type": "timeseries"
+      "id": 46,
+      "panels": [],
+      "title": "Resources - Network",
+      "type": "row"
     },
     {
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
-      "description": "Number of records successfully shipped",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -493,12 +2491,12 @@
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "XDR  SHIP SUCCESS",
+            "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "opacity",
+            "fillOpacity": 0,
+            "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
@@ -510,7 +2508,7 @@
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "never",
+            "showPoints": "auto",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -520,48 +2518,41 @@
               "mode": "off"
             }
           },
-          "links": [],
           "mappings": [],
-          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "dark-green",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
-          },
-          "unit": "short"
+          }
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 5,
         "w": 12,
-        "x": 12,
-        "y": 10
+        "x": 0,
+        "y": 16
       },
-      "id": 4,
+      "id": 47,
       "options": {
         "legend": {
           "calcs": [
-            "mean",
-            "lastNotNull",
             "max",
-            "min"
+            "lastNotNull",
+            "min",
+            "mean"
           ],
           "displayMode": "table",
-          "placement": "bottom",
+          "placement": "right",
           "showLegend": true
         },
         "tooltip": {
-          "mode": "multi",
-          "sort": "asc"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "pluginVersion": "9.3.2",
@@ -572,113 +2563,25 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(aerospike_xdr_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[1m])",
-          "legendFormat": "Success {{service}} {{dc}}",
+          "expr": " irate(aerospike_sysinfo_netstat_tcp_activeopens{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}[$__rate_interval])",
+          "legendFormat": "Open",
           "range": true,
           "refId": "A"
-        }
-      ],
-      "title": "Success",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-      },
-      "description": "Number of ships abandoned",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "XDR  SHIP ABANDONED",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "links": [],
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
         },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 18
-      },
-      "id": 17,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "asc"
-        }
-      },
-      "pluginVersion": "9.3.2",
-      "targets": [
         {
           "datasource": {
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "expr": "rate(aerospike_xdr_abandoned{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[1m])",
-          "legendFormat": "Abandoned {{service}} {{dc}}",
-          "refId": "A"
+          "editorMode": "code",
+          "expr": " irate(aerospike_sysinfo_netstat_tcp_currestab{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}[$__rate_interval])",
+          "hide": false,
+          "legendFormat": "Established",
+          "range": true,
+          "refId": "B"
         }
       ],
-      "title": "Abandoned",
+      "title": "Host TCP Connections (rate)",
       "type": "timeseries"
     },
     {
@@ -686,7 +2589,6 @@
         "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
-      "description": "Number of XDR local read not found",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -695,12 +2597,12 @@
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "XDR NOT FOUND",
+            "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "opacity",
+            "fillOpacity": 0,
+            "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
@@ -712,7 +2614,7 @@
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "never",
+            "showPoints": "auto",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -724,146 +2626,42 @@
           },
           "links": [],
           "mappings": [],
-          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "dark-green",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           },
-          "unit": "short"
+          "unit": "none"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
+        "h": 5,
         "w": 12,
         "x": 12,
-        "y": 18
+        "y": 16
       },
-      "id": 18,
+      "id": 48,
+      "links": [],
       "options": {
         "legend": {
           "calcs": [
-            "mean",
-            "lastNotNull",
             "max",
-            "min"
+            "lastNotNull",
+            "min",
+            "mean"
           ],
           "displayMode": "table",
-          "placement": "bottom",
+          "placement": "right",
           "showLegend": true
         },
         "tooltip": {
-          "mode": "multi",
-          "sort": "asc"
-        }
-      },
-      "pluginVersion": "9.3.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "expr": "rate(aerospike_xdr_not_found{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[1m])",
-          "legendFormat": "Not found {{service}} {{dc}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Not Found",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-      },
-      "description": "How many records are skipped after XDR reading the record locally but before putting them on wire",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "XDR  FILTERED OUT",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "links": [],
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 26
-      },
-      "id": 19,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "asc"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "pluginVersion": "9.3.2",
@@ -874,13 +2672,18 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(aerospike_xdr_filtered_out{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[1m])",
-          "legendFormat": "Filtered out {{service}} {{dc}}",
+          "expr": " (irate(aerospike_sysinfo_netstat_tcp_retranssegs{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}[$__rate_interval] ))",
+          "format": "stat",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{instance}}",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "step": 240
         }
       ],
-      "title": "Filtered Out",
+      "title": "Host Network Traffic - retransmit (packets)  (rate)",
       "type": "timeseries"
     },
     {
@@ -888,21 +2691,20 @@
         "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
-      "description": "Number of retries due to connection reset",
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "thresholds"
           },
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "XDR  RETRY CONN RESET",
+            "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "opacity",
+            "fillOpacity": 0,
+            "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
@@ -914,7 +2716,7 @@
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "never",
+            "showPoints": "auto",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -926,7 +2728,6 @@
           },
           "links": [],
           "mappings": [],
-          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -940,331 +2741,64 @@
               }
             ]
           },
-          "unit": "short"
+          "unit": "binBps"
         },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 26
-      },
-      "id": 22,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "asc"
-        }
-      },
-      "pluginVersion": "9.3.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "expr": "rate(aerospike_xdr_retry_conn_reset{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[1m])",
-          "legendFormat": "Retry Conn Reset {{service}} {{dc}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Retry Connection Reset",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-      },
-      "description": "Number of retries due to temporary error from destination",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "XDR  RETRY DESTINATION",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "receive_packets_eth0"
             },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "links": [],
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
+            "properties": [
               {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
+                "id": "color",
+                "value": {
+                  "fixedColor": "#7EB26D",
+                  "mode": "fixed"
+                }
               }
             ]
           },
-          "unit": "short"
-        },
-        "overrides": []
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "receive_packets_lo"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#E24D42",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 8,
+        "h": 5,
         "w": 12,
         "x": 0,
-        "y": 34
+        "y": 21
       },
-      "id": 21,
+      "id": 50,
+      "links": [],
       "options": {
         "legend": {
           "calcs": [
-            "mean",
-            "lastNotNull",
             "max",
-            "min"
+            "lastNotNull",
+            "min",
+            "mean"
           ],
           "displayMode": "table",
-          "placement": "bottom",
+          "placement": "right",
           "showLegend": true
         },
         "tooltip": {
-          "mode": "multi",
-          "sort": "asc"
-        }
-      },
-      "pluginVersion": "9.3.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "expr": "rate(aerospike_xdr_retry_dest{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[1m])",
-          "legendFormat": "Retry Destination {{service}} {{dc}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Retry Destination",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-      },
-      "description": "Number of times a record write is skipped from processing because that record is already pending processing",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "XDR HOT KEYS",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "links": [],
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 34
-      },
-      "id": 24,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "asc"
-        }
-      },
-      "pluginVersion": "9.3.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "expr": "rate(aerospike_xdr_hot_keys{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[1m])",
-          "legendFormat": "Hot keys {{service}} {{dc}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Hot Keys",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-      },
-      "description": "Number of XDR processing record in progress",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "XDR IN-PROGRESS",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 42
-      },
-      "id": 14,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "asc"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "pluginVersion": "9.3.2",
@@ -1275,13 +2809,17 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "aerospike_xdr_in_progress{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}",
-          "legendFormat": "In Progress {{service}} {{dc}}",
+          "expr": "sum by (service) (irate(aerospike_sysinfo_network_receive_bytes_total{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\", }[$__rate_interval]))",
+          "format": "stat",
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{service}}",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "step": 240
         }
       ],
-      "title": "In Progress",
+      "title": "Host Network Traffic - Received (bytes) (rate)",
       "type": "timeseries"
     },
     {
@@ -1289,21 +2827,20 @@
         "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
-      "description": "Number of records waiting to be processed in in-memory transaction queue",
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "palette-classic"
+            "mode": "thresholds"
           },
           "custom": {
             "axisCenteredZero": false,
             "axisColorMode": "text",
-            "axisLabel": "XDR IN-QUEUE",
+            "axisLabel": "",
             "axisPlacement": "auto",
             "barAlignment": 0,
             "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "opacity",
+            "fillOpacity": 0,
+            "gradientMode": "none",
             "hideFrom": {
               "legend": false,
               "tooltip": false,
@@ -1315,7 +2852,7 @@
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "never",
+            "showPoints": "auto",
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -1340,825 +2877,64 @@
               }
             ]
           },
-          "unit": "short"
+          "unit": "binBps"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "receive_packets_eth0"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#7EB26D",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "receive_packets_lo"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#E24D42",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 8,
+        "h": 5,
         "w": 12,
         "x": 12,
-        "y": 42
+        "y": 21
       },
-      "id": 12,
+      "id": 51,
+      "links": [],
       "options": {
         "legend": {
           "calcs": [
-            "mean",
-            "lastNotNull",
             "max",
-            "min"
+            "lastNotNull",
+            "min",
+            "mean"
           ],
           "displayMode": "table",
-          "placement": "bottom",
+          "placement": "right",
           "showLegend": true
         },
         "tooltip": {
-          "mode": "multi",
-          "sort": "asc"
-        }
-      },
-      "pluginVersion": "9.3.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "expr": "aerospike_xdr_in_queue{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}",
-          "legendFormat": "In queue {{service}} {{dc}}",
-          "refId": "A"
-        }
-      ],
-      "title": "In Queue",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-      },
-      "description": "It signifies how much behind the destination is compared to the source. In other words, so much time worth of data is yet to be shipped from source to destination",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "XDR LAG",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 50
-      },
-      "id": 16,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "asc"
-        }
-      },
-      "pluginVersion": "9.3.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "expr": "aerospike_xdr_lag{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}",
-          "legendFormat": "Lag {{service}} {{dc}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Lag",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-      },
-      "description": "Time taken to process records across partitions in one lap. A higher number indicates slowness of source in processing the records.",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "XDR LAP μS",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 50
-      },
-      "id": 25,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "asc"
-        }
-      },
-      "pluginVersion": "9.3.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "expr": "aerospike_xdr_lap_us{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}",
-          "legendFormat": "Lap μs {{service}} {{dc}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Lap μs",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-      },
-      "description": "Number of partitions that are recovered by reducing the primary index of that partition",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "XDR  RECOVERIES",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "links": [],
-          "mappings": [],
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 58
-      },
-      "id": 20,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "asc"
-        }
-      },
-      "pluginVersion": "9.3.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "expr": "rate(aerospike_xdr_recoveries{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[1m])",
-          "legendFormat": "Recoveries {{service}} {{dc}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Recoveries",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-      },
-      "description": "Number of recoveries that are currently pending",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "XDR RECOVERIES PENDING",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 58
-      },
-      "id": 23,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "asc"
-        }
-      },
-      "pluginVersion": "9.3.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "expr": "aerospike_xdr_recoveries_pending{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}",
-          "legendFormat": "Recoveries pending {{service}} {{dc}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Recoveries Pending",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-      },
-      "description": "Average network latency for the successfully shipped records",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "XDR AVG SHIP LATENCY MS",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 66
-      },
-      "id": 26,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "asc"
-        }
-      },
-      "pluginVersion": "9.3.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "expr": "aerospike_xdr_latency_ms{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}",
-          "legendFormat": "Latency ms {{service}} {{dc}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Latency ms",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-      },
-      "description": "Average XDR compression ratio",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "XDR AVG COMPRESSION RATIO",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 66
-      },
-      "id": 27,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "asc"
-        }
-      },
-      "pluginVersion": "9.3.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "expr": "aerospike_xdr_compression_ratio{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}",
-          "legendFormat": "Avg compression ratio {{service}} {{dc}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Avg Compression Ratio",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-      },
-      "description": "How much % of records are not compressed because they are below the compression threshold",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "XDR AVG UNCOMPRESSED PCT",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 74
-      },
-      "id": 28,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "asc"
-        }
-      },
-      "pluginVersion": "9.3.2",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "expr": "aerospike_xdr_uncompressed_pct{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}",
-          "legendFormat": "Uncompressed pct {{service}} {{dc}}",
-          "refId": "A"
-        }
-      ],
-      "title": "Uncompressed Pct",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-      },
-      "description": "How much % of records are not compressed because they are below the compression threshold",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "XDR AVG UNCOMPRESSED PCT",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 50,
-            "gradientMode": "opacity",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "links": [],
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "short"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 74
-      },
-      "id": 37,
-      "options": {
-        "legend": {
-          "calcs": [
-            "mean",
-            "lastNotNull",
-            "max",
-            "min"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "asc"
+          "mode": "single",
+          "sort": "none"
         }
       },
       "pluginVersion": "9.3.2",
@@ -2169,13 +2945,17 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "rate(aerospike_xdr_bytes_shipped{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[1m])",
-          "legendFormat": " {{service}} {{dc}} ",
+          "expr": "sum by (service) (irate(aerospike_sysinfo_network_transfer_bytes_total{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\", }[$__rate_interval]))",
+          "format": "stat",
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{service}}",
           "range": true,
-          "refId": "A"
+          "refId": "A",
+          "step": 240
         }
       ],
-      "title": "Bytes Shipped",
+      "title": "Host Network Traffic - Transmitted (bytes) (rate)",
       "type": "timeseries"
     }
   ],
@@ -2335,6 +3115,6 @@
   "timezone": "",
   "title": "XDR View (Aerospike 5.0+ only)",
   "uid": "hU_4PTqWk",
-  "version": 2,
+  "version": 29,
   "weekStart": ""
 }
