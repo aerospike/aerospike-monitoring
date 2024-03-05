@@ -1,0 +1,3384 @@
+{
+  "__requires": [
+    {
+      "type": "panel",
+      "id": "bargauge",
+      "name": "Bar gauge",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "gauge",
+      "name": "Gauge",
+      "version": ""
+    },
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "9.3.2"
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "stat",
+      "name": "Stat",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "text",
+      "name": "Text",
+      "version": ""
+    },
+    {
+      "type": "panel",
+      "id": "timeseries",
+      "name": "Time series",
+      "version": ""
+    }
+  ],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "target": {
+          "limit": 100,
+          "matchAny": false,
+          "tags": [],
+          "type": "dashboard"
+        },
+        "type": "dashboard"
+      }
+    ]
+  },
+  "description": "dashboard display key java-virtual-machine metrics like Memory, CPU, Memory, Threads, Classes, File-Descriptors and Buffers. Each group of metric is shown in individual rows",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 44,
+      "panels": [],
+      "title": "Overview",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "Healthy - Green",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#d44a3a",
+                "value": null
+              },
+              {
+                "color": "rgba(237, 129, 40, 0.89)",
+                "value": 1
+              },
+              {
+                "color": "#7eb26d",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 1
+      },
+      "id": 1,
+      "links": [],
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.2",
+      "repeat": "neo4j_instance",
+      "repeatDirection": "h",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "count(aerospike_graph_service_jvm_info{job=~\"$job_name\", instance=~\"$instance\"})",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Instance (count)",
+      "transparent": true,
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "The maximum heap used memory.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 6,
+        "y": 1
+      },
+      "id": 31,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "max((aerospike_graph_service_jvm_memory_bytes_used{job=~\"$job_name\", instance=~\"$instance\", area=~\"heap\"})*100 / (aerospike_graph_service_jvm_memory_bytes_max{job=~\"$job_name\", instance=~\"$instance\", area=~\"heap\"}))",
+          "legendFormat": "Heap used max",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "% Heap Used (max)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "Current count of JVM threads.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 5,
+        "x": 11,
+        "y": 1
+      },
+      "id": 34,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "sum(aerospike_graph_service_jvm_threads_current{job=~\"$job_name\", instance=~\"$instance\"})",
+          "legendFormat": "current threads",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Current Threads(total)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "The number of objects waiting in the finalizer queue.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 8,
+        "x": 16,
+        "y": 1
+      },
+      "id": 32,
+      "links": [],
+      "options": {
+        "displayMode": "gradient",
+        "minVizHeight": 10,
+        "minVizWidth": 0,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showUnfilled": true,
+        "valueMode": "color"
+      },
+      "pluginVersion": "9.3.2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "max(aerospike_graph_service_jvm_memory_objects_pending_finalization{job=~\"$job_name\", instance=~\"$instance\"})",
+          "hide": false,
+          "legendFormat": "max",
+          "range": true,
+          "refId": "max"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "min(aerospike_graph_service_jvm_memory_objects_pending_finalization{job=~\"$job_name\", instance=~\"$instance\"})",
+          "hide": false,
+          "legendFormat": "min",
+          "range": true,
+          "refId": "min"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "avg(aerospike_graph_service_jvm_memory_objects_pending_finalization{job=~\"$job_name\", instance=~\"$instance\"})",
+          "hide": false,
+          "legendFormat": "avg",
+          "range": true,
+          "refId": "avg"
+        }
+      ],
+      "title": "Objects waiting",
+      "type": "bargauge"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 6
+      },
+      "id": 2,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#73BF69",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 6,
+            "x": 0,
+            "y": 3
+          },
+          "id": 30,
+          "links": [],
+          "maxDataPoints": 100,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "name"
+          },
+          "pluginVersion": "9.3.2",
+          "repeatDirection": "h",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": " group by (cluster_name)(aerospike_graph_service_cluster_name{job=~\"$job_name\", cluster_name=~\"$cluster\", instance=~\"$instance\"})",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{cluster_name}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Aerospike Cluster name",
+          "transparent": true,
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "VM version info",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 5,
+            "x": 6,
+            "y": 3
+          },
+          "id": 3,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "horizontal",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "name"
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "aerospike_graph_service_jvm_info{job=~\"$job_name\",instance=~\"$instance\"}",
+              "format": "time_series",
+              "legendFormat": "{{version}}",
+              "range": true,
+              "refId": "jvm_info"
+            }
+          ],
+          "title": "JVM version",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Used bytes of a given JVM memory area",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 5,
+            "x": 11,
+            "y": 3
+          },
+          "id": 33,
+          "links": [],
+          "options": {
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showThresholdLabels": false,
+            "showThresholdMarkers": true
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(aerospike_graph_service_jvm_memory_bytes_used{job=~\"$job_name\", instance=~\"$instance\", area=~\".*\"})",
+              "hide": false,
+              "legendFormat": "{{area}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Used memory",
+          "type": "gauge"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Total Loaded - The total number of classes that have been loaded since the JVM has started execution.\n\nCurrently Loaded - The number of classes that are currently loaded in the JVM.\n\nTotal Unloaded - The total number of classes that have been unloaded since the JVM has started execution.\n",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 8,
+            "x": 16,
+            "y": 3
+          },
+          "id": 6,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "vertical",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "textMode": "auto"
+          },
+          "pluginVersion": "9.3.2",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_graph_service_jvm_classes_loaded_total{job=~\"$job_name\",instance=~\"$instance\"}[$__rate_interval])",
+              "format": "time_series",
+              "legendFormat": "Total Loaded",
+              "range": true,
+              "refId": "Loaded total"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "aerospike_graph_service_jvm_classes_currently_loaded{job=~\"$job_name\",instance=~\"$instance\"}",
+              "format": "time_series",
+              "hide": false,
+              "legendFormat": "Currently Loaded",
+              "range": true,
+              "refId": "Currently Loaded"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_graph_service_jvm_classes_unloaded_total{job=~\"$job_name\",instance=~\"$instance\"}[$__rate_interval])",
+              "format": "time_series",
+              "hide": false,
+              "legendFormat": "Total Unloaded",
+              "range": true,
+              "refId": "Total Unloaded"
+            }
+          ],
+          "title": "Load",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "gridPos": {
+            "h": 2,
+            "w": 24,
+            "x": 0,
+            "y": 8
+          },
+          "id": 40,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "<p style=\"text-align:center;background-color:rgb(31, 96, 196);font-size:20px\"><b>Threads</b></p>",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.3.2",
+          "type": "text"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Current, Daemon, peak, started thread count of a JVM.\nDeadlocked - Cycles of JVM-threads that are in deadlock waiting to acquire object monitors or ownable synchronizers.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 0,
+            "y": 10
+          },
+          "id": 28,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(aerospike_graph_service_jvm_threads_current{job=~\"$job_name\", instance=~\"$instance\"})",
+              "hide": false,
+              "legendFormat": "current",
+              "range": true,
+              "refId": "current"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(aerospike_graph_service_jvm_threads_daemon{job=~\"$job_name\", instance=~\"$instance\"})",
+              "hide": false,
+              "legendFormat": "daemon",
+              "range": true,
+              "refId": "daemon"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(aerospike_graph_service_jvm_threads_peak{job=~\"$job_name\", instance=~\"$instance\"})",
+              "hide": false,
+              "legendFormat": "peak",
+              "range": true,
+              "refId": "peak"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_graph_service_jvm_threads_started_total{job=~\"$job_name\", instance=~\"$instance\"}[$__rate_interval])",
+              "hide": false,
+              "legendFormat": "started",
+              "range": true,
+              "refId": "started"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(aerospike_graph_service_jvm_threads_deadlocked{job=~\"$job_name\", instance=~\"$instance\"})",
+              "hide": false,
+              "legendFormat": "deadlocked",
+              "range": true,
+              "refId": "deadlocked"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(aerospike_graph_service_jvm_threads_deadlocked_monitor{job=~\"$job_name\", instance=~\"$instance\"})",
+              "hide": false,
+              "legendFormat": "deadlocked_monitor",
+              "range": true,
+              "refId": "deadlocked_monitor"
+            }
+          ],
+          "title": "Threads",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Current count of threads by state.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 12,
+            "x": 12,
+            "y": 10
+          },
+          "id": 29,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(aerospike_graph_service_jvm_threads_state{job=~\"$job_name\", instance=~\"$instance\" })",
+              "hide": false,
+              "legendFormat": "{{state}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Threads state",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "gridPos": {
+            "h": 2,
+            "w": 24,
+            "x": 0,
+            "y": 16
+          },
+          "id": 49,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "<p style=\"text-align:center;background-color:rgb(31, 96, 196);font-size:20px\"><b>Memory</b></p>",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.3.2",
+          "type": "text"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Committed (bytes) of a given JVM memory area.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 0,
+            "y": 18
+          },
+          "id": 13,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(aerospike_graph_service_jvm_memory_bytes_committed{job=~\"$job_name\", instance=~\"$instance\"})",
+              "hide": false,
+              "legendFormat": "{{area}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Committed memory (bytes)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Initial bytes of a given JVM memory area.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 12,
+            "y": 18
+          },
+          "id": 14,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(aerospike_graph_service_jvm_memory_bytes_init{job=~\"$job_name\", instance=~\"$instance\"})",
+              "hide": false,
+              "legendFormat": "{{area}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Initial memory (bytes)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Max (bytes) of a given JVM memory area.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 0,
+            "y": 24
+          },
+          "id": 15,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(aerospike_graph_service_jvm_memory_bytes_max{job=~\"$job_name\", instance=~\"$instance\"})",
+              "hide": false,
+              "legendFormat": "{{area}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Max memory (bytes)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Used bytes of a given JVM memory area.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 12,
+            "y": 24
+          },
+          "id": 16,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(aerospike_graph_service_jvm_memory_bytes_used{job=~\"$job_name\", instance=~\"$instance\"})",
+              "hide": false,
+              "legendFormat": "{{area}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Used memory (bytes)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "gridPos": {
+            "h": 2,
+            "w": 24,
+            "x": 0,
+            "y": 30
+          },
+          "id": 38,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "<p style=\"text-align:center;background-color:rgb(31, 96, 196);font-size:20px\"><b>Memory Pool</b></p>",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.3.2",
+          "type": "text"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Total bytes allocated in a given JVM memory pool",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 0,
+            "y": 32
+          },
+          "id": 19,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_graph_service_jvm_memory_pool_allocated_bytes_total{job=~\"$job_name\", instance=~\"$instance\"}[$__rate_interval])",
+              "hide": false,
+              "legendFormat": "{{pool}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Allocated (bytes)(rate)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Total bytes allocated in a given JVM memory pool. Only updated after GC, not continuously.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 12,
+            "y": 32
+          },
+          "id": 18,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_graph_service_jvm_memory_pool_allocated_bytes_created{job=~\"$job_name\", instance=~\"$instance\"}[$__rate_interval])",
+              "hide": false,
+              "legendFormat": "{{pool}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Created (bytes)(rate)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Initial bytes of a given JVM memory pool.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 0,
+            "y": 38
+          },
+          "id": 21,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(aerospike_graph_service_jvm_memory_pool_bytes_init{job=~\"$job_name\", instance=~\"$instance\"})",
+              "hide": false,
+              "legendFormat": "{{pool}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Initial (bytes)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Committed bytes of a given JVM memory pool.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 12,
+            "y": 38
+          },
+          "id": 20,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(aerospike_graph_service_jvm_memory_pool_bytes_committed{job=~\"$job_name\", instance=~\"$instance\"})",
+              "hide": false,
+              "legendFormat": "{{pool}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Committed (bytes)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Used bytes of a given JVM memory pool.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 0,
+            "y": 44
+          },
+          "id": 23,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(aerospike_graph_service_jvm_memory_pool_bytes_used{job=~\"$job_name\", instance=~\"$instance\"})",
+              "hide": false,
+              "legendFormat": "{{pool}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Used (bytes)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Max bytes of a given JVM memory pool.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 12,
+            "y": 44
+          },
+          "id": 22,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(aerospike_graph_service_jvm_memory_pool_bytes_max{job=~\"$job_name\", instance=~\"$instance\"})",
+              "hide": false,
+              "legendFormat": "{{pool}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Max (bytes)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "gridPos": {
+            "h": 2,
+            "w": 24,
+            "x": 0,
+            "y": 50
+          },
+          "id": 39,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "<p style=\"text-align:center;background-color:rgb(31, 96, 196);font-size:20px\"><b>Memory Pool Collection</b></p>",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.3.2",
+          "type": "text"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Initial after last collection bytes of a given JVM memory pool.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 0,
+            "y": 52
+          },
+          "id": 25,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(aerospike_graph_service_jvm_memory_pool_collection_init_bytes{job=~\"$job_name\", instance=~\"$instance\"})",
+              "hide": false,
+              "legendFormat": "{{pool}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Init (bytes)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Committed after last collection bytes of a given JVM memory pool.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 12,
+            "y": 52
+          },
+          "id": 24,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(aerospike_graph_service_jvm_memory_pool_collection_committed_bytes{job=~\"$job_name\", instance=~\"$instance\"})",
+              "hide": false,
+              "legendFormat": "{{pool}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Committed (bytes)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Used bytes after last collection of a given JVM memory pool.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 0,
+            "y": 58
+          },
+          "id": 27,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(aerospike_graph_service_jvm_memory_pool_collection_used_bytes{job=~\"$job_name\", instance=~\"$instance\"})",
+              "hide": false,
+              "legendFormat": "{{pool}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Used (bytes)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Max bytes after last collection of a given JVM memory pool.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 12,
+            "y": 58
+          },
+          "id": 26,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(aerospike_graph_service_jvm_memory_pool_collection_max_bytes{job=~\"$job_name\", instance=~\"$instance\"})",
+              "hide": false,
+              "legendFormat": "{{pool}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Max (bytes)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "gridPos": {
+            "h": 2,
+            "w": 24,
+            "x": 0,
+            "y": 64
+          },
+          "id": 35,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "<p style=\"text-align:center;background-color:rgb(31, 96, 196);font-size:20px\"><b>Objects</b></p>",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.3.2",
+          "type": "text"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Total Loaded - The total number of classes that have been loaded since the JVM has started execution.\n\nTotal Unloaded - The total number of classes that have been unloaded since the JVM has started execution.\n\nCurrently Loaded - The number of classes that are currently loaded in the JVM.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 0,
+            "y": 66
+          },
+          "id": 10,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_graph_service_jvm_classes_loaded_total{job=~\"$job_name\", instance=~\"$instance\"}[$__rate_interval])",
+              "hide": false,
+              "legendFormat": "loaded",
+              "range": true,
+              "refId": "loaded"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_graph_service_jvm_classes_unloaded_total{job=~\"$job_name\", instance=~\"$instance\"}[$__rate_interval])",
+              "hide": false,
+              "legendFormat": "Unloaded",
+              "range": true,
+              "refId": "unloaded"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "aerospike_graph_service_jvm_classes_currently_loaded{job=~\"$job_name\", instance=~\"$instance\"}",
+              "hide": false,
+              "legendFormat": "current",
+              "range": true,
+              "refId": "currently loaded"
+            }
+          ],
+          "title": "Load",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "The number of objects waiting in the finalizer queue.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 12,
+            "y": 66
+          },
+          "id": 17,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(aerospike_graph_service_jvm_memory_objects_pending_finalization{job=~\"$job_name\", instance=~\"$instance\"})",
+              "hide": false,
+              "legendFormat": " ",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Objects waiting",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "gridPos": {
+            "h": 2,
+            "w": 24,
+            "x": 0,
+            "y": 72
+          },
+          "id": 50,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "<p style=\"text-align:center;background-color:rgb(31, 96, 196);font-size:20px\"><b>Buffer Pool</b></p>",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.3.2",
+          "type": "text"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Used bytes of a given JVM buffer pool.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 0,
+            "y": 74
+          },
+          "id": 9,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "aerospike_graph_service_jvm_buffer_pool_used_bytes{job=~\"$job_name\", instance=~\"$instance\"}",
+              "hide": false,
+              "legendFormat": "{{pool}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Used bytes",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Used buffers of a given JVM buffer pool.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 8,
+            "y": 74
+          },
+          "id": 8,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "aerospike_graph_service_jvm_buffer_pool_used_buffers{job=~\"$job_name\", instance=~\"$instance\"}",
+              "hide": false,
+              "legendFormat": "{{pool}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Used buffers",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Bytes capacity of a given JVM buffer pool.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "bytes"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 8,
+            "x": 16,
+            "y": 74
+          },
+          "id": 4,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "aerospike_graph_service_jvm_buffer_pool_capacity_bytes{job=~\"$job_name\", instance=~\"$instance\"}",
+              "hide": false,
+              "legendFormat": "{{pool}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Bytes Capacity",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "gridPos": {
+            "h": 2,
+            "w": 24,
+            "x": 0,
+            "y": 80
+          },
+          "id": 36,
+          "options": {
+            "code": {
+              "language": "plaintext",
+              "showLineNumbers": false,
+              "showMiniMap": false
+            },
+            "content": "<p style=\"text-align:center;background-color:rgb(31, 96, 196);font-size:20px\"><b>Garbage Collector</b></p>",
+            "mode": "markdown"
+          },
+          "pluginVersion": "9.3.2",
+          "type": "text"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Time spent in a given JVM garbage collector in seconds",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 0,
+            "y": 82
+          },
+          "id": 11,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_graph_service_jvm_gc_collection_seconds_count{job=~\"$job_name\", instance=~\"$instance\"}[$__rate_interval])",
+              "hide": false,
+              "legendFormat": "{{gc}}",
+              "range": true,
+              "refId": "G1_Old_Generation & G1_Young_Generation"
+            }
+          ],
+          "title": "GC count (rate)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Time spent in a given JVM garbage collector in seconds",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 30,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "normal"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 12,
+            "x": 12,
+            "y": 82
+          },
+          "id": 12,
+          "links": [],
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "9.5.8",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_graph_service_jvm_gc_collection_seconds_sum{job=~\"$job_name\", instance=~\"$instance\"}[$__rate_interval])",
+              "hide": false,
+              "legendFormat": "{{gc}}",
+              "range": true,
+              "refId": "G1_Old_Generation & G1_Young_Generation"
+            }
+          ],
+          "title": "GC sum (rate)",
+          "type": "timeseries"
+        }
+      ],
+      "repeat": "instance",
+      "repeatDirection": "h",
+      "title": "$instance",
+      "type": "row"
+    }
+  ],
+  "refresh": "",
+  "schemaVersion": 37,
+  "style": "dark",
+  "tags": [
+    "graph",
+    "monitoring",
+    "usecases",
+    "jvm",
+    "node"
+  ],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "selected": false,
+          "text": "Aerospike Prometheus",
+          "value": "Aerospike Prometheus"
+        },
+        "hide": 0,
+        "includeAll": false,
+        "label": "Datasource",
+        "multi": false,
+        "name": "DS_AEROSPIKE_PROMETHEUS",
+        "options": [],
+        "query": "prometheus",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "type": "datasource"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
+        "definition": "label_values(aerospike_graph_service_jvm_info,job)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "job_name",
+        "multi": true,
+        "name": "job_name",
+        "options": [],
+        "query": {
+          "query": "label_values(aerospike_graph_service_jvm_info,job)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
+        "definition": "label_values(aerospike_graph_service_cluster_name{job=~\"$job_name\"},cluster_name)",
+        "hide": 2,
+        "includeAll": true,
+        "label": "Aerospike Cluster",
+        "multi": true,
+        "name": "cluster",
+        "options": [],
+        "query": {
+          "query": "label_values(aerospike_graph_service_cluster_name{job=~\"$job_name\"},cluster_name)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
+        "definition": "label_values(aerospike_graph_service_cluster_name{job=~\"$job_name\", cluster_name=~\"$cluster\"},instance)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "Instance",
+        "multi": true,
+        "name": "instance",
+        "options": [],
+        "query": {
+          "query": "label_values(aerospike_graph_service_cluster_name{job=~\"$job_name\", cluster_name=~\"$cluster\"},instance)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-30m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "",
+  "title": "Aerospike Graph Service JVM",
+  "uid": "4qbWwSTIz",
+  "version": 3,
+  "weekStart": ""
+}
