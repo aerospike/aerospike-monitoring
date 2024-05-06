@@ -1,0 +1,52 @@
+name: Create tar.gz and zip artefacts of dashboars
+
+on: 
+  push:
+    # branches: [master]
+    # TODO this combination logic of branch + tag is not working.
+    tags:
+       - v*
+
+permissions:
+  id-token: write
+  actions: write
+  contents: write
+
+jobs:         
+    tar_job:
+      runs-on: ubuntu-latest    
+      steps:
+        - uses: actions/checkout@v3
+          with:
+            fetch-depth: 0
+
+        - uses: actions-ecosystem/action-get-latest-tag@v1
+          id: get-latest-tag
+
+        - name: Create tar and zip files
+          run: |
+            cd config/grafana
+            echo "Tar GZipping tar files"
+            tar cvf dashboards.tar dashboards/*
+            gzip dashboards.tar
+            zip -r dashboards.zip dashboards/*
+            ls -lrt *.tar.gz
+            ls -lrt *.zip 
+        - name: Upload Release Asset
+          env:
+            GH_TOKEN: ${{ github.token }}
+            TAG_NAME: "${{ steps.get-latest-tag.outputs.tag }}"
+          run: |
+             # echo "tag_name $TAG_NAME"
+             echo
+             
+             files=$(find config/grafana -type f -name "dashboards*" -printf "$(realpath -s %p) ")
+         
+             for file in $files; do
+               echo "uploading file === $file to release-tag $TAG_NAME"
+               gh release upload "$TAG_NAME" "$file"
+             done   
+
+             echo
+             echo "attaching artefacts to tag completed ... "
+             echo
