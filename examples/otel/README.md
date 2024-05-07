@@ -51,7 +51,7 @@ headers = {<mention the auth api-key as key=value pair here, multiple key/values
 Example: {api-key="newrelic-auth-key"}
 ```
 
-These examples cover integration of aerospike monitoring with using OTel Collector component
+These examples cover integration of Aerospike monitoring using the OTel Collector component
 
 1. NewRelic
 2. Datadog
