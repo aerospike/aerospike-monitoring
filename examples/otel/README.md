@@ -26,7 +26,7 @@ Aerospike Prometheus Exporter can push data to OTel endpoints
 ![Deployment Topology](assets/aerospike_exporter_otel_collector.png)
 
 ## Aerospike Prometheus Exporter push to OTel endpoint
-##### modify the Aerospike Prometheus Exporter ape.toml config file with the OTel endpoints
+##### Modify the Aerospike Prometheus Exporter ape.toml config file with the OTel endpoints
 
 > **Note**: Currently Exporter supports only gRPC endpoints
 
