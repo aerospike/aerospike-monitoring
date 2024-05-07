@@ -33,7 +33,7 @@ Aerospike Prometheus Exporter can push data to OTel endpoints
 OpenTelemetry configs are available under section Agent.OpenTelemetry in ape.toml config file
 
 ```
-service_name = "<please provide application service to be appeared in the observability site>"
+service_name = "<please provide application service to appear in the observability site>"
 Example: "aerospike-cluster-checkout-system"
 ```
 
