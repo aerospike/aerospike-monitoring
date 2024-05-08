@@ -13,7 +13,7 @@ permissions:
   contents: write
 
 jobs:         
-    tar_job:
+    zipping_job:
       runs-on: ubuntu-latest    
       steps:
         - uses: actions/checkout@v3
@@ -23,14 +23,12 @@ jobs:
         - uses: actions-ecosystem/action-get-latest-tag@v1
           id: get-latest-tag
 
-        - name: Create tar and zip files
+        - name: Create zip or tar files
           run: |
             cd config/grafana
-            echo "Tar GZipping tar files"
-            tar cvf dashboards.tar dashboards/*
-            gzip dashboards.tar
-            zip -r dashboards.zip dashboards/*
-            ls -lrt *.tar.gz
+            echo "Zipping tar files"
+            VERSION=${GITHUB_REF_NAME#v}
+            zip -r aerospike-grafana-dashboards-$VERSION.zip dashboards/*
             ls -lrt *.zip 
         - name: Upload Release Asset
           env:
@@ -40,7 +38,7 @@ jobs:
              # echo "tag_name $TAG_NAME"
              echo
              
-             files=$(find config/grafana -type f -name "dashboards*" -printf "$(realpath -s %p) ")
+             files=$(find config/grafana -type f -name "aerospike-grafana-dashboards*" -printf "$(realpath -s %p) ")
          
              for file in $files; do
                echo "uploading file === $file to release-tag $TAG_NAME"
@@ -48,5 +46,5 @@ jobs:
              done   
 
              echo
-             echo "attaching artefacts to tag completed ... "
+             echo "lising of files ... "
              echo
