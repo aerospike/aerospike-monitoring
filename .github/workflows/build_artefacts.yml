@@ -24,6 +24,9 @@ jobs:
           id: get-latest-tag
 
         - name: Create zip or tar files
+          env:
+            GH_TOKEN: ${{ github.token }}
+            TAG_NAME: "${{ steps.get-latest-tag.outputs.tag }}"
           run: |
             cd config/grafana
             echo "Tar & GZipping tar files"
@@ -31,23 +34,7 @@ jobs:
             tar cvf aerospike-grafana-dashboards-$VERSION.tar dashboards/*
             gzip aerospike-grafana-dashboards*
             # zip -r aerospike-grafana-dashboards-$VERSION.zip dashboards/*
-            # ls -lrt *.zip 
             ls -lrt *.tar.gz
-        - name: Upload Release Asset
-          env:
-            GH_TOKEN: ${{ github.token }}
-            TAG_NAME: "${{ steps.get-latest-tag.outputs.tag }}"
-          run: |
-             # echo "tag_name $TAG_NAME"
-             echo
-             
-             files=$(find config/grafana -type f -name "aerospike-grafana-dashboards*" -printf "$(realpath -s %p) ")
-         
-             for file in $files; do
-               echo "uploading file === $file to release-tag $TAG_NAME"
-               gh release upload "$TAG_NAME" "$file"
-             done   
-
-             echo
-             echo "lising of files ... "
-             echo
+            echo
+            echo "Uploading release asset"
+            gh release upload "$TAG_NAME" "aerospike-grafana-dashboards-$VERSION.tar.gz"
