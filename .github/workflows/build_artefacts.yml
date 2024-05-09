@@ -1,9 +1,7 @@
-name: Create tar.gz and zip artefacts of dashboars
+name: Create tar.gz artifacts of dashboards
 
 on: 
   push:
-    # branches: [master]
-    # TODO this combination logic of branch + tag is not working.
     tags:
        - v*
 
@@ -23,13 +21,13 @@ jobs:
         - uses: actions-ecosystem/action-get-latest-tag@v1
           id: get-latest-tag
 
-        - name: Create zip or tar files
+        - name: Create tar files
           env:
             GH_TOKEN: ${{ github.token }}
             TAG_NAME: "${{ steps.get-latest-tag.outputs.tag }}"
           run: |
             cd config/grafana
-            echo "Tar & GZipping tar files"
+            echo "Tar-zipping files"
             VERSION=${GITHUB_REF_NAME#v}
             tar czf aerospike-grafana-dashboards-$VERSION.tar.gz dashboards/*
             echo
