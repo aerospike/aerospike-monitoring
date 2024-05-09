@@ -1,0 +1,35 @@
+name: Create tar.gz artifacts of dashboards
+
+on: 
+  push:
+    tags:
+       - v*
+
+permissions:
+  id-token: write
+  actions: write
+  contents: write
+
+jobs:         
+    tar_zipping_job:
+      runs-on: ubuntu-latest    
+      steps:
+        - uses: actions/checkout@v3
+          with:
+            fetch-depth: 0
+
+        - uses: actions-ecosystem/action-get-latest-tag@v1
+          id: get-latest-tag
+
+        - name: Create tar files
+          env:
+            GH_TOKEN: ${{ github.token }}
+            TAG_NAME: "${{ steps.get-latest-tag.outputs.tag }}"
+          run: |
+            cd config/grafana
+            echo "Tar-zipping files"
+            VERSION=${GITHUB_REF_NAME#v}
+            tar czf aerospike-grafana-dashboards-$VERSION.tar.gz dashboards/*
+            echo
+            echo "Uploading release asset"
+            gh release upload "$TAG_NAME" "aerospike-grafana-dashboards-$VERSION.tar.gz"
