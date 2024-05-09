@@ -13,7 +13,7 @@ permissions:
   contents: write
 
 jobs:         
-    zipping_job:
+    tar_zipping_job:
       runs-on: ubuntu-latest    
       steps:
         - uses: actions/checkout@v3
@@ -26,10 +26,13 @@ jobs:
         - name: Create zip or tar files
           run: |
             cd config/grafana
-            echo "Zipping tar files"
+            echo "Tar & GZipping tar files"
             VERSION=${GITHUB_REF_NAME#v}
-            zip -r aerospike-grafana-dashboards-$VERSION.zip dashboards/*
-            ls -lrt *.zip 
+            tar cvf aerospike-grafana-dashboards-$VERSION.tar dashboards/*
+            gzip aerospike-grafana-dashboards*
+            # zip -r aerospike-grafana-dashboards-$VERSION.zip dashboards/*
+            # ls -lrt *.zip 
+            ls -lrt *.tar.gz
         - name: Upload Release Asset
           env:
             GH_TOKEN: ${{ github.token }}
