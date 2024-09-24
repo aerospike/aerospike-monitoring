@@ -18,7 +18,7 @@ If you are using fluent-bit as your log ingestion agent, then follow below provi
 Below are the two fluent-bit configurations relatated to Aerospike logs
 
 1. fluent-bit-aerospike-parsers.conf
-2. fluent-bit-aerospike-filters-section.conf
+2. fluent-bit-aerospike.conf
 
 Follow below steps to use and configure fluent-bit to process Aerospike logs
 
@@ -37,6 +37,28 @@ Follow below steps to use and configure fluent-bit to process Aerospike logs
     parsers_file /etc/fluent-bit/fluent-bit-aerospike-parsers.conf
     ....
 ```
+
 > **NOTE**: multiple parsers can be mentioned or provided in fluent-bit config, please refer https://docs.fluentbit.io/manual/administration/configuring-fluent-bit/classic-mode/configuration-file
 
-> **NOTE**: we can include multiple parsers file in flient-bit.conf file using @INCLUDE directive, 
+We strongly recommend to use a differnt index in Elasticsearch when ingesting Aerospike server logs.
+
+# splunk (https://www.splunk.com)
+
+If you are using splunk, then follow below provided steps to parse logs as individual fields during log ingestion into splunk
+
+Below are the two Splunk configurations relatated to Aerospike logs
+
+1. splunk-aerospike-local_props.conf
+2. splunk-aerospike-local_transforms.conf
+
+In your splunk indexer machine 
+1. goto $SPLUNK_HOME (like /etc/splunk)
+2. cd system/local
+3. copy splunk-aerospike-local_props.conf and rename as props.conf
+4. copy splunk-aerospike-local_transforms.conf and rename as transforms.conf
+
+If you already have a props.conf and transform.conf in your $SPLUNK_HOME/system/local folder, then,
+- append splunk-aerospike-local_props.conf contents to your existing $SPLUNK_HOME/system/local/props.conf
+- append  splunk-aerospike-local_transforms.conf to your $SPLUNK_HOME/system/local/transforms.conf
+
+We strongly recommend to import Aerospike logs under a separate "sourcetype".
