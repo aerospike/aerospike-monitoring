@@ -1,120 +1,42 @@
-# Regular Expressions for log parsing
+# Regular Expressions for Aerospike log parsing
 
-The otel deploy Aerospike Monitoring Stack is a docker compose configuration
-which creates the following containers running on the same host as a single-node
-Aerospike cluster:
-1. aerospike-prometheus-exporter latest version
-2. OTel collector contrib latest version
+This document outlines how Aerospike server logs can be ingested and parsed as fields into 3rd party log management tools, 
+around 150 unique regular expression are created to parse various logs.
 
-A prerequisite is that you have a single-node cluster, with the service port
-accessible from port 3000 of the host where the monitoring stack is deployed.  If you
-do not already have such an Aerospike cluster, you can deploy a single-node cluster
-in a container using:
+In this document we are providing details and steps for 2 popular log ingestion tools
+* Fluent-bit, and
+* Splunk 
 
-```
-$ docker run -tid --name aerospike -p 3000:3000 -p 3001:3001 -p 3002:3002 aerospike/aerospike-server:latest
-```
+> **Note**: These regular expression can parse logs from Aerospike server 6.x and above
 
-# Deployment model
+> **Note**: Currently Multi-line log parsing is not supported
 
-Aerospike Prometheus Exporter can push data to OTel endpoints  
+# fluent-bit ( https://docs.fluentbit.io/manual )
 
-1. Exporter directly pushing to OTel endpoint
-2. OTel Collector
+If you are using fluent-bit as your log ingestion agent, then follow below provided guidelines.
 
-# Connecting to OTel endpoints
-![Deployment Topology](assets/aerospike_exporter_otel_collector.png)
+Below are the two fluent-bit configurations relatated to Aerospike logs
 
-## Aerospike Prometheus Exporter push to OTel endpoint
-##### Modify the Aerospike Prometheus Exporter ape.toml config file with the OTel endpoints
+1. fluent-bit-aerospike-parsers.conf
+2. fluent-bit-aerospike-filters-section.conf
 
-> **Note**: Currently Exporter supports only gRPC endpoints
+Follow below steps to use and configure fluent-bit to process Aerospike logs
 
-OpenTelemetry configs are available under section Agent.OpenTelemetry in ape.toml config file
+1. copy fluent-bit-aerospike-parsers.conf to folder /etc/fluent-bit/
+2. open /etc/fluent-bit/fluent-bit.conf
+3. search and update the value of the "parsers_file" key under "SERVICE" section  to /etc/fluent-bit/fluent-bit-aerospike-parsers.conf
+4. restart fluent-bit agent
 
 ```
-service_name = "<please provide application service to appear in the observability site>"
-Example: "aerospike-cluster-checkout-system"
+[SERVICE]
+    .....
+    # Parsers File
+    # ============
+    # specify an optional 'Parsers' configuration file
+    # parsers_file /root/fluentbit/parsers.conf
+    parsers_file /etc/fluent-bit/fluent-bit-aerospike-parsers.conf
+    ....
 ```
+> **NOTE**: multiple parsers can be mentioned or provided in fluent-bit config, please refer https://docs.fluentbit.io/manual/administration/configuring-fluent-bit/classic-mode/configuration-file
 
-```
-endpoint = "<endpoint of the OTel provider without any protocol and port number>"
-Example: "otlp.nr-data.net"
-```
-
-```
-endpoint_tls_enabled = true/false
-```
-
-```
-headers = {<mention the auth api-key as key=value pair here, multiple key/values can be provided as a comma separated values>}
-Example: {api-key="newrelic-auth-key"}
-```
-
-These examples cover integration of Aerospike monitoring using the OTel Collector component
-
-1. NewRelic
-2. Datadog
-3. AWS Cloudwatch
-4. Dynatrace
-
-> **Note**: You need to update the API Key or Access Key in the respective configuration files.
-
-## NewRelic 
-### modify newrelic-otel-collector-config.yml and update below key with respective values 
-###### <NEWRELIC-API-KEY> 
-### To start the stack 
-```
-$ docker-compose -f newrelic-docker-compose.yml up
-```
-## To stop the stack
-```
-$ docker-compose -f newrelic-docker-compose.yml down
-```
-Now simply point your browser at NewRelic cloud https://one.newrelic.com/data-explorer to see Aerospike metrics.
-
-## Datadog
-### modify datadog-otel-collector-config.yml and update below key with respective values 
-###### <DATADOG-APP-KEY> 
-### To start the stack 
-```
-$ docker-compose -f datadog-docker-compose.yml up
-```
-
-## To stop the stack
-```
-$ docker-compose -f datadog-docker-compose.yml down
-```
-Now simply point your browser at Datadog cloud https://app.datadoghq.com/metric/explorer to see Aerospike metrics.
-
-## DynaTrace 
-### modify dynatrace-otel-collector-config.yml and update below key with respective values 
-###### <DYNATRACE-API-TOKEN> 
-### To start the stack 
-```
-$ docker-compose -f dynatrace-docker-compose.yml up
-```
-## To stop the stack
-```
-$ docker-compose -f dynatrace-docker-compose.yml down
-```
-Now simply point your browser at DynaTrace cloud https://<YOUR-ENVIRONMENT-ID>.apps.dynatrace.com/ui/apps/dynatrace.classic.metrics/ui/metrics to see Aerospike metrics.
-
-See [OTel-DynaTrace-documentation](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/exporter/dynatraceexporter/README.md)
-
-## Cloudwatch
-### modify cloudwatch-docker-compose.yml and update below keys with respective values 
-###### AWS_REGION=<AWS_REGION_LOCATION>
-###### AWS_ACCESS_KEY_ID=<MENTION-YOUR-AWS-CLOUD-WATCH-KEY>
-###### AWS_SECRET_ACCESS_KEY=<MENTION-YOUR-AWS-CW-SECRET-ACCESS-KEY>
-### To start the stack 
-```
-$ docker-compose -f cloudwatch-docker-compose.yml up
-```
-
-Now simply point your browser at AWS Cloudwatch to see Aerospike metrics.
-
-## To stop the stack
-```
-$ docker-compose -f cloudwatch-docker-compose.yml down
-```
+> **NOTE**: we can include multiple parsers file in flient-bit.conf file using @INCLUDE directive, 
