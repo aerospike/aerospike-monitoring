@@ -2,6 +2,8 @@ import re
 
 G_GIAI_REGEX_FILENAME="configs/giai_regex_patterns.txt"
 
+G_TOOL_LOG_FILENAME="process_output.log"
+
 G_MODIFIED_GIAI_REGEX_FILENAME="configs/modified_giai_regex_patterns.txt"
 G_FLUENTBIT_MASTER_CONF_FILENAME="configs/fluentbit/master-fluent-bit-partial.conf"
 
@@ -14,6 +16,9 @@ G_SPLUNK_TRANSFORMERS_CONF_FILE="configs/splunk/splunk_local_transforms.conf"
 giai_unique_regex_set = set()
 unique_regex_set = set()
 
+# global regex to count words
+g_word_pattern = re.compile(r'\w+')
+
 # BEGIN giai regex processing
 def read_giai_regex(): 
     count = 0
@@ -24,36 +29,62 @@ def read_giai_regex():
             
 def parse_modify_and_save_regex():  
     read_giai_regex()   
-    fbit_unique_regex_str="" 
+    unique_regex_str="" 
+    ignored_line_str=""
     for line in giai_unique_regex_set:
         l = line
-        if not l.startswith("#"):            
+        
+        # remove leading / trailing spaces
+        l = l.strip() 
+        
+        if  not l.startswith("#") and l.startswith("-") : 
             l = l.replace("\"","")
+            l = l.replace("\\(","(")
+            l = l.replace("\\)",")")
             l = l.replace("\\\d","\\d")
             l = l.replace("\\\(","\\(")
             l = l.replace("\\\)","\)")        
+            l = l.replace("\\[","[")        
+            l = l.replace("\\]","]")        
 
+            # if there is a comment in between the regex, pick only the regex and ignore the rest of comments
             if "#" in l:
                 l= l[:line.find("#")-2]
                 l= l.strip(" ")
+            
+            # remove leading hypen (-)
+            l= l[1:]
+            l= l.strip(" ")
                 
-            l = "^(?P<datetimestamp>\w+ \d+ \d+ \d+:\d+:\d+) (?P<timezone>\S+): (?P<log_level>\S+) \((?<source>\S+)\): \((?P<source_location>[^)]+)\)\s+"+ l + "$"
-            # print("# Giai line ==> "+line)           
-            # print(l)
-            fbit_unique_regex_str = fbit_unique_regex_str + "# Giai line ==> "+line +"\n"
-            fbit_unique_regex_str = fbit_unique_regex_str + l +"\n"
-
-            unique_regex_set.add ("# Giai line ==> "+line)           
-            unique_regex_set.add (l)           
+            temp_regx= l
+            if check_if_parsable_regex(l):
+                l = "^(?P<datetimestamp>\w+ \d+ \d+ \d+:\d+:\d+) (?P<timezone>\S+): (?P<log_level>\S+) \((?P<source>\S+)\): \((?P<source_location>[^)]+)\)\s+"+ l + "$"
+                
+                if check_valid_regex( temp_regx):
+                    unique_regex_str = unique_regex_str + "# Giai line ==> "+line +"\n"
+                    unique_regex_str = unique_regex_str + l +"\n"
+                    unique_regex_set.add ("# Giai line ==> "+line)           
+                    unique_regex_set.add (l)
+                else:
+                    ignored_line_str = ignored_line_str + "# Giai line, Ignoring, invalid regex syntax issues ==> "+temp_regx +"\n"
+            else:
+                ignored_line_str = ignored_line_str + "# Giai line, Ignoring, invalid regex is very small ==> "+temp_regx +"\n"
+                
         else:
             # print("# Giai line, Ignoring ==> "+line)           
-            fbit_unique_regex_str = fbit_unique_regex_str + "# Giai line, Ignoring ==> "+line +"\n"
-            unique_regex_set.add ("# Giai line, Ignoring ==> "+line) 
+            ignored_line_str = ignored_line_str + "# Giai line, Ignoring ==> "+line +"\n"
+            # unique_regex_set.add ("# Giai line, Ignoring ==> "+line) 
+
+    # save to modified patterns to file
+    fh_modified_pattterns_conf = open(G_MODIFIED_GIAI_REGEX_FILENAME, "w")
+    fh_modified_pattterns_conf.write(unique_regex_str)    
+    fh_modified_pattterns_conf.close()  
+    # print( unique_regex_str)  
     
-    
-    fh_fluentbit_conf = open(G_MODIFIED_GIAI_REGEX_FILENAME, "w")
-    fh_fluentbit_conf.write(fbit_unique_regex_str)    
-    fh_fluentbit_conf.close()    
+    # sace output log
+    fh_modified_pattterns_conf = open(G_TOOL_LOG_FILENAME, "w")
+    fh_modified_pattterns_conf.write(ignored_line_str)    
+    fh_modified_pattterns_conf.close()  
 # END giai regex processing
 
 # BEGIN fluent-bit parsers.conf and filter.conf generation
@@ -112,6 +143,7 @@ def construct_fluentbit_filters_from_giai():
     
     for line in unique_regex_set:
         idx = idx +1
+        l = line.replace("?P","?")
         f= ""
         f= f+ "[FILTER]\n"
         f= f+ "    Name parser\n"
@@ -126,7 +158,7 @@ def construct_fluentbit_filters_from_giai():
         p= p+ "    # Aerospike RegEx patterns - "+str(idx)+" \n"
         p= p+ "    Name aero_log_parser_type_"+str(idx)+"\n"
         p= p+ "    Format regex\n"
-        p= p+ "    Regex   "+ line+"\n"
+        p= p+ "    Regex   "+ l+"\n"
         p= p+ "    Time_Key    datetime\n"        
         
         all_filters_together = all_filters_together + "    Parser aero_log_parser_type_"+ str(idx)+"\n"        
@@ -168,10 +200,11 @@ def generate_fluentbit_conf_files():
     all_fluent_bit_configs = all_fluent_bit_configs + individual_filters+"\n"
     all_fluent_bit_configs = all_fluent_bit_configs + record_modifier_filter+"\n"
     all_fluent_bit_configs = all_fluent_bit_configs + all_filters_together+"\n"
-    all_fluent_bit_configs = all_fluent_bit_configs + output_sections+"\n"
 
     # Add the SERVICE section    
-    fluentbit_conf_sections= read_fluentbit_conf_sections()
+    # fluentbit_conf_sections= read_fluentbit_conf_sections()
+    # Add output section
+    # all_fluent_bit_configs = all_fluent_bit_configs + output_sections+"\n"
     
     fh_fluentbit_conf = open(G_FLUENTBIT_FILTER_SECTIONS_CONF_FILE, "w")
     fh_fluentbit_conf.write(fluentbit_conf_sections+"\n")    
@@ -235,6 +268,18 @@ def generate_splunk_conf_files():
 # END splunk props.conf and transform.conf generation              
 
 # commons functions
+
+def check_valid_regex(pattern):
+    try:
+        re.compile(pattern)
+        return True
+    except re.error as e:
+        return False
+
+def check_if_parsable_regex(pattern):
+    word_count = g_word_pattern.findall(pattern)
+    return (len(word_count)>2)
+
 def convert_group_names_to_lower(p_regex):
     group_names = re.findall(r'\?P<(\w+)>', p_regex)    
     lowercase_map = {name: name.lower() for name in group_names}

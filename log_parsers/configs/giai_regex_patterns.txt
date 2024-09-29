@@ -1,162 +1,1409 @@
-"[A-Z][a-z]{2} [0-9]{2} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3} " # with ms and timezone shift
-"[A-Z][a-z]{2} [0-9]{2} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} " # with timezone shift
-"[A-Z][a-z]{2} [0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} " # syslog edition
-#- "[A-Z][a-z]{2} [0-9]{2} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} [A-Z]{3}[\\+|-][0-9]{4}" # with timezone shift
-#- "[A-Z][a-z]{2} [0-9]{2} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3} [A-Z]{3}[\\+|-][0-9]{4}" # with ms and timezone shift
-#- "[A-Z][a-z]{2} [0-9]{2} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} [A-Z]{3}" # basic
-#- "[A-Z][a-z]{2} [0-9]{2} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3} [A-Z]{3}" # basic with ms
-"histogram dump: {(?P<Namespace>[^}]+)}-(?P<Histogram>[^ ]+) \\((?P<total>\\d+) total\\) msec *(?P<histogram>.*)"
-"histogram dump: (?P<Histogram>[^ ]+) \\((?P<total>\\d+) total\\) msec *(?P<histogram>.*)"
-"histogram dump: {(?P<Namespace>[^}]+)}-(?P<HistogramCount>[^ ]+) \\((?P<total>\\d+) total\\) count *(?P<histogram>.*)"
-"histogram dump: (?P<HistogramCount>[^ ]+) \\((?P<total>\\d+) total\\) count *(?P<histogram>.*)"
-"histogram dump: {(?P<Namespace>[^}]+)}-(?P<HistogramUs>[^ ]+) \\((?P<total>\\d+) total\\) usec *(?P<histogram>.*)"
-"histogram dump: (?P<HistogramUs>[^ ]+) \\((?P<total>\\d+) total\\) usec *(?P<histogram>.*)"
-"histogram dump: {(?P<Namespace>[^}]+)}-(?P<HistogramSize>[^ ]+) \\((?P<total>\\d+) total\\) bytes *(?P<histogram>.*)"
-"histogram dump: {(?P<HistogramSize>[^ ]+) \\((?P<total>\\d+) total\\) bytes *(?P<histogram>.*)"
-# - "CLUSTER-SIZE (?P<ClusterSize>\\d+) CLUSTER-NAME (?P<ClusterName>[^$]+)" # if simple search matches, find and export these values to <binName>, standard Perl regex format: (?P<BinName>REGEX) - we do not need ClusterName in the bins
-"CLUSTER-SIZE (?P<ClusterSize>\\d+)"
-"{(?P<Namespace>[^}]+)} migrations: remaining \\((?P<MigraRemainTx>\\d+),(?P<MigraRemainRx>\\d+),(?P<MigraRemainSig>\\d+)\\) active \\((?P<MigraActiveTx>\\d+),(?P<MigraActiveRx>\\d+),(?P<MigraActiveSig>\\d+)\\) complete-pct (?P<MigraCompletPct>[0-9\\.]+)"
-"{(?P<Namespace>[^}]+)} migrations: remaining \\((?P<MigraRemainTx>\\d+),(?P<MigraRemainRx>\\d+)\\) active \\((?P<MigraActiveTx>\\d+),(?P<MigraActiveRx>\\d+)\\) complete-pct (?P<MigraCompletPct>[0-9\\.]+)"
-"{(?P<Namespace>[^}]+)} migrations: remaining \\((?P<MigraRemainTx>\\d+),(?P<MigraRemainRx>\\d+),(?P<MigraRemainSig>\\d+)\\) active \\((?P<MigraActiveTx>\\d+),(?P<MigraActiveRx>\\d+),(?P<MigraActiveSig>\\d+)\\) complete-pct (?P<MigraCompletPct>[0-9\\.]+)"
-"skew-ms (?P<ClockSkewMs>\\d+)"
-"system: total-cpu-pct (?P<TotalCpuPct>\\d+) user-cpu-pct (?P<UserCpuPct>\\d+) kernel-cpu-pct (?P<KernelCpuPct>\\d+) free-mem-kbytes (?P<FreeMemKB>\\d+) free-mem-pct (?P<FreeMemPct>\\d+) thp-mem-kbytes (?P<THPMemKB>\\d+)"
-"system: total-cpu-pct (?P<TotalCpuPct>\\d+) user-cpu-pct (?P<UserCpuPct>\\d+) kernel-cpu-pct (?P<KernelCpuPct>\\d+) free-mem-kbytes (?P<FreeMemKB>\\d+) free-mem-pct (?P<FreeMemPct>\\d+)"
-"process: cpu-pct (?P<ProcessCpuPct>\\d+) threads \\((?P<ThreadJoin>\\d+),(?P<ThreadDetach>\\d+),(?P<ThreadPoolTot>\\d+),(?P<ThreadPoolAct>\\d+)\\) heap-kbytes \\((?P<HeapKBAlloc>\\d+),(?P<HeapKBActive>\\d+),(?P<HeapKBMapped>\\d+)\\) heap-efficiency-pct (?P<HeapEfficPct>[0-9\\.]+)"
-"process: cpu-pct (?P<ProcessCpuPct>\\d+) heap-kbytes \\((?P<HeapKBAlloc>\\d+),(?P<HeapKBActive>\\d+),(?P<HeapKBMapped>\\d+)\\) heap-efficiency-pct (?P<HeapEfficPct>[0-9\\.]+)"
-"system-memory: free-kbytes (?P<FreeMemKB>\\d+) free-pct (?P<FreeMemPct>\\d+) heap-kbytes \\((?P<HeapKBAlloc>\\d+),(?P<HeapKBActive>\\d+),(?P<HeapKBMapped>\\d+)\\) heap-efficiency-pct (?P<HeapEfficPct>[0-9\\.]+)"
-"system-memory: free-kbytes (?P<FreeMemKB>\\d+) free-pct (?P<FreeMemPct>\\d+)"
-"in-progress: info-q (?P<InfoQ>\\d+) rw-hash (?P<RWHash>\\d+) proxy-hash (?P<ProxyHash>\\d+) tree-gc-q (?P<TreeGcQ>\\d+)"
-"in-progress: tsvc-q (?P<TsvcQ>\\d+) info-q (?P<InfoQ>\\d+) rw-hash (?P<RWHash>\\d+) proxy-hash (?P<ProxyHash>\\d+) tree-gc-q (?P<TreeGcQ>\\d+)"
-"in-progress: tsvc-q (?P<TsvcQ>\\d+) info-q (?P<InfoQ>\\d+) nsup-delete-q (?P<NsupDelQ>\\d+) rw-hash (?P<RWHash>\\d+) proxy-hash (?P<ProxyHash>\\d+) tree-gc-q (?P<TreeGcQ>\\d+)"
-"in-progress: tsvc-q (?P<TsvcQ>\\d+) info-q (?P<InfoQ>\\d+) nsup-delete-q (?P<NsupDelQ>\\d+) rw-hash (?P<RWHash>\\d+) proxy-hash (?P<ProxyHash>\\d+)"
-"{(?P<Namespace>[^}]+)} appeals: remaining-tx (?P<ApplRemainTx>\\d+) remaining-rx (?P<ApplRemainRx>\\d+) active \\((?P<ApplActTx>\\d+),(?P<ApplActRx>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} appeals: remaining-tx (?P<ApplRemainTx>\\d+) active \\((?P<ApplActTx>\\d+),(?P<ApplActRx>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} appeals: remaining-rx (?P<ApplRemainRx>\\d+) active \\((?P<ApplActTx>\\d+),(?P<ApplActRx>\\d+)\\)"
-"fds: proto \\((?P<ProtoConnNow>\\d+),(?P<ProtoConnOpen>\\d+),(?P<ProtoConnClose>\\d+)\\) heartbeat \\((?P<HBConnNow>\\d+),(?P<HBConnOpen>\\d+),(?P<HBConnClose>\\d+)\\) fabric \\((?P<FabricConnNow>\\d+),(?P<FabricConnOpen>\\d+),(?P<FabricConnClose>\\d+)\\)"
-"heartbeat-received: self (?P<HBSelf>\\d+) foreign (?P<HBForeign>\\d+)"
-"fabric-bytes-per-second: bulk \\((?P<FabricBulkTx>\\d+),(?P<FabricBulkRx>\\d+)\\) ctrl \\((?P<FabricCtrlTx>\\d+),(?P<FabricCtrlRx>\\d+)\\) meta \\((?P<FabricMetaTx>\\d+),(?P<FabricMetaRx>\\d+)\\) rw \\((?P<FabricRwTx>\\d+),(?P<FabricRwRx>\\d+)\\)"
-"early-fail: demarshal (?P<EarlyFailDemar>\\d+) tsvc-client (?P<EarlyFailTsvc>\\d+) tsvc-from-proxy (?P<EarlyFailFrmPrx>\\d+) tsvc-batch-sub (?P<EarlyFailBchSub>\\d+) tsvc-from-proxy-batch-sub (?P<EarlyFFPBchSub>\\d+) tsvc-udf-sub (?P<EarlyFailUdfSub>\\d+) tsvc-ops-sub (?P<EarlyFailOpsSub>\\d+)"
-"early-fail: demarshal (?P<EarlyFailDemar>\\d+) tsvc-client (?P<EarlyFailTsvc>\\d+) tsvc-from-proxy (?P<EarlyFailFrmPrx>\\d+) tsvc-batch-sub (?P<EarlyFailBchSub>\\d+) tsvc-from-proxy-batch-sub (?P<EarlyFFPBchSub>\\d+) tsvc-udf-sub (?P<EarlyFailUdfSub>\\d+)"
-"early-fail: demarshal (?P<EarlyFailDemar>\\d+) tsvc-client (?P<EarlyFailTsvc>\\d+) tsvc-batch-sub (?P<EarlyFailBchSub>\\d+) tsvc-udf-sub (?P<EarlyFailUdfSub>\\d+)"
-"batch-index: batches \\((?P<BatchSuccess>\\d+),(?P<BatchError>\\d+),(?P<BatchTimeout>\\d+)\\) delays (?P<BatchDelay>\\d+)"
-"batch-index: batches \\((?P<BatchSuccess>\\d+),(?P<BatchError>\\d+),(?P<BatchTimeout>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} (?P<Device>[^:]+): used-bytes (?P<UsedBytes>\\d+) free-wblocks (?P<FreeWBlocks>\\d+) write \\((?P<Writes>\\d+),(?P<WritePerSec>[0-9\\.]+)\\) defrag-q (?P<DefragQ>\\d+) defrag-read \\((?P<DefragR>\\d+),(?P<DefragRPerSec>[0-9\\.]+)\\) defrag-write \\((?P<DefragW>\\d+),(?P<DefragWPerSec>[0-9\\.]+)\\) write-q (?P<WriteQ>\\d+)"
-"{(?P<Namespace>[^}]+)} (?P<Device>[^:]+): used-bytes (?P<UsedBytes>\\d+) free-wblocks (?P<FreeWBlocks>\\d+) write \\((?P<Writes>\\d+),(?P<WritePerSec>[0-9\\.]+)\\) defrag-q (?P<DefragQ>\\d+) defrag-read \\((?P<DefragR>\\d+),(?P<DefragRPerSec>[0-9\\.]+)\\) defrag-write \\((?P<DefragW>\\d+),(?P<DefragWPerSec>[0-9\\.]+)\\)"
-"{(?P<Namespace>[^}]+)} (?P<Device>[^:]+): used-bytes (?P<UsedBytes>\\d+) free-wblocks (?P<FreeWBlocks>\\d+) write-q (?P<WriteQ>\\d+) write \\((?P<Writes>\\d+),(?P<WritePerSec>[0-9\\.]+)\\) defrag-q (?P<DefragQ>\\d+) defrag-read \\((?P<DefragR>\\d+),(?P<DefragRPerSec>[0-9\\.]+)\\) defrag-write \\((?P<DefragW>\\d+),(?P<DefragWPerSec>[0-9\\.]+)\\) shadow-write-q (?P<ShadowWriteQ>\\d+) tomb-raider-read \\((?P<TombDevRd>\\d+),(?P<TombDevRdSec>[0-9\\.]+)\\)"
-"{(?P<Namespace>[^}]+)} (?P<Device>[^:]+): used-bytes (?P<UsedBytes>\\d+) free-wblocks (?P<FreeWBlocks>\\d+) write-q (?P<WriteQ>\\d+) write \\((?P<Writes>\\d+),(?P<WritePerSec>[0-9\\.]+)\\) defrag-q (?P<DefragQ>\\d+) defrag-read \\((?P<DefragR>\\d+),(?P<DefragRPerSec>[0-9\\.]+)\\) defrag-write \\((?P<DefragW>\\d+),(?P<DefragWPerSec>[0-9\\.]+)\\) tomb-raider-read \\((?P<TombDevRd>\\d+),(?P<TombDevRdSec>[0-9\\.]+)\\)"
-"{(?P<Namespace>[^}]+)} (?P<Device>[^:]+): used-bytes (?P<UsedBytes>\\d+) free-wblocks (?P<FreeWBlocks>\\d+) write-q (?P<WriteQ>\\d+) write \\((?P<Writes>\\d+),(?P<WritePerSec>[0-9\\.]+)\\) defrag-q (?P<DefragQ>\\d+) defrag-read \\((?P<DefragR>\\d+),(?P<DefragRPerSec>[0-9\\.]+)\\) defrag-write \\((?P<DefragW>\\d+),(?P<DefragWPerSec>[0-9\\.]+)\\) shadow-write-q (?P<ShadowWriteQ>\\d+)"
-"{(?P<Namespace>[^}]+)} (?P<Device>[^:]+): used-bytes (?P<UsedBytes>\\d+) free-wblocks (?P<FreeWBlocks>\\d+) write-q (?P<WriteQ>\\d+) write \\((?P<Writes>\\d+),(?P<WritePerSec>[0-9\\.]+)\\) defrag-q (?P<DefragQ>\\d+) defrag-read \\((?P<DefragR>\\d+),(?P<DefragRPerSec>[0-9\\.]+)\\) defrag-write \\((?P<DefragW>\\d+),(?P<DefragWPerSec>[0-9\\.]+)\\)"
-"device (?P<Device>[^:]+): used (?P<UsedBytes>\\d+), contig-free [^ ]+ \\((?P<FreeWBlocks>\\d+) wblocks\\), swb-free (?P<SwbFree>\\d+), w-q (?P<WriteQ>\\d+) w-tot (?P<Writes>\\d+) \\((?P<WritePerSec>[0-9\\.]+)/s\\), defrag-q (?P<DefragQ>\\d+) defrag-tot (?P<DefragR>\\d+) \\((?P<DefragRPerSec>[0-9\\.]+)/s\\) defrag-w-tot (?P<DefragW>\\d+) \\((?P<DefragWPerSec>[0-9\\.]+)/s\\)"
-"{(?P<Namespace>[^}]+)} (?P<Device>[^:]+): used-bytes (?P<UsedBytes>\\d+) free-wblocks (?P<FreeWBlocks>\\d+) write-q (?P<WriteQ>\\d+) write \\((?P<Writes>\\d+),(?P<WritePerSec>[0-9\\.]+)\\) defrag-q (?P<DefragQ>\\d+) defrag-read \\((?P<DefragR>\\d+),(?P<DefragRPerSec>[0-9\\.]+)\\) defrag-write \\((?P<DefragW>\\d+),(?P<DefragWPerSec>[0-9\\.]+)\\) shadow-write-q (?P<ShadowWriteQ>\\d+) tomb-raider-read \\((?P<TombDevRd>\\d+),(?P<TombDevRdSec>[0-9\\.]+)\\)"
-"{(?P<Namespace>[^}]+)} (?P<Device>[^:]+): used-bytes (?P<UsedBytes>\\d+) free-wblocks (?P<FreeWBlocks>\\d+) write-q (?P<WriteQ>\\d+) write \\((?P<Writes>\\d+),(?P<WritePerSec>[0-9\\.]+)\\) defrag-q (?P<DefragQ>\\d+) defrag-read \\((?P<DefragR>\\d+),(?P<DefragRPerSec>[0-9\\.]+)\\) defrag-write \\((?P<DefragW>\\d+),(?P<DefragWPerSec>[0-9\\.]+)\\) tomb-raider-read \\((?P<TombDevRd>\\d+),(?P<TombDevRdSec>[0-9\\.]+)\\)"
-"{(?P<Namespace>[^}]+)} (?P<Device>[^:]+): used-bytes (?P<UsedBytes>\\d+) free-wblocks (?P<FreeWBlocks>\\d+) write-q (?P<WriteQ>\\d+) write \\((?P<Writes>\\d+),(?P<WritePerSec>[0-9\\.]+)\\) defrag-q (?P<DefragQ>\\d+) defrag-read \\((?P<DefragR>\\d+),(?P<DefragRPerSec>[0-9\\.]+)\\) defrag-write \\((?P<DefragW>\\d+),(?P<DefragWPerSec>[0-9\\.]+)\\) shadow-write-q (?P<ShadowWriteQ>\\d+)"
-"{(?P<Namespace>[^}]+)} (?P<Device>[^:]+): used-bytes (?P<UsedBytes>\\d+) free-wblocks (?P<FreeWBlocks>\\d+) write-q (?P<WriteQ>\\d+) write \\((?P<Writes>\\d+),(?P<WritePerSec>[0-9\\.]+)\\) defrag-q (?P<DefragQ>\\d+) defrag-read \\((?P<DefragR>\\d+),(?P<DefragRPerSec>[0-9\\.]+)\\) defrag-write \\((?P<DefragW>\\d+),(?P<DefragWPerSec>[0-9\\.]+)\\)"
-"{(?P<Namespace>[^}]+)} objects: all (?P<ObjectsAll>\\d+) master (?P<ObjectsMaster>\\d+) prole (?P<ObjectsProle>\\d+) non-replica (?P<ObjectsNonProle>\\d+)"
-"{(?P<Namespace>[^}]+)} objects: all (?P<ObjectsAll>\\d+) master (?P<ObjectsMaster>\\d+) prole (?P<ObjectsProle>\\d+)"
-"{(?P<Namespace>[^}]+)} sindex-usage: used-bytes (?P<sidxUsedBytes>\\d+)"
-"{(?P<Namespace>[^}]+)} set-index-usage: used-bytes (?P<setidxUsedBytes>\\d+)"
-"{(?P<Namespace>[^}]+)} index-usage: used-bytes (?P<idxUsedBytes>\\d+)"
-"{(?P<Namespace>[^}]+)} data-usage: used-bytes (?P<dataUsedBytes>\\d+) avail-pct (?P<dataAvailPct>\\d+)"
-"{(?P<Namespace>[^}]+)} breached stop-writes limit \\((?P<stopWrReason>[^)]+)\\), sys-memory pct:(?P<stopWrSysMemPct>\\d+), indexes-memory sz:(?P<stopWrIdxMemSz>\\d+) \\((?P<stopWrIdx>\\d+) + (?P<stopWrSetIdx>\\d+) + (?P<stopWrSetSIdx>\\d+)\\), data avail-pct:(?P<stopWrDatAvail>\\d+) used-pct:(?P<stopWrUsed>\\d+)"
-"{(?P<Namespace>[^}]+)} breached eviction limit \\((?P<evictReason>[^)]+)\\), sys-memory pct:(?P<evictSysMemPct>\\d+), indexes-memory sz:(?P<evictIdxMemSz>\\d+) \\((?P<evictIdx>\\d+) + (?P<evictSetIdx>\\d+) + (?P<evictSetSIdx>\\d+)\\), index-device sz:(?P<evictIdxDev>\\d+) used-pct (?P<evictUsedPct>\\d+), data used-pct:(?P<evictDataUsed>\\d+)"
-"{(?P<Namespace>[^}]+)} memory-usage: total-bytes (?P<NsMemTotalBytes>\\d+) index-bytes (?P<NsMemIndexBytes>\\d+) sindex-bytes (?P<NsMemSindexByte>\\d+) used-pct (?P<NsMemUsedPct>[0-9\\.]+)"
-"{(?P<Namespace>[^}]+)} memory-usage: total-bytes (?P<NsMemTotalBytes>\\d+) index-bytes (?P<NsMemIndexBytes>\\d+) sindex-bytes (?P<NsMemSindexByte>\\d+) data-bytes (?P<NsMemDataByte>\\d+) used-pct (?P<NsMemUsedPct>[0-9\\.]+)"
-"{(?P<Namespace>[^}]+)} memory-usage: total-bytes (?P<NsMemTotalBytes>\\d+) index-bytes (?P<NsMemIndexBytes>\\d+) set-index-bytes (?P<NsMemSetIdxByte>\\d+) sindex-bytes (?P<NsMemSindexByte>\\d+) data-bytes (?P<NsMemDataByte>\\d+) used-pct (?P<NsMemUsedPct>[0-9\\.]+)"
-"{(?P<Namespace>[^}]+)} memory-usage: total-bytes (?P<NsMemTotalBytes>\\d+) index-bytes (?P<NsMemIndexBytes>\\d+) set-index-bytes (?P<NsMemSetIdxByte>\\d+) sindex-bytes (?P<NsMemSindexByte>\\d+) used-pct (?P<NsMemUsedPct>[0-9\\.]+)"
-"{(?P<Namespace>[^}]+)} dup-res: ask (?P<dupresAsk>\\d+) respond \\((?P<dupresRespRd>\\d+),(?P<dupresRespNo>\\d+)\\)"
-"allowing (?P<MigraFillCt>\\d+) fill-migrations after (?P<MigraFillSec>\\d+) seconds delay"
-"{(?P<Namespace>[^}]+)} rebalanced: regime (?P<reRegime>\\d+) expected-migrations \\((?P<reTx>\\d+),(?P<reRx>\\d+),(?P<reSig>\\d+)\\) expected-appeals (?P<reAppeals>\\d+) unavailable-partitions (?P<reUnavail>\\d+)"
-"{(?P<Namespace>[^}]+)} rebalanced: regime (?P<reRegime>\\d+) expected-migrations \\((?P<reTx>\\d+),(?P<reRx>\\d+),(?P<reSig>\\d+)\\) expected-appeals (?P<reAppeals>\\d+) dead-partitions (?P<reDead>\\d+)"
-"{(?P<Namespace>[^}]+)} rebalanced: regime (?P<reRegime>\\d+) expected-migrations \\((?P<reTx>\\d+),(?P<reRx>\\d+),(?P<reSig>\\d+)\\) expected-appeals (?P<reAppeals>\\d+)"
-"{(?P<Namespace>[^}]+)} rebalanced: regime (?P<reRegime>\\d+) expected-migrations \\((?P<reTx>\\d+),(?P<reRx>\\d+),(?P<reSig>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} rebalanced: expected-migrations \\((?P<reTx>\\d+),(?P<reRx>\\d+),(?P<reSig>\\d+)\\) fresh-partitions (?P<reFresh>\\d+)"
-"{(?P<Namespace>[^}]+)} rebalanced: expected-migrations \\((?P<reTx>\\d+),(?P<reRx>\\d+),(?P<reSig>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} (?P<quiesced>\\d+)"
+printLineNotMatched: true
+countPatternMatches: false # internal counter for how many times a pattern was matched
+metaAddStaticValue:
+    -
+        name: "Histogram"
+        value: "NONE"
+    -
+        name: "HistogramUs"
+        value: "NONE"
+    -
+        name: "HistogramCount"
+        value: "NONE"
+    -
+        name: "HistogramSize"
+        value: "NONE"
+metaBinList:
+    - "Namespace"
+    - "Histogram"
+    - "HistogramUs"
+    - "HistogramCount"
+    - "HistogramSize"
+    - "XdrDcName"
+    - "xdr5dc"
+    - "warnC"
+    - "warnCtx"
+    - "errC"
+    - "errCtx"
+    - "ClusterName"
+nonMultiline:
+    - "security.c"
+    - "WARN"
+    - "tls_ee"
+    - "ERROR"
+    - "DEBUG"
+    - "DETAIL"
+metaSetName: "meta"
+metaLogFilesBinName: "logFiles"
+metaNodeBinName: "logFileNode"
+metaClusterBinName: "logFileCluster"
+logFileImportRename: # rename log file name in the Aerospike DB while importing
+    -
+        match: "^([0-9]+_[^_]+)_[0-9]+.log$"
+        rename: "$1.log" #https://golang.org/pkg/regexp/#Regexp.ReplaceAllString
+    -
+        match: "^([0-9]+_[^_]+)_[0-9]+$"
+        rename: "$1" #https://golang.org/pkg/regexp/#Regexp.ReplaceAllString
+
+timestamp:
+    tryDefaultBeforeRegex: true # will try to do default match before attempting regexes (start of line, etc), makes things faster
+    regex:                      # regexes to search for to find the timestamp, will attempt in order, until one match is found, in which case it will prefer-try that one first everywhere
+        - "[A-Z][a-z]{2} [0-9]{2} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3} " # with ms and timezone shift
+        - "[A-Z][a-z]{2} [0-9]{2} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} " # with timezone shift
+        - "[A-Z][a-z]{2} [0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2} " # syslog edition
+        #- "[A-Z][a-z]{2} [0-9]{2} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} [A-Z]{3}[\\+|-][0-9]{4}" # with timezone shift
+        #- "[A-Z][a-z]{2} [0-9]{2} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3} [A-Z]{3}[\\+|-][0-9]{4}" # with ms and timezone shift
+        #- "[A-Z][a-z]{2} [0-9]{2} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2} [A-Z]{3}" # basic
+        #- "[A-Z][a-z]{2} [0-9]{2} [0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2}\\.[0-9]{3} [A-Z]{3}" # basic with ms
+    timeDefinitions:            # for regex, this will map 1:1 in the same order, with default it will attempt one after another until suitable match is found, it will then prefer-try that one first; see https://golang.org/src/time/format.go
+        - "Jan 02 2006 15:04:05.000 "
+        - "Jan 02 2006 15:04:05 "
+        - "Jan 02 15:04:05 "
+        #- "Jan 02 2006 15:04:05 MST-0700"
+        #- "Jan 02 2006 15:04:05.000 MST-0700"
+        #- "Jan 02 2006 15:04:05 MST"
+        #- "Jan 02 2006 15:04:05.000 MST"
+
+# multiline:
+# simple search using startSearch to identify first line
+# once matched, do a reMatchLines on all following lines to see if the are still part of this multiline
+# as long as reMatchLines matches, export reMatchJoin and join it to the first line we found via startSearch
+# if the reMatchLines does not match, treat this multiline search as complete and process the line (and the next line we just have and didn't match)
+# you still need a pattern to then export metrics from the newly created joined line
+multiline:
+    -
+        startSearch: "histogram dump"
+        reMatchLines: "\\(hist\\.c:\\d+\\)[ ]+\\("
+        reMatchJoin:
+            - re: "( |\\(hist\\.c:\\d+\\))( \\(.*)"
+              matchSeq: 2
+
+########### patterns start here
+patterns: 
+    - 
+        setName: "latencies"
+        search: "histogram dump" # simple search to speed up before regex (strings.Contains())
+        defaultValuePadding: # if this statistic is missing from the regex (requires regex to contain a "maybe"), pad it with the below values
+            "00": "0"
+            "01": "0"
+            "02": "0"
+            "03": "0"
+            "04": "0"
+            "05": "0"
+            "06": "0"
+            "07": "0"
+            "08": "0"
+            "09": "0"
+            "10": "0"
+            "11": "0"
+            "12": "0"
+            "13": "0"
+            "14": "0"
+            "15": "0"
+            "16": "0"
+            "17": "0"
+            "18": "0"
+            "19": "0"
+            "20": "0"
+            "21": "0"
+            "22": "0"
+            "23": "0"
+        histogram: true
+        buckets:
+            - "00"
+            - "01"
+            - "02"
+            - "03"
+            - "04"
+            - "05"
+            - "06"
+            - "07"
+            - "08"
+            - "09"
+            - "10"
+            - "11"
+            - "12"
+            - "13"
+            - "14"
+            - "15"
+            - "16"
+            - "17"
+            - "18"
+            - "19"
+            - "20"
+            - "21"
+            - "22"
+            - "23"
+        export:
+            - "histogram dump: {(?P<Namespace>[^}]+)}-(?P<Histogram>[^ ]+) \\((?P<total>\\d+) total\\) msec *(?P<histogram>.*)"
+            - "histogram dump: (?P<Histogram>[^ ]+) \\((?P<total>\\d+) total\\) msec *(?P<histogram>.*)"
+            - "histogram dump: {(?P<Namespace>[^}]+)}-(?P<HistogramCount>[^ ]+) \\((?P<total>\\d+) total\\) count *(?P<histogram>.*)"
+            - "histogram dump: (?P<HistogramCount>[^ ]+) \\((?P<total>\\d+) total\\) count *(?P<histogram>.*)"
+            - "histogram dump: {(?P<Namespace>[^}]+)}-(?P<HistogramUs>[^ ]+) \\((?P<total>\\d+) total\\) usec *(?P<histogram>.*)"
+            - "histogram dump: (?P<HistogramUs>[^ ]+) \\((?P<total>\\d+) total\\) usec *(?P<histogram>.*)"
+            - "histogram dump: {(?P<Namespace>[^}]+)}-(?P<HistogramSize>[^ ]+) \\((?P<total>\\d+) total\\) bytes *(?P<histogram>.*)"
+            - "histogram dump: {(?P<HistogramSize>[^ ]+) \\((?P<total>\\d+) total\\) bytes *(?P<histogram>.*)"
+        func: # execute simple maths function on result set
+            -
+                outputBinName: "16plus" # where to store the result # this isn't 16+, this is tail really. 24 plus on size histograms
+                mathType: "int"
+                math:
+                    - "total"
+                    - "-"
+                    - "00"
+                    - "-"
+                    - "01"
+                    - "-"
+                    - "02"
+                    - "-"
+                    - "03"
+                    - "-"
+                    - "04"
+                    - "-"
+                    - "05"
+                    - "-"
+                    - "06"
+                    - "-"
+                    - "07"
+                    - "-"
+                    - "08"
+                    - "-"
+                    - "09"
+                    - "-"
+                    - "10"
+                    - "-"
+                    - "11"
+                    - "-"
+                    - "12"
+                    - "-"
+                    - "13"
+                    - "-"
+                    - "14"
+                    - "-"
+                    - "15"
+                    - "-"
+                    - "16"
+                    - "-"
+                    - "17"
+                    - "-"
+                    - "18"
+                    - "-"
+                    - "19"
+                    - "-"
+                    - "20"
+                    - "-"
+                    - "21"
+                    - "-"
+                    - "22"
+                    - "-"
+                    - "23"
+            -
+                outputBinName: "1plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "01"
+                    - "+"
+                    - "02"
+                    - "+"
+                    - "03"
+                    - "+"
+                    - "04"
+                    - "+"
+                    - "05"
+                    - "+"
+                    - "06"
+                    - "+"
+                    - "07"
+                    - "+"
+                    - "08"
+                    - "+"
+                    - "09"
+                    - "+"
+                    - "10"
+                    - "+"
+                    - "11"
+                    - "+"
+                    - "12"
+                    - "+"
+                    - "13"
+                    - "+"
+                    - "14"
+                    - "+"
+                    - "15"
+                    - "+"
+                    - "16"
+                    - "+"
+                    - "17"
+                    - "+"
+                    - "18"
+                    - "+"
+                    - "19"
+                    - "+"
+                    - "20"
+                    - "+"
+                    - "21"
+                    - "+"
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "2plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "02"
+                    - "+"
+                    - "03"
+                    - "+"
+                    - "04"
+                    - "+"
+                    - "05"
+                    - "+"
+                    - "06"
+                    - "+"
+                    - "07"
+                    - "+"
+                    - "08"
+                    - "+"
+                    - "09"
+                    - "+"
+                    - "10"
+                    - "+"
+                    - "11"
+                    - "+"
+                    - "12"
+                    - "+"
+                    - "13"
+                    - "+"
+                    - "14"
+                    - "+"
+                    - "15"
+                    - "+"
+                    - "16"
+                    - "+"
+                    - "17"
+                    - "+"
+                    - "18"
+                    - "+"
+                    - "19"
+                    - "+"
+                    - "20"
+                    - "+"
+                    - "21"
+                    - "+"
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "3plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "03"
+                    - "+"
+                    - "04"
+                    - "+"
+                    - "05"
+                    - "+"
+                    - "06"
+                    - "+"
+                    - "07"
+                    - "+"
+                    - "08"
+                    - "+"
+                    - "09"
+                    - "+"
+                    - "10"
+                    - "+"
+                    - "11"
+                    - "+"
+                    - "12"
+                    - "+"
+                    - "13"
+                    - "+"
+                    - "14"
+                    - "+"
+                    - "15"
+                    - "+"
+                    - "16"
+                    - "+"
+                    - "17"
+                    - "+"
+                    - "18"
+                    - "+"
+                    - "19"
+                    - "+"
+                    - "20"
+                    - "+"
+                    - "21"
+                    - "+"
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "4plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "04"
+                    - "+"
+                    - "05"
+                    - "+"
+                    - "06"
+                    - "+"
+                    - "07"
+                    - "+"
+                    - "08"
+                    - "+"
+                    - "09"
+                    - "+"
+                    - "10"
+                    - "+"
+                    - "11"
+                    - "+"
+                    - "12"
+                    - "+"
+                    - "13"
+                    - "+"
+                    - "14"
+                    - "+"
+                    - "15"
+                    - "+"
+                    - "16"
+                    - "+"
+                    - "17"
+                    - "+"
+                    - "18"
+                    - "+"
+                    - "19"
+                    - "+"
+                    - "20"
+                    - "+"
+                    - "21"
+                    - "+"
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "5plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "05"
+                    - "+"
+                    - "06"
+                    - "+"
+                    - "07"
+                    - "+"
+                    - "08"
+                    - "+"
+                    - "09"
+                    - "+"
+                    - "10"
+                    - "+"
+                    - "11"
+                    - "+"
+                    - "12"
+                    - "+"
+                    - "13"
+                    - "+"
+                    - "14"
+                    - "+"
+                    - "15"
+                    - "+"
+                    - "16"
+                    - "+"
+                    - "17"
+                    - "+"
+                    - "18"
+                    - "+"
+                    - "19"
+                    - "+"
+                    - "20"
+                    - "+"
+                    - "21"
+                    - "+"
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "6plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "06"
+                    - "+"
+                    - "07"
+                    - "+"
+                    - "08"
+                    - "+"
+                    - "09"
+                    - "+"
+                    - "10"
+                    - "+"
+                    - "11"
+                    - "+"
+                    - "12"
+                    - "+"
+                    - "13"
+                    - "+"
+                    - "14"
+                    - "+"
+                    - "15"
+                    - "+"
+                    - "16"
+                    - "+"
+                    - "17"
+                    - "+"
+                    - "18"
+                    - "+"
+                    - "19"
+                    - "+"
+                    - "20"
+                    - "+"
+                    - "21"
+                    - "+"
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "7plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "07"
+                    - "+"
+                    - "08"
+                    - "+"
+                    - "09"
+                    - "+"
+                    - "10"
+                    - "+"
+                    - "11"
+                    - "+"
+                    - "12"
+                    - "+"
+                    - "13"
+                    - "+"
+                    - "14"
+                    - "+"
+                    - "15"
+                    - "+"
+                    - "16"
+                    - "+"
+                    - "17"
+                    - "+"
+                    - "18"
+                    - "+"
+                    - "19"
+                    - "+"
+                    - "20"
+                    - "+"
+                    - "21"
+                    - "+"
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "8plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "08"
+                    - "+"
+                    - "09"
+                    - "+"
+                    - "10"
+                    - "+"
+                    - "11"
+                    - "+"
+                    - "12"
+                    - "+"
+                    - "13"
+                    - "+"
+                    - "14"
+                    - "+"
+                    - "15"
+                    - "+"
+                    - "16"
+                    - "+"
+                    - "17"
+                    - "+"
+                    - "18"
+                    - "+"
+                    - "19"
+                    - "+"
+                    - "20"
+                    - "+"
+                    - "21"
+                    - "+"
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "9plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "09"
+                    - "+"
+                    - "10"
+                    - "+"
+                    - "11"
+                    - "+"
+                    - "12"
+                    - "+"
+                    - "13"
+                    - "+"
+                    - "14"
+                    - "+"
+                    - "15"
+                    - "+"
+                    - "16"
+                    - "+"
+                    - "17"
+                    - "+"
+                    - "18"
+                    - "+"
+                    - "19"
+                    - "+"
+                    - "20"
+                    - "+"
+                    - "21"
+                    - "+"
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "10plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "10"
+                    - "+"
+                    - "11"
+                    - "+"
+                    - "12"
+                    - "+"
+                    - "13"
+                    - "+"
+                    - "14"
+                    - "+"
+                    - "15"
+                    - "+"
+                    - "16"
+                    - "+"
+                    - "17"
+                    - "+"
+                    - "18"
+                    - "+"
+                    - "19"
+                    - "+"
+                    - "20"
+                    - "+"
+                    - "21"
+                    - "+"
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "11plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "11"
+                    - "+"
+                    - "12"
+                    - "+"
+                    - "13"
+                    - "+"
+                    - "14"
+                    - "+"
+                    - "15"
+                    - "+"
+                    - "16"
+                    - "+"
+                    - "17"
+                    - "+"
+                    - "18"
+                    - "+"
+                    - "19"
+                    - "+"
+                    - "20"
+                    - "+"
+                    - "21"
+                    - "+"
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "12plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "12"
+                    - "+"
+                    - "13"
+                    - "+"
+                    - "14"
+                    - "+"
+                    - "15"
+                    - "+"
+                    - "16"
+                    - "+"
+                    - "17"
+                    - "+"
+                    - "18"
+                    - "+"
+                    - "19"
+                    - "+"
+                    - "20"
+                    - "+"
+                    - "21"
+                    - "+"
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "13plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "13"
+                    - "+"
+                    - "14"
+                    - "+"
+                    - "15"
+                    - "+"
+                    - "16"
+                    - "+"
+                    - "17"
+                    - "+"
+                    - "18"
+                    - "+"
+                    - "19"
+                    - "+"
+                    - "20"
+                    - "+"
+                    - "21"
+                    - "+"
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "14plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "14"
+                    - "+"
+                    - "15"
+                    - "+"
+                    - "16"
+                    - "+"
+                    - "17"
+                    - "+"
+                    - "18"
+                    - "+"
+                    - "19"
+                    - "+"
+                    - "20"
+                    - "+"
+                    - "21"
+                    - "+"
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "15plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "15"
+                    - "+"
+                    - "16"
+                    - "+"
+                    - "17"
+                    - "+"
+                    - "18"
+                    - "+"
+                    - "19"
+                    - "+"
+                    - "20"
+                    - "+"
+                    - "21"
+                    - "+"
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "16pl" # where to store the result
+                mathType: "int"
+                math:
+                    - "16"
+                    - "+"
+                    - "17"
+                    - "+"
+                    - "18"
+                    - "+"
+                    - "19"
+                    - "+"
+                    - "20"
+                    - "+"
+                    - "21"
+                    - "+"
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "17plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "17"
+                    - "+"
+                    - "18"
+                    - "+"
+                    - "19"
+                    - "+"
+                    - "20"
+                    - "+"
+                    - "21"
+                    - "+"
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "18plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "18"
+                    - "+"
+                    - "19"
+                    - "+"
+                    - "20"
+                    - "+"
+                    - "21"
+                    - "+"
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "19plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "19"
+                    - "+"
+                    - "20"
+                    - "+"
+                    - "21"
+                    - "+"
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "20plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "20"
+                    - "+"
+                    - "21"
+                    - "+"
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "21plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "21"
+                    - "+"
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "22plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "22"
+                    - "+"
+                    - "23"
+                    - "+"
+                    - "16plus"
+            -
+                outputBinName: "23plus" # where to store the result
+                mathType: "int"
+                math:
+                    - "23"
+                    - "+"
+                    - "16plus"
+    - 
+        setName: "clusterSize" ### this is how you can do an override for the global set name for this particular pattern
+        search: " CLUSTER-SIZE " # simple search to speed up before regex (strings.Contains())
+        export: # which values to export to Aerospike from this successful string search. Multiple export attempts can be added, for multiple variations of the string
+            # - "CLUSTER-SIZE (?P<ClusterSize>\\d+) CLUSTER-NAME (?P<ClusterName>[^$]+)" # if simple search matches, find and export these values to <binName>, standard Perl regex format: (?P<BinName>REGEX) - we do not need ClusterName in the bins
+            - "CLUSTER-SIZE (?P<ClusterSize>\\d+)"
+        storeNodePrefix: true
+        storeLogFileName: true
+    -
+        setName: "nsMigrations"
+        search: "migrations: remaining"
+        export:
+            - "{(?P<Namespace>[^}]+)} migrations: remaining \\((?P<MigraRemainTx>\\d+),(?P<MigraRemainRx>\\d+),(?P<MigraRemainSig>\\d+)\\) active \\((?P<MigraActiveTx>\\d+),(?P<MigraActiveRx>\\d+),(?P<MigraActiveSig>\\d+)\\) complete-pct (?P<MigraCompletPct>[0-9\\.]+)"
+            - "{(?P<Namespace>[^}]+)} migrations: remaining \\((?P<MigraRemainTx>\\d+),(?P<MigraRemainRx>\\d+)\\) active \\((?P<MigraActiveTx>\\d+),(?P<MigraActiveRx>\\d+)\\) complete-pct (?P<MigraCompletPct>[0-9\\.]+)"
+    -
+        setName: "nsMigrations"
+        search: "migrations: complete" # and this is how you get around having to replace string to match another (migrations complete == migrations remaining 0,0,0)
+        replace: # https://golang.org/pkg/regexp/#Regexp.ReplaceAllString
+            -
+                regex: "complete"
+                sub: "remaining (0,0,0) active (0,0,0) complete-pct 100.0"
+        export:
+            - "{(?P<Namespace>[^}]+)} migrations: remaining \\((?P<MigraRemainTx>\\d+),(?P<MigraRemainRx>\\d+),(?P<MigraRemainSig>\\d+)\\) active \\((?P<MigraActiveTx>\\d+),(?P<MigraActiveRx>\\d+),(?P<MigraActiveSig>\\d+)\\) complete-pct (?P<MigraCompletPct>[0-9\\.]+)"
+    - 
+        setName: "clockSkew"
+        search: " cluster-clock: skew-ms "
+        export:
+            - "skew-ms (?P<ClockSkewMs>\\d+)"
+    -
+        setName: "system"
+        search: "system: total-cpu-pct"
+        export:
+            - "system: total-cpu-pct (?P<TotalCpuPct>\\d+) user-cpu-pct (?P<UserCpuPct>\\d+) kernel-cpu-pct (?P<KernelCpuPct>\\d+) free-mem-kbytes (?P<FreeMemKB>\\d+) free-mem-pct (?P<FreeMemPct>\\d+) thp-mem-kbytes (?P<THPMemKB>\\d+)"
+            - "system: total-cpu-pct (?P<TotalCpuPct>\\d+) user-cpu-pct (?P<UserCpuPct>\\d+) kernel-cpu-pct (?P<KernelCpuPct>\\d+) free-mem-kbytes (?P<FreeMemKB>\\d+) free-mem-pct (?P<FreeMemPct>\\d+)"
+    -
+        setName: "system"
+        search: "process: cpu-pct"
+        export:
+            - "process: cpu-pct (?P<ProcessCpuPct>\\d+) threads \\((?P<ThreadJoin>\\d+),(?P<ThreadDetach>\\d+),(?P<ThreadPoolTot>\\d+),(?P<ThreadPoolAct>\\d+)\\) heap-kbytes \\((?P<HeapKBAlloc>\\d+),(?P<HeapKBActive>\\d+),(?P<HeapKBMapped>\\d+)\\) heap-efficiency-pct (?P<HeapEfficPct>[0-9\\.]+)"
+            - "process: cpu-pct (?P<ProcessCpuPct>\\d+) heap-kbytes \\((?P<HeapKBAlloc>\\d+),(?P<HeapKBActive>\\d+),(?P<HeapKBMapped>\\d+)\\) heap-efficiency-pct (?P<HeapEfficPct>[0-9\\.]+)"
+    -
+        setName: "system"
+        search: "system-memory"
+        export:
+            - "system-memory: free-kbytes (?P<FreeMemKB>\\d+) free-pct (?P<FreeMemPct>\\d+) heap-kbytes \\((?P<HeapKBAlloc>\\d+),(?P<HeapKBActive>\\d+),(?P<HeapKBMapped>\\d+)\\) heap-efficiency-pct (?P<HeapEfficPct>[0-9\\.]+)"
+            - "system-memory: free-kbytes (?P<FreeMemKB>\\d+) free-pct (?P<FreeMemPct>\\d+)"
+    -
+        setName: "inprogress"
+        search: "in-progress: info-q"
+        export:
+            - "in-progress: info-q (?P<InfoQ>\\d+) rw-hash (?P<RWHash>\\d+) proxy-hash (?P<ProxyHash>\\d+) tree-gc-q (?P<TreeGcQ>\\d+)"
+    -
+        setName: "inprogress"
+        search: "in-progress: tsvc-q"
+        export:
+            - "in-progress: tsvc-q (?P<TsvcQ>\\d+) info-q (?P<InfoQ>\\d+) rw-hash (?P<RWHash>\\d+) proxy-hash (?P<ProxyHash>\\d+) tree-gc-q (?P<TreeGcQ>\\d+)"
+            - "in-progress: tsvc-q (?P<TsvcQ>\\d+) info-q (?P<InfoQ>\\d+) nsup-delete-q (?P<NsupDelQ>\\d+) rw-hash (?P<RWHash>\\d+) proxy-hash (?P<ProxyHash>\\d+) tree-gc-q (?P<TreeGcQ>\\d+)"
+            - "in-progress: tsvc-q (?P<TsvcQ>\\d+) info-q (?P<InfoQ>\\d+) nsup-delete-q (?P<NsupDelQ>\\d+) rw-hash (?P<RWHash>\\d+) proxy-hash (?P<ProxyHash>\\d+)"
+    -
+        setName: "nsAppeals"
+        search: "appeals: remaining-"
+        export:
+            - "{(?P<Namespace>[^}]+)} appeals: remaining-tx (?P<ApplRemainTx>\\d+) remaining-rx (?P<ApplRemainRx>\\d+) active \\((?P<ApplActTx>\\d+),(?P<ApplActRx>\\d+)\\)"
+            - "{(?P<Namespace>[^}]+)} appeals: remaining-tx (?P<ApplRemainTx>\\d+) active \\((?P<ApplActTx>\\d+),(?P<ApplActRx>\\d+)\\)"
+            - "{(?P<Namespace>[^}]+)} appeals: remaining-rx (?P<ApplRemainRx>\\d+) active \\((?P<ApplActTx>\\d+),(?P<ApplActRx>\\d+)\\)"
+    -
+        setName: "fds"
+        search: "fds: proto "
+        export:
+            - "fds: proto \\((?P<ProtoConnNow>\\d+),(?P<ProtoConnOpen>\\d+),(?P<ProtoConnClose>\\d+)\\) heartbeat \\((?P<HBConnNow>\\d+),(?P<HBConnOpen>\\d+),(?P<HBConnClose>\\d+)\\) fabric \\((?P<FabricConnNow>\\d+),(?P<FabricConnOpen>\\d+),(?P<FabricConnClose>\\d+)\\)"
+    -
+        setName: "hb"
+        search: "heartbeat-received: self"
+        export:
+            - "heartbeat-received: self (?P<HBSelf>\\d+) foreign (?P<HBForeign>\\d+)"
+    -
+        setName: "fabricpersec"
+        search: "fabric-bytes-per-second: bulk"
+        export:
+            - "fabric-bytes-per-second: bulk \\((?P<FabricBulkTx>\\d+),(?P<FabricBulkRx>\\d+)\\) ctrl \\((?P<FabricCtrlTx>\\d+),(?P<FabricCtrlRx>\\d+)\\) meta \\((?P<FabricMetaTx>\\d+),(?P<FabricMetaRx>\\d+)\\) rw \\((?P<FabricRwTx>\\d+),(?P<FabricRwRx>\\d+)\\)"
+    -
+        setName: "earlyfail"
+        search: "early-fail: demarshal"
+        export:
+            - "early-fail: demarshal (?P<EarlyFailDemar>\\d+) tsvc-client (?P<EarlyFailTsvc>\\d+) tsvc-from-proxy (?P<EarlyFailFrmPrx>\\d+) tsvc-batch-sub (?P<EarlyFailBchSub>\\d+) tsvc-from-proxy-batch-sub (?P<EarlyFFPBchSub>\\d+) tsvc-udf-sub (?P<EarlyFailUdfSub>\\d+) tsvc-ops-sub (?P<EarlyFailOpsSub>\\d+)"
+            - "early-fail: demarshal (?P<EarlyFailDemar>\\d+) tsvc-client (?P<EarlyFailTsvc>\\d+) tsvc-from-proxy (?P<EarlyFailFrmPrx>\\d+) tsvc-batch-sub (?P<EarlyFailBchSub>\\d+) tsvc-from-proxy-batch-sub (?P<EarlyFFPBchSub>\\d+) tsvc-udf-sub (?P<EarlyFailUdfSub>\\d+)"
+            - "early-fail: demarshal (?P<EarlyFailDemar>\\d+) tsvc-client (?P<EarlyFailTsvc>\\d+) tsvc-batch-sub (?P<EarlyFailBchSub>\\d+) tsvc-udf-sub (?P<EarlyFailUdfSub>\\d+)"
+    -
+        setName: "batch"
+        search: "batch-index: batches"
+        export:
+            - "batch-index: batches \\((?P<BatchSuccess>\\d+),(?P<BatchError>\\d+),(?P<BatchTimeout>\\d+)\\) delays (?P<BatchDelay>\\d+)"
+            - "batch-index: batches \\((?P<BatchSuccess>\\d+),(?P<BatchError>\\d+),(?P<BatchTimeout>\\d+)\\)"
+    -
+        setName: "nsDevice"
+        search: "INFO (drv-mem)"
+        export:
+            - "{(?P<Namespace>[^}]+)} (?P<Device>[^:]+): used-bytes (?P<UsedBytes>\\d+) free-wblocks (?P<FreeWBlocks>\\d+) write \\((?P<Writes>\\d+),(?P<WritePerSec>[0-9\\.]+)\\) defrag-q (?P<DefragQ>\\d+) defrag-read \\((?P<DefragR>\\d+),(?P<DefragRPerSec>[0-9\\.]+)\\) defrag-write \\((?P<DefragW>\\d+),(?P<DefragWPerSec>[0-9\\.]+)\\) write-q (?P<WriteQ>\\d+)"
+            - "{(?P<Namespace>[^}]+)} (?P<Device>[^:]+): used-bytes (?P<UsedBytes>\\d+) free-wblocks (?P<FreeWBlocks>\\d+) write \\((?P<Writes>\\d+),(?P<WritePerSec>[0-9\\.]+)\\) defrag-q (?P<DefragQ>\\d+) defrag-read \\((?P<DefragR>\\d+),(?P<DefragRPerSec>[0-9\\.]+)\\) defrag-write \\((?P<DefragW>\\d+),(?P<DefragWPerSec>[0-9\\.]+)\\)"
+    -
+        setName: "nsDevice"
+        search: "INFO (drv_ssd)"
+        export:
+            - "{(?P<Namespace>[^}]+)} (?P<Device>[^:]+): used-bytes (?P<UsedBytes>\\d+) free-wblocks (?P<FreeWBlocks>\\d+) write-q (?P<WriteQ>\\d+) write \\((?P<Writes>\\d+),(?P<WritePerSec>[0-9\\.]+)\\) defrag-q (?P<DefragQ>\\d+) defrag-read \\((?P<DefragR>\\d+),(?P<DefragRPerSec>[0-9\\.]+)\\) defrag-write \\((?P<DefragW>\\d+),(?P<DefragWPerSec>[0-9\\.]+)\\) shadow-write-q (?P<ShadowWriteQ>\\d+) tomb-raider-read \\((?P<TombDevRd>\\d+),(?P<TombDevRdSec>[0-9\\.]+)\\)"
+            - "{(?P<Namespace>[^}]+)} (?P<Device>[^:]+): used-bytes (?P<UsedBytes>\\d+) free-wblocks (?P<FreeWBlocks>\\d+) write-q (?P<WriteQ>\\d+) write \\((?P<Writes>\\d+),(?P<WritePerSec>[0-9\\.]+)\\) defrag-q (?P<DefragQ>\\d+) defrag-read \\((?P<DefragR>\\d+),(?P<DefragRPerSec>[0-9\\.]+)\\) defrag-write \\((?P<DefragW>\\d+),(?P<DefragWPerSec>[0-9\\.]+)\\) tomb-raider-read \\((?P<TombDevRd>\\d+),(?P<TombDevRdSec>[0-9\\.]+)\\)"
+            - "{(?P<Namespace>[^}]+)} (?P<Device>[^:]+): used-bytes (?P<UsedBytes>\\d+) free-wblocks (?P<FreeWBlocks>\\d+) write-q (?P<WriteQ>\\d+) write \\((?P<Writes>\\d+),(?P<WritePerSec>[0-9\\.]+)\\) defrag-q (?P<DefragQ>\\d+) defrag-read \\((?P<DefragR>\\d+),(?P<DefragRPerSec>[0-9\\.]+)\\) defrag-write \\((?P<DefragW>\\d+),(?P<DefragWPerSec>[0-9\\.]+)\\) shadow-write-q (?P<ShadowWriteQ>\\d+)"
+            - "{(?P<Namespace>[^}]+)} (?P<Device>[^:]+): used-bytes (?P<UsedBytes>\\d+) free-wblocks (?P<FreeWBlocks>\\d+) write-q (?P<WriteQ>\\d+) write \\((?P<Writes>\\d+),(?P<WritePerSec>[0-9\\.]+)\\) defrag-q (?P<DefragQ>\\d+) defrag-read \\((?P<DefragR>\\d+),(?P<DefragRPerSec>[0-9\\.]+)\\) defrag-write \\((?P<DefragW>\\d+),(?P<DefragWPerSec>[0-9\\.]+)\\)"
+            - "device (?P<Device>[^:]+): used (?P<UsedBytes>\\d+), contig-free [^ ]+ \\((?P<FreeWBlocks>\\d+) wblocks\\), swb-free (?P<SwbFree>\\d+), w-q (?P<WriteQ>\\d+) w-tot (?P<Writes>\\d+) \\((?P<WritePerSec>[0-9\\.]+)/s\\), defrag-q (?P<DefragQ>\\d+) defrag-tot (?P<DefragR>\\d+) \\((?P<DefragRPerSec>[0-9\\.]+)/s\\) defrag-w-tot (?P<DefragW>\\d+) \\((?P<DefragWPerSec>[0-9\\.]+)/s\\)"
+    -  
+        setName: "nsDevice"
+        search: "INFO (drv_pmem)"
+        export:
+            - "{(?P<Namespace>[^}]+)} (?P<Device>[^:]+): used-bytes (?P<UsedBytes>\\d+) free-wblocks (?P<FreeWBlocks>\\d+) write-q (?P<WriteQ>\\d+) write \\((?P<Writes>\\d+),(?P<WritePerSec>[0-9\\.]+)\\) defrag-q (?P<DefragQ>\\d+) defrag-read \\((?P<DefragR>\\d+),(?P<DefragRPerSec>[0-9\\.]+)\\) defrag-write \\((?P<DefragW>\\d+),(?P<DefragWPerSec>[0-9\\.]+)\\) shadow-write-q (?P<ShadowWriteQ>\\d+) tomb-raider-read \\((?P<TombDevRd>\\d+),(?P<TombDevRdSec>[0-9\\.]+)\\)"
+            - "{(?P<Namespace>[^}]+)} (?P<Device>[^:]+): used-bytes (?P<UsedBytes>\\d+) free-wblocks (?P<FreeWBlocks>\\d+) write-q (?P<WriteQ>\\d+) write \\((?P<Writes>\\d+),(?P<WritePerSec>[0-9\\.]+)\\) defrag-q (?P<DefragQ>\\d+) defrag-read \\((?P<DefragR>\\d+),(?P<DefragRPerSec>[0-9\\.]+)\\) defrag-write \\((?P<DefragW>\\d+),(?P<DefragWPerSec>[0-9\\.]+)\\) tomb-raider-read \\((?P<TombDevRd>\\d+),(?P<TombDevRdSec>[0-9\\.]+)\\)"
+            - "{(?P<Namespace>[^}]+)} (?P<Device>[^:]+): used-bytes (?P<UsedBytes>\\d+) free-wblocks (?P<FreeWBlocks>\\d+) write-q (?P<WriteQ>\\d+) write \\((?P<Writes>\\d+),(?P<WritePerSec>[0-9\\.]+)\\) defrag-q (?P<DefragQ>\\d+) defrag-read \\((?P<DefragR>\\d+),(?P<DefragRPerSec>[0-9\\.]+)\\) defrag-write \\((?P<DefragW>\\d+),(?P<DefragWPerSec>[0-9\\.]+)\\) shadow-write-q (?P<ShadowWriteQ>\\d+)"
+            - "{(?P<Namespace>[^}]+)} (?P<Device>[^:]+): used-bytes (?P<UsedBytes>\\d+) free-wblocks (?P<FreeWBlocks>\\d+) write-q (?P<WriteQ>\\d+) write \\((?P<Writes>\\d+),(?P<WritePerSec>[0-9\\.]+)\\) defrag-q (?P<DefragQ>\\d+) defrag-read \\((?P<DefragR>\\d+),(?P<DefragRPerSec>[0-9\\.]+)\\) defrag-write \\((?P<DefragW>\\d+),(?P<DefragWPerSec>[0-9\\.]+)\\)"
+    -
+        setName: "nsObjects"
+        search: "objects: all"
+        export:
+            - "{(?P<Namespace>[^}]+)} objects: all (?P<ObjectsAll>\\d+) master (?P<ObjectsMaster>\\d+) prole (?P<ObjectsProle>\\d+) non-replica (?P<ObjectsNonProle>\\d+)"
+            - "{(?P<Namespace>[^}]+)} objects: all (?P<ObjectsAll>\\d+) master (?P<ObjectsMaster>\\d+) prole (?P<ObjectsProle>\\d+)"
+    -
+        setName: "nsUsageSIdx" #v7
+        search: "sindex-usage: used-bytes"
+        export:
+            - "{(?P<Namespace>[^}]+)} sindex-usage: used-bytes (?P<sidxUsedBytes>\\d+)"
+    -
+        setName: "nsUsageSetIdx" #v7
+        search: "set-index-usage: used-bytes"
+        export:
+            - "{(?P<Namespace>[^}]+)} set-index-usage: used-bytes (?P<setidxUsedBytes>\\d+)"
+    -
+        setName: "nsUsageIdx" #v7
+        search: "index-usage: used-bytes"
+        export:
+            - "{(?P<Namespace>[^}]+)} index-usage: used-bytes (?P<idxUsedBytes>\\d+)"
+    -
+        setName: "nsUsageData" #v7
+        search: "data-usage: used-bytes"
+        export:
+            - "{(?P<Namespace>[^}]+)} data-usage: used-bytes (?P<dataUsedBytes>\\d+) avail-pct (?P<dataAvailPct>\\d+)"
+    -
+        setName: "nsStopWrites" #v7
+        search: "breached stop-writes limit"
+        export:
+            - "{(?P<Namespace>[^}]+)} breached stop-writes limit \\((?P<stopWrReason>[^)]+)\\), sys-memory pct:(?P<stopWrSysMemPct>\\d+), indexes-memory sz:(?P<stopWrIdxMemSz>\\d+) \\((?P<stopWrIdx>\\d+) + (?P<stopWrSetIdx>\\d+) + (?P<stopWrSetSIdx>\\d+)\\), data avail-pct:(?P<stopWrDatAvail>\\d+) used-pct:(?P<stopWrUsed>\\d+)"
+    -
+        setName: "nsEvict" #v7
+        search: "breached eviction limit"
+        export:
+            - "{(?P<Namespace>[^}]+)} breached eviction limit \\((?P<evictReason>[^)]+)\\), sys-memory pct:(?P<evictSysMemPct>\\d+), indexes-memory sz:(?P<evictIdxMemSz>\\d+) \\((?P<evictIdx>\\d+) + (?P<evictSetIdx>\\d+) + (?P<evictSetSIdx>\\d+)\\), index-device sz:(?P<evictIdxDev>\\d+) used-pct (?P<evictUsedPct>\\d+), data used-pct:(?P<evictDataUsed>\\d+)"
+    -
+        setName: "nsMemory"
+        search: "memory-usage: total-bytes"
+        export:
+            - "{(?P<Namespace>[^}]+)} memory-usage: total-bytes (?P<NsMemTotalBytes>\\d+) index-bytes (?P<NsMemIndexBytes>\\d+) sindex-bytes (?P<NsMemSindexByte>\\d+) used-pct (?P<NsMemUsedPct>[0-9\\.]+)"
+            - "{(?P<Namespace>[^}]+)} memory-usage: total-bytes (?P<NsMemTotalBytes>\\d+) index-bytes (?P<NsMemIndexBytes>\\d+) sindex-bytes (?P<NsMemSindexByte>\\d+) data-bytes (?P<NsMemDataByte>\\d+) used-pct (?P<NsMemUsedPct>[0-9\\.]+)"
+            - "{(?P<Namespace>[^}]+)} memory-usage: total-bytes (?P<NsMemTotalBytes>\\d+) index-bytes (?P<NsMemIndexBytes>\\d+) set-index-bytes (?P<NsMemSetIdxByte>\\d+) sindex-bytes (?P<NsMemSindexByte>\\d+) data-bytes (?P<NsMemDataByte>\\d+) used-pct (?P<NsMemUsedPct>[0-9\\.]+)"
+            - "{(?P<Namespace>[^}]+)} memory-usage: total-bytes (?P<NsMemTotalBytes>\\d+) index-bytes (?P<NsMemIndexBytes>\\d+) set-index-bytes (?P<NsMemSetIdxByte>\\d+) sindex-bytes (?P<NsMemSindexByte>\\d+) used-pct (?P<NsMemUsedPct>[0-9\\.]+)"
+    -
+        setName: "dupres"
+        search: "dup-res: ask"
+        export:
+            - "{(?P<Namespace>[^}]+)} dup-res: ask (?P<dupresAsk>\\d+) respond \\((?P<dupresRespRd>\\d+),(?P<dupresRespNo>\\d+)\\)"
+    -
+        setName: "filldelay"
+        search: "fill-migrations after"
+        export:
+            - "allowing (?P<MigraFillCt>\\d+) fill-migrations after (?P<MigraFillSec>\\d+) seconds delay"
+    -
+        setName: "rebalanced"
+        search: "unavailable-partitions"
+        export:
+            - "{(?P<Namespace>[^}]+)} rebalanced: regime (?P<reRegime>\\d+) expected-migrations \\((?P<reTx>\\d+),(?P<reRx>\\d+),(?P<reSig>\\d+)\\) expected-appeals (?P<reAppeals>\\d+) unavailable-partitions (?P<reUnavail>\\d+)"
+    -
+        setName: "rebalanced"
+        search: "dead-partitions"
+        export:
+            - "{(?P<Namespace>[^}]+)} rebalanced: regime (?P<reRegime>\\d+) expected-migrations \\((?P<reTx>\\d+),(?P<reRx>\\d+),(?P<reSig>\\d+)\\) expected-appeals (?P<reAppeals>\\d+) dead-partitions (?P<reDead>\\d+)"
+    -
+        setName: "rebalanced"
+        search: "expected-appeals"
+        export:
+            - "{(?P<Namespace>[^}]+)} rebalanced: regime (?P<reRegime>\\d+) expected-migrations \\((?P<reTx>\\d+),(?P<reRx>\\d+),(?P<reSig>\\d+)\\) expected-appeals (?P<reAppeals>\\d+)"
+    -
+        setName: "rebalanced"
+        search: "rebalanced: regime"
+        export:
+            - "{(?P<Namespace>[^}]+)} rebalanced: regime (?P<reRegime>\\d+) expected-migrations \\((?P<reTx>\\d+),(?P<reRx>\\d+),(?P<reSig>\\d+)\\)"
+    -
+        setName: "rebalanced"
+        search: "fresh-partitions"
+        export:
+            - "{(?P<Namespace>[^}]+)} rebalanced: expected-migrations \\((?P<reTx>\\d+),(?P<reRx>\\d+),(?P<reSig>\\d+)\\) fresh-partitions (?P<reFresh>\\d+)"
+    -
+        setName: "rebalanced"
+        search: "rebalanced: expected-migrations"
+        export:
+            - "{(?P<Namespace>[^}]+)} rebalanced: expected-migrations \\((?P<reTx>\\d+),(?P<reRx>\\d+),(?P<reSig>\\d+)\\)"
+    -
+        setName: "quiesce"
+        search: " nodes are quiesced"
+        export:
+            - "{(?P<Namespace>[^}]+)} (?P<quiesced>\\d+)"
+    -
+        setName: "quiesce"
+        search: "quiesced this node"
+        replace:
+            -
                 regex: " quiesced this node"
                 sub: " quiesced this 1 node"
+            -
                 regex: " un-quiesced this node"
                 sub: " un-quiesced this 0 node"
-"quiesced this (?P<thisQuiesce>\\d+) node"
+        export:
+            - "quiesced this (?P<thisQuiesce>\\d+) node"
+    -
+        setName: "restarts"
+        search: "<><><><><><><><>"
+        replace: # https://golang.org/pkg/regexp/#Regexp.ReplaceAllString
+            -
                 regex: " build "
                 sub: " 1 build "
-"(?P<restart>\\d+) build (?P<build>[^ ]+)"
+        export:
+            - "(?P<restart>\\d+) build (?P<build>[^ ]+)"
+    -
+        setName: "configset"
+        search: "config-set"
+        replace: # https://golang.org/pkg/regexp/#Regexp.ReplaceAllString
+            -
                 regex: " config-set command "
                 sub: " config-set 1 command "
-"config-set (?P<configset>\\d+) command completed: params (?P<command>.*)"
-"(?P<signal>[^ ]+) received, shutting down Aerospike Enterprise Edition (?P<stop>\\d+) build (?P<build>.+)"
-"(?P<stop>\\d+) build (?P<build>[^ ]+)"
-"(?P<signal>[^ ]+) received, aborting Aerospike Enterprise Edition (?P<stop>\\d+) build (?P<build>.+)"
-"(?P<stop>\\d+) build (?P<build>[^ ]+)"
-"(?P<signal>[^ ]+) received, (?P<stop>\\d+) shutting down"
-"(?P<stop>\\d+) shutting down"
-"(?P<signal>[^ ]+) received, (?P<stop>\\d+) starting normal shutdown"
-"(?P<stop>\\d+) starting normal shutdown"
-"(?P<stopDone>\\d+) finished clean shutdown - exiting"
-"{(?P<Namespace>[^}]+)} device-usage: used-bytes (?P<DevUsedBytes>\\d+) avail-pct (?P<DevAvailPct>[0-9\\.]+) cache-read-pct (?P<DevCacheReadPct>[0-9\\.]+)"
-"{(?P<Namespace>[^}]+)} device-usage: used-bytes (?P<DevUsedBytes>\\d+) avail-pct (?P<DevAvailPct>[0-9\\.]+)"
-"{(?P<Namespace>[^}]+)} special-errors: key-busy (?P<ErrKeyBusy>\\d+) record-too-big (?P<ErrRecTooBig>\\d+)"
-"{(?P<Namespace>[^}]+)} client: tsvc \\((?P<ClientTsvcErr>\\d+),(?P<ClientTsvcTout>\\d+)\\) proxy \\((?P<ClientPrxyOk>\\d+),(?P<ClientPrxyErr>\\d+),(?P<ClientPrxyTout>\\d+)\\) read \\((?P<ClientReadOk>\\d+),(?P<ClientReadErr>\\d+),(?P<ClientReadTout>\\d+),(?P<ClientReadNFnd>\\d+),(?P<ClientReadFltr>\\d+)\\) write \\((?P<ClientWrtOk>\\d+),(?P<ClientWrtErr>\\d+),(?P<ClientWrtTout>\\d+),(?P<ClientWrtFltr>\\d+)\\) delete \\((?P<ClientDelOk>\\d+),(?P<ClientDelErr>\\d+),(?P<ClientDelTout>\\d+),(?P<ClientDelNFnd>\\d+),(?P<ClientDelFltr>\\d+)\\) udf \\((?P<ClientUdfOk>\\d+),(?P<ClientUdfErr>\\d+),(?P<ClientUdfTout>\\d+),(?P<ClientUdfFltr>\\d+)\\) lang \\((?P<ClientLangRead>\\d+),(?P<ClientLangWrite>\\d+),(?P<ClientLangDel>\\d+),(?P<ClientlangErr>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} client: tsvc \\((?P<ClientTsvcErr>\\d+),(?P<ClientTsvcTout>\\d+)\\) proxy \\((?P<ClientPrxyOk>\\d+),(?P<ClientPrxyErr>\\d+),(?P<ClientPrxyTout>\\d+)\\) read \\((?P<ClientReadOk>\\d+),(?P<ClientReadErr>\\d+),(?P<ClientReadTout>\\d+),(?P<ClientReadNFnd>\\d+)\\) write \\((?P<ClientWrtOk>\\d+),(?P<ClientWrtErr>\\d+),(?P<ClientWrtTout>\\d+)\\) delete \\((?P<ClientDelOk>\\d+),(?P<ClientDelErr>\\d+),(?P<ClientDelTout>\\d+),(?P<ClientDelNFnd>\\d+)\\) udf \\((?P<ClientUdfOk>\\d+),(?P<ClientUdfErr>\\d+),(?P<ClientUdfTout>\\d+)\\) lang \\((?P<ClientLangRead>\\d+),(?P<ClientLangWrite>\\d+),(?P<ClientLangDel>\\d+),(?P<ClientlangErr>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} from-proxy: tsvc \\((?P<FrPrxyTsvcErr>\\d+),(?P<FrPrxyTsvcTout>\\d+)\\) read \\((?P<FrPrxyReadOk>\\d+),(?P<FrPrxyReadErr>\\d+),(?P<FrPrxyReadTout>\\d+),(?P<FrPrxyReadNFnd>\\d+),(?P<FrPrxyReadFltr>\\d+)\\) write \\((?P<FrPrxyWrtOk>\\d+),(?P<FrPrxyWrtErr>\\d+),(?P<FrPrxyWrtTout>\\d+),(?P<FrPrxyWrtFltr>\\d+)\\) delete \\((?P<FrPrxyDelOk>\\d+),(?P<FrPrxyDelErr>\\d+),(?P<FrPrxyDelTout>\\d+),(?P<FrPrxyDelNFnd>\\d+),(?P<FrPrxyDelFltr>\\d+)\\) udf \\((?P<FrPrxyUdfOk>\\d+),(?P<FrPrxyUdfErr>\\d+),(?P<FrPrxyUdfTout>\\d+),(?P<FrPrxyUdfFltr>\\d+)\\) lang \\((?P<FrPrxyLangRead>\\d+),(?P<FrPrxyLangWrite>\\d+),(?P<FrPrxyLangDel>\\d+),(?P<FrPrxylangErr>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} from-proxy: tsvc \\((?P<FrPrxyTsvcErr>\\d+),(?P<FrPrxyTsvcTout>\\d+)\\) read \\((?P<FrPrxyReadOk>\\d+),(?P<FrPrxyReadErr>\\d+),(?P<FrPrxyReadTout>\\d+),(?P<FrPrxyReadNFnd>\\d+)\\) write \\((?P<FrPrxyWrtOk>\\d+),(?P<FrPrxyWrtErr>\\d+),(?P<FrPrxyWrtTout>\\d+)\\) delete \\((?P<FrPrxyDelOk>\\d+),(?P<FrPrxyDelErr>\\d+),(?P<FrPrxyDelTout>\\d+),(?P<FrPrxyDelNFnd>\\d+)\\) udf \\((?P<FrPrxyUdfOk>\\d+),(?P<FrPrxyUdfErr>\\d+),(?P<FrPrxyUdfTout>\\d+)\\) lang \\((?P<FrPrxyLangRead>\\d+),(?P<FrPrxyLangWrite>\\d+),(?P<FrPrxyLangDel>\\d+),(?P<FrPrxylangErr>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} from-proxy-batch-sub: tsvc \\((?P<BtSuFPTsvcErr>\\d+),(?P<BtSuFPTsvcTout>\\d+)\\) read \\((?P<BtSuFPReadOk>\\d+),(?P<BtSuFPReadErr>\\d+),(?P<BtSuFPReadTout>\\d+),(?P<BtSuFPReadNFnd>\\d+),(?P<BtSuFPReadFltr>\\d+)\\) write \\((?P<BtSuFPWriteOk>\\d+),(?P<BtSuFPWriteErr>\\d+),(?P<BtSuFPWriteTout>\\d+),(?P<BtSuFPWriteFltr>\\d+)\\) delete \\((?P<BtSuFPDelOk>\\d+),(?P<BtSuFPDelErr>\\d+),(?P<BtSuFPDelTout>\\d+),(?P<BtSuFPDelNFnd>\\d+),(?P<BtSuFPDelFltr>\\d+)\\) udf \\((?P<BtSuFPUdfOk>\\d+),(?P<BtSuFPUdfErr>\\d+),(?P<BtSuFPUdfTout>\\d+),(?P<BtSuFPUdfFltr>\\d+)\\) lang \\((?P<BtSuFPLangRdOk>\\d+),(?P<BtSuFPLangWtOk>\\d+),(?P<BtSuFPLangDlOk>\\d+),(?P<BtSuFPLangErr>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} from-proxy-batch-sub: tsvc \\((?P<BtSuFPTsvcErr>\\d+),(?P<BtSuFPTsvcTout>\\d+)\\) read \\((?P<BtSuFPReadOk>\\d+),(?P<BtSuFPReadErr>\\d+),(?P<BtSuFPReadTout>\\d+),(?P<BtSuFPReadNFnd>\\d+),(?P<BtSuFPReadFltr>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} from-proxy-batch-sub: tsvc \\((?P<BtSuFPTsvcErr>\\d+),(?P<BtSuFPTsvcTout>\\d+)\\) read \\((?P<BtSuFPReadOk>\\d+),(?P<BtSuFPReadErr>\\d+),(?P<BtSuFPReadTout>\\d+),(?P<BtSuFPReadNFnd>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} batch-sub: tsvc \\((?P<BtcSubTsvcErr>\\d+),(?P<BtcSubTsvcTout>\\d+)\\) proxy \\((?P<BtcSubPrxyOk>\\d+),(?P<BtcSubPrxyErr>\\d+),(?P<BtcSubPrxyTout>\\d+)\\) read \\((?P<BtcSubReadOk>\\d+),(?P<BtcSubReadErr>\\d+),(?P<BtcSubReadTout>\\d+),(?P<BtcSubReadNFnd>\\d+),(?P<BtcSubReadFltr>\\d+)\\) write \\((?P<BtcSubWriteOk>\\d+),(?P<BtcSubWriteErr>\\d+),(?P<BtcSubWriteTout>\\d+),(?P<BtcSubWriteFltr>\\d+)\\) delete \\((?P<BtcSubDelOk>\\d+),(?P<BtcSubDelErr>\\d+),(?P<BtcSubDelTout>\\d+),(?P<BtcSubDelNFnd>\\d+),(?P<BtcSubDelFltr>\\d+)\\) udf \\((?P<BtcSubUdfOk>\\d+),(?P<BtcSubUdfErr>\\d+),(?P<BtcSubUdfTout>\\d+),(?P<BtcSubUdfFltr>\\d+)\\) lang \\((?P<BtcSubLangRdOk>\\d+),(?P<BtcSubLangWtOk>\\d+),(?P<BtcSubLangDlOk>\\d+),(?P<BtcSubLangErr>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} batch-sub: tsvc \\((?P<BtcSubTsvcErr>\\d+),(?P<BtcSubTsvcTout>\\d+)\\) proxy \\((?P<BtcSubPrxyOk>\\d+),(?P<BtcSubPrxyErr>\\d+),(?P<BtcSubPrxyTout>\\d+)\\) read \\((?P<BtcSubReadOk>\\d+),(?P<BtcSubReadErr>\\d+),(?P<BtcSubReadTout>\\d+),(?P<BtcSubReadNFnd>\\d+),(?P<BtcSubReadFltr>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} batch-sub: tsvc \\((?P<BtcSubTsvcErr>\\d+),(?P<BtcSubTsvcTout>\\d+)\\) proxy \\((?P<BtcSubPrxyOk>\\d+),(?P<BtcSubPrxyErr>\\d+),(?P<BtcSubPrxyTout>\\d+)\\) read \\((?P<BtcSubReadOk>\\d+),(?P<BtcSubReadErr>\\d+),(?P<BtcSubReadTout>\\d+),(?P<BtcSubReadNFnd>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} scan: basic \\((?P<ScanBasicOk>\\d+),(?P<ScanBasicErr>\\d+),(?P<ScanBasicAbrt>\\d+)\\) aggr \\((?P<ScanAggrOk>\\d+),(?P<ScanAggrErr>\\d+),(?P<ScanAggrAbrt>\\d+)\\) udf-bg \\((?P<ScanUdfOk>\\d+),(?P<ScanUdfErr>\\d+),(?P<ScanUdfAbrt>\\d+)\\) ops-bg \\((?P<ScanOpsOk>\\d+),(?P<ScanOpsErr>\\d+),(?P<ScanOpsAbrt>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} scan: basic \\((?P<ScanBasicOk>\\d+),(?P<ScanBasicErr>\\d+),(?P<ScanBasicAbrt>\\d+)\\) aggr \\((?P<ScanAggrOk>\\d+),(?P<ScanAggrErr>\\d+),(?P<ScanAggrAbrt>\\d+)\\) udf-bg \\((?P<ScanUdfOk>\\d+),(?P<ScanUdfErr>\\d+),(?P<ScanUdfAbrt>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} scan: basic \\((?P<ScanBasicOk>\\d+),(?P<ScanBasicErr>\\d+),(?P<ScanBasicAbrt>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} pi-query: short-basic \\((?P<ScanBasicOk>\\d+),(?P<ScanBasicErr>\\d+),(?P<ScanBasicAbrt>\\d+)\\) long-basic \\((?P<ScanLongOk>\\d+),(?P<ScanLongErr>\\d+),(?P<ScanLongAbrt>\\d+)\\) aggr \\((?P<ScanAggrOk>\\d+),(?P<ScanAggrErr>\\d+),(?P<ScanAggrAbrt>\\d+)\\) udf-bg \\((?P<ScanUdfOk>\\d+),(?P<ScanUdfErr>\\d+),(?P<ScanUdfAbrt>\\d+)\\) ops-bg \\((?P<ScanOpsOk>\\d+),(?P<ScanOpsErr>\\d+),(?P<ScanOpsAbrt>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} si-query: short-basic \\((?P<QueryBasicOk>\\d+),(?P<QueryBasicErr>\\d+),(?P<QueryBasicAbrt>\\d+)\\) long-basic \\((?P<QueryLongOk>\\d+),(?P<QueryLongErr>\\d+),(?P<QueryLongAbrt>\\d+)\\) aggr \\((?P<QueryAggrOk>\\d+),(?P<QueryAggrErr>\\d+),(?P<QueryAggrAbrt>\\d+)\\) udf-bg \\((?P<QueryUdfOk>\\d+),(?P<QueryUdfErr>\\d+),(?P<QueryUdfAbrt>\\d+)\\) ops-bg \\((?P<QueryOpsOk>\\d+),(?P<QueryOpsErr>\\d+),(?P<QueryOpsAbrt>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} query: basic \\((?P<QueryBasicOk>\\d+),(?P<QueryBasicErr>\\d+),(?P<QueryBasicAbrt>\\d+)\\) aggr \\((?P<QueryAggrOk>\\d+),(?P<QueryAggrErr>\\d+),(?P<QueryAggrAbrt>\\d+)\\) udf-bg \\((?P<QueryUdfOk>\\d+),(?P<QueryUdfErr>\\d+),(?P<QueryUdfAbrt>\\d+)\\) ops-bg \\((?P<QueryOpsOk>\\d+),(?P<QueryOpsErr>\\d+),(?P<QueryOpsAbrt>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} query: basic \\((?P<QueryBasicOk>\\d+),(?P<QueryBasicAbrt>\\d+)\\) aggr \\((?P<QueryAggrOk>\\d+),(?P<QueryAggrAbrt>\\d+)\\) udf-bg \\((?P<QueryUdfOk>\\d+),(?P<QueryUdfErr>\\d+)\\) ops-bg \\((?P<QueryOpsOk>\\d+),(?P<QueryOpsErr>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} query: basic \\((?P<QueryBasicOk>\\d+),(?P<QueryBasicAbrt>\\d+)\\) aggr \\((?P<QueryAggrOk>\\d+),(?P<QueryAggrAbrt>\\d+)\\) udf-bg \\((?P<QueryUdfOk>\\d+),(?P<QueryUdfErr>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} retransmits: migration (?P<ResmitMigra>\\d+) dup-res \\((?P<ResmitRead>\\d+),(?P<ResmitWrtDup>\\d+),(?P<ResmitDelDup>\\d+),(?P<ResmitUdfDupSub>\\d+),(?P<ResmitBRDup>\\d+),(?P<ResmitBWDup>\\d+),(?P<ResmitBDDup>\\d+),(?P<ResmitBUDup>\\d+),(?P<ResmitUdfDupSub>\\d+),(?P<ResmitOpsDup>\\d+)\\) repl-ping \\((?P<ResmitRPRepl>\\d+),(?P<ResmitBPRepl>\\d+)\\) repl-write \\((?P<ResmitWrtRepl>\\d+),(?P<ResmitDelRepl>\\d+),(?P<ResmitRepl>\\d+),(?P<ResmitBWRepl>\\d+),(?P<ResmitBDRepl>\\d+),(?P<ResmitBURepl>\\d+),(?P<ResmitUdfRepl>\\d+),(?P<ResmitOpsRepl>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} retransmits: migration (?P<ResmitMigra>\\d+) all-read (?P<ResmitRead>\\d+) all-write \\((?P<ResmitWrtDup>\\d+),(?P<ResmitWrtRepl>\\d+)\\) all-delete \\((?P<ResmitDelDup>\\d+),(?P<ResmitDelRepl>\\d+)\\) all-udf \\((?P<ResmitUdfDup>\\d+),(?P<ResmitRepl>\\d+)\\) all-batch-sub (?P<ResmitBtchDup>\\d+) udf-sub \\((?P<ResmitUdfDupSub>\\d+),(?P<ResmitUdfRepl>\\d+)\\) ops-sub \\((?P<ResmitOpsDup>\\d+),(?P<ResmitOpsRepl>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} retransmits: migration (?P<ResmitMigra>\\d+) all-read (?P<ResmitRead>\\d+) all-write \\((?P<ResmitWrtDup>\\d+),(?P<ResmitWrtRepl>\\d+)\\) all-delete \\((?P<ResmitDelDup>\\d+),(?P<ResmitDelRepl>\\d+)\\) all-udf \\((?P<ResmitUdfDup>\\d+),(?P<ResmitRepl>\\d+)\\) all-batch-sub (?P<ResmitBtchDup>\\d+) udf-sub \\((?P<ResmitUdfDupSub>\\d+),(?P<ResmitUdfRepl>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} retransmits: migration (?P<ResmitMigra>\\d+) client-read (?P<ResmitRead>\\d+) client-write \\((?P<ResmitWrtDup>\\d+),(?P<ResmitWrtRepl>\\d+)\\) client-delete \\((?P<ResmitDelDup>\\d+),(?P<ResmitDelRepl>\\d+)\\) client-udf \\((?P<ResmitUdfDup>\\d+),(?P<ResmitRepl>\\d+)\\) batch-sub (?P<ResmitBtchDup>\\d+) udf-sub \\((?P<ResmitUdfDupSub>\\d+),(?P<ResmitUdfRepl>\\d+)\\) nsup (?P<ResmitNsup>\\d+)"
-"{(?P<Namespace>[^}]+)} retransmits: migration (?P<ResmitMigra>\\d+) client-read (?P<ResmitRead>\\d+) client-write \\((?P<ResmitWrtDup>\\d+),(?P<ResmitWrtRepl>\\d+)\\) client-delete \\((?P<ResmitDelDup>\\d+),(?P<ResmitDelRepl>\\d+)\\) client-udf \\((?P<ResmitUdfDup>\\d+),(?P<ResmitRepl>\\d+)\\) batch-sub (?P<ResmitBtchDup>\\d+) udf-sub \\((?P<ResmitUdfDupSub>\\d+),(?P<ResmitUdfRepl>\\d+)\\)"
-"summary: throughput (?P<xdrThroughput>\\d+) inflight (?P<xdrInFlight>\\d+) dlog-outstanding (?P<xdrDlgOutstand>\\d+) dlog-delta-per-sec (?P<xdrDlogDeltaSec>[-]*[0-9\\.]+)"
-"detail: sh (?P<xdrSh>\\d+) ul (?P<xdrUl>\\d+) lg (?P<xdrLg>\\d+) rlg (?P<xdrRlg>\\d+) rlgi (?P<xdrRlgi>\\d+) rlgo (?P<xdrRlgo>\\d+) lproc (?P<xdrLproc>\\d+) rproc (?P<xdrRproc>\\d+) lkdproc (?P<xdrLkdproc>\\d+) errcl (?P<xdrErrcl>\\d+) errsrv (?P<xdrErrSrv>\\d+) hkskip (?P<xdrHkskip>\\d+) hkf (?P<xdrHkf>\\d+) flat (?P<xdrFlat>\\d+)"
-"\\[(?P<XdrDcName>[^]]+)\\]: dc-state (?P<XdrDcState>[^ ]+) timelag-sec (?P<XdrDcTimelag>\\d+) lst (?P<XdrDcLst>\\d+) mlst (?P<XdrDcMlst>\\d+) \\([^)]+\\) fnlst (?P<XdrDcFnlst>\\d+) \\([^)]+\\) wslst (?P<XdrDcWslst>\\d+) \\([^)]+\\) shlat-ms (?P<XdrDcShlatMs>[0-9\\.]+) rsas-ms (?P<XdrDcRsasMs>[0-9\\.]+) rsas-pct (?P<XdrDcRsasPct>[0-9\\.]+) con (?P<XdrDcOpenConn>\\d+) errcl (?P<XdrDcErrcl>\\d+) errsrv (?P<XdrDcErrsrv>\\d+) sz (?P<XdrDcSz>\\d+)"
-"\\[(?P<XdrDcName>[^]]+)\\]: dc-state (?P<XdrDcState>[^ ]+) timelag-sec (?P<XdrDcTimelag>\\d+) lst (?P<XdrDcLst>\\d+) mlst (?P<XdrDcMlst>\\d+) \\([^)]+\\) fnlst (?P<XdrDcFnlst>\\d+) \\([^)]+\\) wslst (?P<XdrDcWslst>\\d+) \\([^)]+\\) shlat-ms (?P<XdrDcShlatMs>[0-9\\.]+) errcl (?P<XdrDcErrcl>\\d+) errsrv (?P<XdrDcErrsrv>\\d+) rsas-ms (?P<XdrDcRsasMs>[0-9\\.]+) rsas-pct (?P<XdrDcRsasPct>[0-9\\.]+)"
-"dlog: free-pct (?P<xdrDlgFreePct>[0-9\\.]+) reclaimed (?P<xdrDlogReclaim>\\d+) glst (?P<xdrDlogGlst>\\d+)"
-"{(?P<Namespace>[^}]+)} Records: (?P<nsupMasterObj>\\d+), (?P<nsupNonExpirabl>\\d+) 0-vt, (?P<nsupExpireTotal>\\d+)\\((?P<nsupExpireNow>\\d+)\\) expired, (?P<nsupEvictTotal>\\d+)\\((?P<nsupEvictNow>\\d+)\\) evicted, (?P<nsupSetDelTotal>\\d+)\\((?P<nsupSetDelNow>\\d+)\\) set deletes. Evict ttl: (?P<nsupEvictTtl>[0-9\\-]+). Waits: (?P<nsupSetWaits>\\d+),(?P<nsupClearWaits>\\d+),(?P<nsupGeneWaits>\\d+). Total time: (?P<nsupTotalMs>\\d+) ms"
-"{(?P<Namespace>[^}]+)} nsup-done: evict-threads (?P<nsupEvictThrds>\\d+) expire-threads (?P<nsupExpireThrds>\\d+) non-expirable (?P<nsupNonExpirabl>\\d+) expired \\((?P<nsupExpireTotal>\\d+),(?P<nsupExpireNow>\\d+)\\) evicted \\((?P<nsupEvictTotal>\\d+),(?P<nsupEvictNow>\\d+)\\) evict-ttl (?P<nsupEvictTtl>[0-9\\-]+) total-ms (?P<nsupTotalMs>\\d+)"
-"{(?P<Namespace>[^}]+)} nsup-done: evict-threads (?P<nsupEvictThrds>\\d+) expire-threads (?P<nsupExpireThrds>\\d+) master-objects \\((?P<nsupMasterObj>\\d+),(?P<nsupNonExpirabl>\\d+)\\) expired \\((?P<nsupExpireTotal>\\d+),(?P<nsupExpireNow>\\d+)\\) evicted \\((?P<nsupEvictTotal>\\d+),(?P<nsupEvictNow>\\d+)\\) evict-ttl (?P<nsupEvictTtl>[0-9\\-]+) waits \\((?P<nsupGeneWaits>\\d+),(?P<nsupClearWaits>\\d+)\\) total-ms (?P<nsupTotalMs>\\d+)"
-"{(?P<Namespace>[^}]+)} nsup-start: expire-threads (?P<nsupExpireThrds>\\d+)"
-"{(?P<Namespace>[^}]+)} nsup-start: evict-threads (?P<nsupEvictThrds>\\d+) evict-ttl (?P<nsupEvictTtl>\\d+) evict-void-time \\((?P<nsupEvictVoidEf>\\d+),(?P<nsupEvictVoidSp>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} nsup-start: evict-ttl (?P<nsupEvictTtl>\\d+) evict-void-time \\((?P<nsupEvictVoidEf>\\d+),(?P<nsupEvictVoidSp>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} tombstones: all (?P<TombAll>\\d+) xdr \\((?P<TombXdr>\\d+),(?P<TombXdrCem>\\d+)\\) master (?P<TombMaster>\\d+) prole (?P<TombProle>\\d+) non-replica (?P<TombNonRepl>\\d+)"
-"{(?P<Namespace>[^}]+)} tombstones: all (?P<TombAll>\\d+) xdr (?P<TombXdr>\\d+) master (?P<TombMaster>\\d+) prole (?P<TombProle>\\d+) non-replica (?P<TombNonRepl>\\d+)"
-"{(?P<Namespace>[^}]+)} tombstones: all (?P<TombAll>\\d+) master (?P<TombMaster>\\d+) prole (?P<TombProle>\\d+) non-replica (?P<TombNonRepl>\\d+)"
-"{(?P<Namespace>[^}]+)} xdr-from-proxy: write \\((?P<XdrWrFrPrxOk>\\d+),(?P<XdrWrFrPrxErr>\\d+),(?P<XdrWrFrPrxTout>\\d+)\\) delete \\((?P<XdrDelFrPrxOk>\\d+),(?P<XdrDelFrPrxErr>\\d+),(?P<XdrDelFrPrxTout>\\d+),(?P<XdrDelFrPrxNFou>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} xdr-client: write \\((?P<XdrClWrOk>\\d+),(?P<XdrClWrErr>\\d+),(?P<XdrClWrTout>\\d+)\\) delete \\((?P<XdrClDelOk>\\d+),(?P<XdrClDelErr>\\d+),(?P<XdrClDelTout>\\d+),(?P<XdrClDelNFou>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} index-flash-usage: used-bytes (?P<IdxFlashUseByte>\\d+) used-pct (?P<IdxFlashUsePct>\\d+) alloc-bytes (?P<IdxFlashAlBt>\\d+) alloc-pct (?P<IdxFlashAlPct>\\d+)"
-"{(?P<Namespace>[^}]+)} index-flash-usage: used-bytes (?P<IdxFlashUseByte>\\d+) used-pct (?P<IdxFlashUsePct>\\d+)"
-"{(?P<Namespace>[^}]+)} index-pmem-usage: used-bytes (?P<IdxPmemUseByte>\\d+) used-pct (?P<IdxPmemUsePct>\\d+)"
-"{(?P<Namespace>[^}]+)} sindex-pmem-usage: used-bytes (?P<SdxPmemUseByte>\\d+) used-pct (?P<SdxPmemUsePct>\\d+)"
-"{(?P<Namespace>[^}]+)} pmem-usage: used-bytes (?P<PmemUseByte>\\d+) avail-pct (?P<PmemAvailPct>\\d+)"
-"{(?P<Namespace>[^}]+)} udf-sub: tsvc \\((?P<UdfSubTsvcErr>\\d+),(?P<UdfSubTsvcTout>\\d+)\\) udf \\((?P<UdfSubUdfOk>\\d+),(?P<UdfSubUdfErr>\\d+),(?P<UdfSubUdfTout>\\d+),(?P<UdfSubUdfFOut>\\d+)\\) lang \\((?P<UdfSubLangRdOk>\\d+),(?P<UdfSubLangWrOk>\\d+),(?P<UdfSubLangDelOk>\\d+),(?P<UdfSubLangErr>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} udf-sub: tsvc \\((?P<UdfSubTsvcErr>\\d+),(?P<UdfSubTsvcTout>\\d+)\\) udf \\((?P<UdfSubUdfOk>\\d+),(?P<UdfSubUdfErr>\\d+),(?P<UdfSubUdfOkTout>\\d+)\\) lang \\((?P<UdfSubLangRdOk>\\d+),(?P<UdfSubLangWrOk>\\d+),(?P<UdfSubLangDelOk>\\d+),(?P<UdfSubLangErr>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} re-repl: tsvc \\((?P<ReReplTsvcErr>\\d+),(?P<ReReplTsvcTout>\\d+)\\) all-triggers \\((?P<ReReplAllTrgOk>\\d+),(?P<ReReplAllTrgErr>\\d+),(?P<ReReplAllTrgTou>\\d+)\\) unreplicated-records (?P<ReReplUn>\\d+)"
-"{(?P<Namespace>[^}]+)} re-repl: tsvc \\((?P<ReReplTsvcErr>\\d+),(?P<ReReplTsvcTout>\\d+)\\) all-triggers \\((?P<ReReplAllTrgOk>\\d+),(?P<ReReplAllTrgErr>\\d+),(?P<ReReplAllTrgTou>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} re-repl: all-triggers \\((?P<ReReplAllTrgOk>\\d+),(?P<ReReplAllTrgErr>\\d+),(?P<ReReplAllTrgTou>\\d+)\\) unreplicated-records (?P<ReReplUn>\\d+)"
-"{(?P<Namespace>[^}]+)} re-repl: all-triggers \\((?P<ReReplAllTrgOk>\\d+),(?P<ReReplAllTrgErr>\\d+),(?P<ReReplAllTrgTou>\\d+)\\)"
-"{(?P<Namespace>[^}]+)} sindex-gc-done: cleaned \\((?P<sindexGcClnA>\\d+),(?P<sindexGcClnC>\\d+)\\) total-ms (?P<sindexGcMs>\\d+)"
-"{(?P<Namespace>[^}]+)} sindex-gc-done: processed (?P<sindexGcProc>\\d+) found (?P<sindexGcFound>\\d+) deleted (?P<sindexGcDel>\\d+) total-ms (?P<sindexGcMs>\\d+)"
-"{(?P<Namespace>[^}]+)} sindex-gc: Processed: (?P<sindexGcProc>\\d+), found:(?P<sindexGcFound>\\d+), deleted: (?P<sindexGcDel>\\d+): Total time: (?P<sindexGcMs>\\d+) ms"
-"{(?P<Namespace>[^}]+)} ops-sub: tsvc \\((?P<OpsSubTsvcErr>\\d+),(?P<OpsSubTsvcTout>\\d+)\\) write \\((?P<OpsSubWrOk>\\d+),(?P<OpsSubWrErr>\\d+),(?P<OpsSubWrTout>\\d+),(?P<OpsSubWrFOut>\\d+)\\)"
-"xdr-dc (?P<xdr5dc>[^:]+): nodes (?P<xdr5nodes>\\d+) latency-ms (?P<xdr5latencyms>\\d+)"
-"{(?P<Namespace>[^}]+)} xdr-dc (?P<xdr5dc>[^:]+): lag (?P<xdr5lag>\\d+) throughput (?P<xdr5throughput>\\d+) in-queue (?P<xdr5inqueue>\\d+) in-progress (?P<xdr5outstanding>\\d+) complete \\((?P<xdr5DoneOk>\\d+),(?P<xdr5DoneAbandon>\\d+),(?P<xdr5DoneNotFnd>\\d+),(?P<xdr5DoneFOut>\\d+)\\) retries \\((?P<xdr5RetrNoNode>\\d+),(?P<xdr5RetrConnRst>\\d+),(?P<xdr5RetrDest>\\d+)\\) recoveries \\((?P<xdr5Recov>\\d+),(?P<xdr5RecovPend>\\d+)\\) hot-keys (?P<xdr5HotKeys>\\d+)"
-"xdr-dc (?P<xdr5dc>[^:]+): nodes (?P<xdr5nodes>\\d+) lag (?P<xdr5lag>\\d+) throughput (?P<xdr5throughput>\\d+) latency-ms (?P<xdr5latencyms>\\d+) in-queue (?P<xdr5inqueue>\\d+) in-progress (?P<xdr5outstanding>\\d+) complete \\((?P<xdr5DoneOk>\\d+),(?P<xdr5DoneAbandon>\\d+),(?P<xdr5DoneNotFnd>\\d+),(?P<xdr5DoneFOut>\\d+)\\) retries \\((?P<xdr5RetrNoNode>\\d+),(?P<xdr5RetrConnRst>\\d+),(?P<xdr5RetrDest>\\d+)\\) recoveries \\((?P<xdr5Recov>\\d+),(?P<xdr5RecovPend>\\d+)\\) hot-keys (?P<xdr5HotKeys>\\d+)"
-"xdr-dc (?P<xdr5dc>[^:]+): lag (?P<xdr5lag>\\d+) throughput (?P<xdr5throughput>\\d+) latency-ms (?P<xdr5latencyms>\\d+) in-queue (?P<xdr5inqueue>\\d+) in-progress (?P<xdr5outstanding>\\d+) complete \\((?P<xdr5DoneOk>\\d+),(?P<xdr5DoneAbandon>\\d+),(?P<xdr5DoneNotFnd>\\d+),(?P<xdr5DoneFOut>\\d+)\\) retries \\((?P<xdr5RetrNoNode>\\d+),(?P<xdr5RetrConnRst>\\d+),(?P<xdr5RetrDest>\\d+)\\) recoveries \\((?P<xdr5Recov>\\d+),(?P<xdr5RecovPend>\\d+)\\) hot-keys (?P<xdr5HotKeys>\\d+)"
-"xdr-dc (?P<xdr5dc>[^:]+): lag (?P<xdr5lag>\\d+) throughput (?P<xdr5throughput>\\d+) latency-ms (?P<xdr5latencyms>\\d+) in-queue (?P<xdr5inqueue>\\d+) outstanding (?P<xdr5outstanding>\\d+) complete \\((?P<xdr5DoneOk>\\d+),(?P<xdr5DoneAbandon>\\d+),(?P<xdr5DoneNotFnd>\\d+),(?P<xdr5DoneFOut>\\d+)\\) retries \\((?P<xdr5RetrConnRst>\\d+),(?P<xdr5RetrDest>\\d+)\\) recoveries \\((?P<xdr5Recov>\\d+),(?P<xdr5RecovPend>\\d+)\\) hot-keys (?P<xdr5HotKeys>\\d+)"
-"xdr-dc (?P<xdr5dc>[^:]+): lag (?P<xdr5lag>\\d+) throughput (?P<xdr5throughput>\\d+) latency-ms (?P<xdr5latencyms>\\d+) in-queue (?P<xdr5inqueue>\\d+) in-progress (?P<xdr5outstanding>\\d+) complete \\((?P<xdr5DoneOk>\\d+),(?P<xdr5DoneAbandon>\\d+),(?P<xdr5DoneNotFnd>\\d+),(?P<xdr5DoneFOut>\\d+)\\) retries \\((?P<xdr5RetrConnRst>\\d+),(?P<xdr5RetrDest>\\d+)\\) recoveries \\((?P<xdr5Recov>\\d+),(?P<xdr5RecovPend>\\d+)\\) hot-keys (?P<xdr5HotKeys>\\d+)"
-"{(?P<Namespace>[^}]+)} xdr-tomb-raid-done: dropped (?P<xdr5tombDrop>\\d+) total-ms (?P<xdr5tombMs>\\d+)"
-" \\((?P<warnCtx>[^)]+)\\): \\((?P<warnC>[^)]+)\\) \\(repeated:(?P<repeated>\\d+)\\) (?P<warnMessage>.+$)"
-" \\(norepeat:(?P<repeated>\\d+)\\) \\((?P<warnCtx>[^)]+)\\): \\((?P<warnC>[^)]+)\\) (?P<warnMessage>.+$)"
-" \\((?P<errCtx>[^)]+)\\): \\((?P<errC>[^)]+)\\) \\(repeated:(?P<repeated>\\d+)\\) (?P<errMessage>.+$)"
-" \\(norepeat:(?P<repeated>\\d+)\\) \\((?P<errCtx>[^)]+)\\): \\((?P<errC>[^)]+)\\) (?P<errMessage>.+$)"
+        export:
+            - "config-set (?P<configset>\\d+) command completed: params (?P<command>.*)"
+    -
+        setName: "restarts"
+        search: "shutting down Aerospike"
+        replace: # https://golang.org/pkg/regexp/#Regexp.ReplaceAllString
+            -
+                regex: " build "
+                sub: " 1 build "
+        export:
+            - "(?P<signal>[^ ]+) received, shutting down Aerospike Enterprise Edition (?P<stop>\\d+) build (?P<build>.+)"
+            - "(?P<stop>\\d+) build (?P<build>[^ ]+)"
+    -
+        setName: "restarts"
+        search: "aborting Aerospike"
+        replace: # https://golang.org/pkg/regexp/#Regexp.ReplaceAllString
+            -
+                regex: " build "
+                sub: " 1 build "
+        export:
+            - "(?P<signal>[^ ]+) received, aborting Aerospike Enterprise Edition (?P<stop>\\d+) build (?P<build>.+)"
+            - "(?P<stop>\\d+) build (?P<build>[^ ]+)"
+    -
+        setName: "restarts"
+        search: "shutting down"
+        replace: # https://golang.org/pkg/regexp/#Regexp.ReplaceAllString
+            -
+                regex: " shutting down"
+                sub: " 1 shutting down"
+        export:
+            - "(?P<signal>[^ ]+) received, (?P<stop>\\d+) shutting down"
+            - "(?P<stop>\\d+) shutting down"
+    -
+        setName: "restarts"
+        search: "starting normal shutdown"
+        replace: # https://golang.org/pkg/regexp/#Regexp.ReplaceAllString
+            -
+                regex: " starting normal shutdown"
+                sub: " 1 starting normal shutdown"
+        export:
+            - "(?P<signal>[^ ]+) received, (?P<stop>\\d+) starting normal shutdown"
+            - "(?P<stop>\\d+) starting normal shutdown"
+    -
+        setName: "restarts"
+        search: "finished clean shutdown - exiting"
+        replace: # https://golang.org/pkg/regexp/#Regexp.ReplaceAllString
+            -
+                regex: " finished clean shutdown - exiting"
+                sub: " 1 finished clean shutdown - exiting"
+        export:
+            - "(?P<stopDone>\\d+) finished clean shutdown - exiting"
+    -
+        setName: "nsDevices"
+        search: "device-usage: used-bytes"
+        export:
+            - "{(?P<Namespace>[^}]+)} device-usage: used-bytes (?P<DevUsedBytes>\\d+) avail-pct (?P<DevAvailPct>[0-9\\.]+) cache-read-pct (?P<DevCacheReadPct>[0-9\\.]+)"
+            - "{(?P<Namespace>[^}]+)} device-usage: used-bytes (?P<DevUsedBytes>\\d+) avail-pct (?P<DevAvailPct>[0-9\\.]+)"
+    -
+        setName: "specialerrors"
+        search: "special-errors: key-busy"
+        export:
+            - "{(?P<Namespace>[^}]+)} special-errors: key-busy (?P<ErrKeyBusy>\\d+) record-too-big (?P<ErrRecTooBig>\\d+)"
+    -
+        setName: "nsClient"
+        search: "client: tsvc"
+        export:
+            - "{(?P<Namespace>[^}]+)} client: tsvc \\((?P<ClientTsvcErr>\\d+),(?P<ClientTsvcTout>\\d+)\\) proxy \\((?P<ClientPrxyOk>\\d+),(?P<ClientPrxyErr>\\d+),(?P<ClientPrxyTout>\\d+)\\) read \\((?P<ClientReadOk>\\d+),(?P<ClientReadErr>\\d+),(?P<ClientReadTout>\\d+),(?P<ClientReadNFnd>\\d+),(?P<ClientReadFltr>\\d+)\\) write \\((?P<ClientWrtOk>\\d+),(?P<ClientWrtErr>\\d+),(?P<ClientWrtTout>\\d+),(?P<ClientWrtFltr>\\d+)\\) delete \\((?P<ClientDelOk>\\d+),(?P<ClientDelErr>\\d+),(?P<ClientDelTout>\\d+),(?P<ClientDelNFnd>\\d+),(?P<ClientDelFltr>\\d+)\\) udf \\((?P<ClientUdfOk>\\d+),(?P<ClientUdfErr>\\d+),(?P<ClientUdfTout>\\d+),(?P<ClientUdfFltr>\\d+)\\) lang \\((?P<ClientLangRead>\\d+),(?P<ClientLangWrite>\\d+),(?P<ClientLangDel>\\d+),(?P<ClientlangErr>\\d+)\\)"
+            - "{(?P<Namespace>[^}]+)} client: tsvc \\((?P<ClientTsvcErr>\\d+),(?P<ClientTsvcTout>\\d+)\\) proxy \\((?P<ClientPrxyOk>\\d+),(?P<ClientPrxyErr>\\d+),(?P<ClientPrxyTout>\\d+)\\) read \\((?P<ClientReadOk>\\d+),(?P<ClientReadErr>\\d+),(?P<ClientReadTout>\\d+),(?P<ClientReadNFnd>\\d+)\\) write \\((?P<ClientWrtOk>\\d+),(?P<ClientWrtErr>\\d+),(?P<ClientWrtTout>\\d+)\\) delete \\((?P<ClientDelOk>\\d+),(?P<ClientDelErr>\\d+),(?P<ClientDelTout>\\d+),(?P<ClientDelNFnd>\\d+)\\) udf \\((?P<ClientUdfOk>\\d+),(?P<ClientUdfErr>\\d+),(?P<ClientUdfTout>\\d+)\\) lang \\((?P<ClientLangRead>\\d+),(?P<ClientLangWrite>\\d+),(?P<ClientLangDel>\\d+),(?P<ClientlangErr>\\d+)\\)"
+    -
+        setName: "nsFromProxy"
+        search: "from-proxy: tsvc"
+        export:
+            - "{(?P<Namespace>[^}]+)} from-proxy: tsvc \\((?P<FrPrxyTsvcErr>\\d+),(?P<FrPrxyTsvcTout>\\d+)\\) read \\((?P<FrPrxyReadOk>\\d+),(?P<FrPrxyReadErr>\\d+),(?P<FrPrxyReadTout>\\d+),(?P<FrPrxyReadNFnd>\\d+),(?P<FrPrxyReadFltr>\\d+)\\) write \\((?P<FrPrxyWrtOk>\\d+),(?P<FrPrxyWrtErr>\\d+),(?P<FrPrxyWrtTout>\\d+),(?P<FrPrxyWrtFltr>\\d+)\\) delete \\((?P<FrPrxyDelOk>\\d+),(?P<FrPrxyDelErr>\\d+),(?P<FrPrxyDelTout>\\d+),(?P<FrPrxyDelNFnd>\\d+),(?P<FrPrxyDelFltr>\\d+)\\) udf \\((?P<FrPrxyUdfOk>\\d+),(?P<FrPrxyUdfErr>\\d+),(?P<FrPrxyUdfTout>\\d+),(?P<FrPrxyUdfFltr>\\d+)\\) lang \\((?P<FrPrxyLangRead>\\d+),(?P<FrPrxyLangWrite>\\d+),(?P<FrPrxyLangDel>\\d+),(?P<FrPrxylangErr>\\d+)\\)"
+            - "{(?P<Namespace>[^}]+)} from-proxy: tsvc \\((?P<FrPrxyTsvcErr>\\d+),(?P<FrPrxyTsvcTout>\\d+)\\) read \\((?P<FrPrxyReadOk>\\d+),(?P<FrPrxyReadErr>\\d+),(?P<FrPrxyReadTout>\\d+),(?P<FrPrxyReadNFnd>\\d+)\\) write \\((?P<FrPrxyWrtOk>\\d+),(?P<FrPrxyWrtErr>\\d+),(?P<FrPrxyWrtTout>\\d+)\\) delete \\((?P<FrPrxyDelOk>\\d+),(?P<FrPrxyDelErr>\\d+),(?P<FrPrxyDelTout>\\d+),(?P<FrPrxyDelNFnd>\\d+)\\) udf \\((?P<FrPrxyUdfOk>\\d+),(?P<FrPrxyUdfErr>\\d+),(?P<FrPrxyUdfTout>\\d+)\\) lang \\((?P<FrPrxyLangRead>\\d+),(?P<FrPrxyLangWrite>\\d+),(?P<FrPrxyLangDel>\\d+),(?P<FrPrxylangErr>\\d+)\\)"
+    -
+        setName: "nsFromProxyBatch"
+        search: "from-proxy-batch-sub: tsvc"
+        export:
+            - "{(?P<Namespace>[^}]+)} from-proxy-batch-sub: tsvc \\((?P<BtSuFPTsvcErr>\\d+),(?P<BtSuFPTsvcTout>\\d+)\\) read \\((?P<BtSuFPReadOk>\\d+),(?P<BtSuFPReadErr>\\d+),(?P<BtSuFPReadTout>\\d+),(?P<BtSuFPReadNFnd>\\d+),(?P<BtSuFPReadFltr>\\d+)\\) write \\((?P<BtSuFPWriteOk>\\d+),(?P<BtSuFPWriteErr>\\d+),(?P<BtSuFPWriteTout>\\d+),(?P<BtSuFPWriteFltr>\\d+)\\) delete \\((?P<BtSuFPDelOk>\\d+),(?P<BtSuFPDelErr>\\d+),(?P<BtSuFPDelTout>\\d+),(?P<BtSuFPDelNFnd>\\d+),(?P<BtSuFPDelFltr>\\d+)\\) udf \\((?P<BtSuFPUdfOk>\\d+),(?P<BtSuFPUdfErr>\\d+),(?P<BtSuFPUdfTout>\\d+),(?P<BtSuFPUdfFltr>\\d+)\\) lang \\((?P<BtSuFPLangRdOk>\\d+),(?P<BtSuFPLangWtOk>\\d+),(?P<BtSuFPLangDlOk>\\d+),(?P<BtSuFPLangErr>\\d+)\\)"
+            - "{(?P<Namespace>[^}]+)} from-proxy-batch-sub: tsvc \\((?P<BtSuFPTsvcErr>\\d+),(?P<BtSuFPTsvcTout>\\d+)\\) read \\((?P<BtSuFPReadOk>\\d+),(?P<BtSuFPReadErr>\\d+),(?P<BtSuFPReadTout>\\d+),(?P<BtSuFPReadNFnd>\\d+),(?P<BtSuFPReadFltr>\\d+)\\)"
+            - "{(?P<Namespace>[^}]+)} from-proxy-batch-sub: tsvc \\((?P<BtSuFPTsvcErr>\\d+),(?P<BtSuFPTsvcTout>\\d+)\\) read \\((?P<BtSuFPReadOk>\\d+),(?P<BtSuFPReadErr>\\d+),(?P<BtSuFPReadTout>\\d+),(?P<BtSuFPReadNFnd>\\d+)\\)"
+    -
+        setName: "nsBatch"
+        search: "batch-sub: tsvc"
+        export:
+            - "{(?P<Namespace>[^}]+)} batch-sub: tsvc \\((?P<BtcSubTsvcErr>\\d+),(?P<BtcSubTsvcTout>\\d+)\\) proxy \\((?P<BtcSubPrxyOk>\\d+),(?P<BtcSubPrxyErr>\\d+),(?P<BtcSubPrxyTout>\\d+)\\) read \\((?P<BtcSubReadOk>\\d+),(?P<BtcSubReadErr>\\d+),(?P<BtcSubReadTout>\\d+),(?P<BtcSubReadNFnd>\\d+),(?P<BtcSubReadFltr>\\d+)\\) write \\((?P<BtcSubWriteOk>\\d+),(?P<BtcSubWriteErr>\\d+),(?P<BtcSubWriteTout>\\d+),(?P<BtcSubWriteFltr>\\d+)\\) delete \\((?P<BtcSubDelOk>\\d+),(?P<BtcSubDelErr>\\d+),(?P<BtcSubDelTout>\\d+),(?P<BtcSubDelNFnd>\\d+),(?P<BtcSubDelFltr>\\d+)\\) udf \\((?P<BtcSubUdfOk>\\d+),(?P<BtcSubUdfErr>\\d+),(?P<BtcSubUdfTout>\\d+),(?P<BtcSubUdfFltr>\\d+)\\) lang \\((?P<BtcSubLangRdOk>\\d+),(?P<BtcSubLangWtOk>\\d+),(?P<BtcSubLangDlOk>\\d+),(?P<BtcSubLangErr>\\d+)\\)"
+            - "{(?P<Namespace>[^}]+)} batch-sub: tsvc \\((?P<BtcSubTsvcErr>\\d+),(?P<BtcSubTsvcTout>\\d+)\\) proxy \\((?P<BtcSubPrxyOk>\\d+),(?P<BtcSubPrxyErr>\\d+),(?P<BtcSubPrxyTout>\\d+)\\) read \\((?P<BtcSubReadOk>\\d+),(?P<BtcSubReadErr>\\d+),(?P<BtcSubReadTout>\\d+),(?P<BtcSubReadNFnd>\\d+),(?P<BtcSubReadFltr>\\d+)\\)"
+            - "{(?P<Namespace>[^}]+)} batch-sub: tsvc \\((?P<BtcSubTsvcErr>\\d+),(?P<BtcSubTsvcTout>\\d+)\\) proxy \\((?P<BtcSubPrxyOk>\\d+),(?P<BtcSubPrxyErr>\\d+),(?P<BtcSubPrxyTout>\\d+)\\) read \\((?P<BtcSubReadOk>\\d+),(?P<BtcSubReadErr>\\d+),(?P<BtcSubReadTout>\\d+),(?P<BtcSubReadNFnd>\\d+)\\)"
+    -
+        setName: "scan"
+        search: "scan: basic"
+        export:
+            - "{(?P<Namespace>[^}]+)} scan: basic \\((?P<ScanBasicOk>\\d+),(?P<ScanBasicErr>\\d+),(?P<ScanBasicAbrt>\\d+)\\) aggr \\((?P<ScanAggrOk>\\d+),(?P<ScanAggrErr>\\d+),(?P<ScanAggrAbrt>\\d+)\\) udf-bg \\((?P<ScanUdfOk>\\d+),(?P<ScanUdfErr>\\d+),(?P<ScanUdfAbrt>\\d+)\\) ops-bg \\((?P<ScanOpsOk>\\d+),(?P<ScanOpsErr>\\d+),(?P<ScanOpsAbrt>\\d+)\\)"
+            - "{(?P<Namespace>[^}]+)} scan: basic \\((?P<ScanBasicOk>\\d+),(?P<ScanBasicErr>\\d+),(?P<ScanBasicAbrt>\\d+)\\) aggr \\((?P<ScanAggrOk>\\d+),(?P<ScanAggrErr>\\d+),(?P<ScanAggrAbrt>\\d+)\\) udf-bg \\((?P<ScanUdfOk>\\d+),(?P<ScanUdfErr>\\d+),(?P<ScanUdfAbrt>\\d+)\\)"
+            - "{(?P<Namespace>[^}]+)} scan: basic \\((?P<ScanBasicOk>\\d+),(?P<ScanBasicErr>\\d+),(?P<ScanBasicAbrt>\\d+)\\)"
+    -
+        setName: "scan"
+        search: "pi-query"
+        export:
+            - "{(?P<Namespace>[^}]+)} pi-query: short-basic \\((?P<ScanBasicOk>\\d+),(?P<ScanBasicErr>\\d+),(?P<ScanBasicAbrt>\\d+)\\) long-basic \\((?P<ScanLongOk>\\d+),(?P<ScanLongErr>\\d+),(?P<ScanLongAbrt>\\d+)\\) aggr \\((?P<ScanAggrOk>\\d+),(?P<ScanAggrErr>\\d+),(?P<ScanAggrAbrt>\\d+)\\) udf-bg \\((?P<ScanUdfOk>\\d+),(?P<ScanUdfErr>\\d+),(?P<ScanUdfAbrt>\\d+)\\) ops-bg \\((?P<ScanOpsOk>\\d+),(?P<ScanOpsErr>\\d+),(?P<ScanOpsAbrt>\\d+)\\)"
+    -
+        setName: "query"
+        search: "si-query"
+        export:
+            - "{(?P<Namespace>[^}]+)} si-query: short-basic \\((?P<QueryBasicOk>\\d+),(?P<QueryBasicErr>\\d+),(?P<QueryBasicAbrt>\\d+)\\) long-basic \\((?P<QueryLongOk>\\d+),(?P<QueryLongErr>\\d+),(?P<QueryLongAbrt>\\d+)\\) aggr \\((?P<QueryAggrOk>\\d+),(?P<QueryAggrErr>\\d+),(?P<QueryAggrAbrt>\\d+)\\) udf-bg \\((?P<QueryUdfOk>\\d+),(?P<QueryUdfErr>\\d+),(?P<QueryUdfAbrt>\\d+)\\) ops-bg \\((?P<QueryOpsOk>\\d+),(?P<QueryOpsErr>\\d+),(?P<QueryOpsAbrt>\\d+)\\)"
+    -
+        setName: "query"
+        search: "query: basic"
+        export:
+            - "{(?P<Namespace>[^}]+)} query: basic \\((?P<QueryBasicOk>\\d+),(?P<QueryBasicErr>\\d+),(?P<QueryBasicAbrt>\\d+)\\) aggr \\((?P<QueryAggrOk>\\d+),(?P<QueryAggrErr>\\d+),(?P<QueryAggrAbrt>\\d+)\\) udf-bg \\((?P<QueryUdfOk>\\d+),(?P<QueryUdfErr>\\d+),(?P<QueryUdfAbrt>\\d+)\\) ops-bg \\((?P<QueryOpsOk>\\d+),(?P<QueryOpsErr>\\d+),(?P<QueryOpsAbrt>\\d+)\\)"
+            - "{(?P<Namespace>[^}]+)} query: basic \\((?P<QueryBasicOk>\\d+),(?P<QueryBasicAbrt>\\d+)\\) aggr \\((?P<QueryAggrOk>\\d+),(?P<QueryAggrAbrt>\\d+)\\) udf-bg \\((?P<QueryUdfOk>\\d+),(?P<QueryUdfErr>\\d+)\\) ops-bg \\((?P<QueryOpsOk>\\d+),(?P<QueryOpsErr>\\d+)\\)"
+            - "{(?P<Namespace>[^}]+)} query: basic \\((?P<QueryBasicOk>\\d+),(?P<QueryBasicAbrt>\\d+)\\) aggr \\((?P<QueryAggrOk>\\d+),(?P<QueryAggrAbrt>\\d+)\\) udf-bg \\((?P<QueryUdfOk>\\d+),(?P<QueryUdfErr>\\d+)\\)"
+    -
+        setName: "retransmits"
+        search: "retransmits: migration"
+        export:
+            - "{(?P<Namespace>[^}]+)} retransmits: migration (?P<ResmitMigra>\\d+) dup-res \\((?P<ResmitRead>\\d+),(?P<ResmitWrtDup>\\d+),(?P<ResmitDelDup>\\d+),(?P<ResmitUdfDupSub>\\d+),(?P<ResmitBRDup>\\d+),(?P<ResmitBWDup>\\d+),(?P<ResmitBDDup>\\d+),(?P<ResmitBUDup>\\d+),(?P<ResmitUdfDupSub2>\\d+),(?P<ResmitOpsDup>\\d+)\\) repl-ping \\((?P<ResmitRPRepl>\\d+),(?P<ResmitBPRepl>\\d+)\\) repl-write \\((?P<ResmitWrtRepl>\\d+),(?P<ResmitDelRepl>\\d+),(?P<ResmitRepl>\\d+),(?P<ResmitBWRepl>\\d+),(?P<ResmitBDRepl>\\d+),(?P<ResmitBURepl>\\d+),(?P<ResmitUdfRepl>\\d+),(?P<ResmitOpsRepl>\\d+)\\)"
+            - "{(?P<Namespace>[^}]+)} retransmits: migration (?P<ResmitMigra>\\d+) all-read (?P<ResmitRead>\\d+) all-write \\((?P<ResmitWrtDup>\\d+),(?P<ResmitWrtRepl>\\d+)\\) all-delete \\((?P<ResmitDelDup>\\d+),(?P<ResmitDelRepl>\\d+)\\) all-udf \\((?P<ResmitUdfDup>\\d+),(?P<ResmitRepl>\\d+)\\) all-batch-sub (?P<ResmitBtchDup>\\d+) udf-sub \\((?P<ResmitUdfDupSub>\\d+),(?P<ResmitUdfRepl>\\d+)\\) ops-sub \\((?P<ResmitOpsDup>\\d+),(?P<ResmitOpsRepl>\\d+)\\)"
+            - "{(?P<Namespace>[^}]+)} retransmits: migration (?P<ResmitMigra>\\d+) all-read (?P<ResmitRead>\\d+) all-write \\((?P<ResmitWrtDup>\\d+),(?P<ResmitWrtRepl>\\d+)\\) all-delete \\((?P<ResmitDelDup>\\d+),(?P<ResmitDelRepl>\\d+)\\) all-udf \\((?P<ResmitUdfDup>\\d+),(?P<ResmitRepl>\\d+)\\) all-batch-sub (?P<ResmitBtchDup>\\d+) udf-sub \\((?P<ResmitUdfDupSub>\\d+),(?P<ResmitUdfRepl>\\d+)\\)"
+            - "{(?P<Namespace>[^}]+)} retransmits: migration (?P<ResmitMigra>\\d+) client-read (?P<ResmitRead>\\d+) client-write \\((?P<ResmitWrtDup>\\d+),(?P<ResmitWrtRepl>\\d+)\\) client-delete \\((?P<ResmitDelDup>\\d+),(?P<ResmitDelRepl>\\d+)\\) client-udf \\((?P<ResmitUdfDup>\\d+),(?P<ResmitRepl>\\d+)\\) batch-sub (?P<ResmitBtchDup>\\d+) udf-sub \\((?P<ResmitUdfDupSub>\\d+),(?P<ResmitUdfRepl>\\d+)\\) nsup (?P<ResmitNsup>\\d+)"
+            - "{(?P<Namespace>[^}]+)} retransmits: migration (?P<ResmitMigra>\\d+) client-read (?P<ResmitRead>\\d+) client-write \\((?P<ResmitWrtDup>\\d+),(?P<ResmitWrtRepl>\\d+)\\) client-delete \\((?P<ResmitDelDup>\\d+),(?P<ResmitDelRepl>\\d+)\\) client-udf \\((?P<ResmitUdfDup>\\d+),(?P<ResmitRepl>\\d+)\\) batch-sub (?P<ResmitBtchDup>\\d+) udf-sub \\((?P<ResmitUdfDupSub>\\d+),(?P<ResmitUdfRepl>\\d+)\\)"
+    -
+        setName: "xdrSummary"
+        search: "dlog-outstanding"
+        export:
+            - "summary: throughput (?P<xdrThroughput>\\d+) inflight (?P<xdrInFlight>\\d+) dlog-outstanding (?P<xdrDlgOutstand>\\d+) dlog-delta-per-sec (?P<xdrDlogDeltaSec>[-]*[0-9\\.]+)"
+    -
+        setName: "xdrDetail"
+        search: "detail: sh "
+        export:
+            - "detail: sh (?P<xdrSh>\\d+) ul (?P<xdrUl>\\d+) lg (?P<xdrLg>\\d+) rlg (?P<xdrRlg>\\d+) rlgi (?P<xdrRlgi>\\d+) rlgo (?P<xdrRlgo>\\d+) lproc (?P<xdrLproc>\\d+) rproc (?P<xdrRproc>\\d+) lkdproc (?P<xdrLkdproc>\\d+) errcl (?P<xdrErrcl>\\d+) errsrv (?P<xdrErrSrv>\\d+) hkskip (?P<xdrHkskip>\\d+) hkf (?P<xdrHkf>\\d+) flat (?P<xdrFlat>\\d+)"
+    -
+        setName: "xdrDc"
+        search: "timelag-sec"
+        export:
+            - "\\[(?P<XdrDcName>[^]]+)\\]: dc-state (?P<XdrDcState>[^ ]+) timelag-sec (?P<XdrDcTimelag>\\d+) lst (?P<XdrDcLst>\\d+) mlst (?P<XdrDcMlst>\\d+) \\([^)]+\\) fnlst (?P<XdrDcFnlst>\\d+) \\([^)]+\\) wslst (?P<XdrDcWslst>\\d+) \\([^)]+\\) shlat-ms (?P<XdrDcShlatMs>[0-9\\.]+) rsas-ms (?P<XdrDcRsasMs>[0-9\\.]+) rsas-pct (?P<XdrDcRsasPct>[0-9\\.]+) con (?P<XdrDcOpenConn>\\d+) errcl (?P<XdrDcErrcl>\\d+) errsrv (?P<XdrDcErrsrv>\\d+) sz (?P<XdrDcSz>\\d+)"
+            - "\\[(?P<XdrDcName>[^]]+)\\]: dc-state (?P<XdrDcState>[^ ]+) timelag-sec (?P<XdrDcTimelag>\\d+) lst (?P<XdrDcLst>\\d+) mlst (?P<XdrDcMlst>\\d+) \\([^)]+\\) fnlst (?P<XdrDcFnlst>\\d+) \\([^)]+\\) wslst (?P<XdrDcWslst>\\d+) \\([^)]+\\) shlat-ms (?P<XdrDcShlatMs>[0-9\\.]+) errcl (?P<XdrDcErrcl>\\d+) errsrv (?P<XdrDcErrsrv>\\d+) rsas-ms (?P<XdrDcRsasMs>[0-9\\.]+) rsas-pct (?P<XdrDcRsasPct>[0-9\\.]+)"
+    -
+        setName: "xdrDlog"
+        search: "dlog: free-pct"
+        export:
+            - "dlog: free-pct (?P<xdrDlgFreePct>[0-9\\.]+) reclaimed (?P<xdrDlogReclaim>\\d+) glst (?P<xdrDlogGlst>\\d+)"
+    -
+        setName: "nsup"
+        search: "Records: "
+        export:
+            - "{(?P<Namespace>[^}]+)} Records: (?P<nsupMasterObj>\\d+), (?P<nsupNonExpirabl>\\d+) 0-vt, (?P<nsupExpireTotal>\\d+)\\((?P<nsupExpireNow>\\d+)\\) expired, (?P<nsupEvictTotal>\\d+)\\((?P<nsupEvictNow>\\d+)\\) evicted, (?P<nsupSetDelTotal>\\d+)\\((?P<nsupSetDelNow>\\d+)\\) set deletes. Evict ttl: (?P<nsupEvictTtl>[0-9\\-]+). Waits: (?P<nsupSetWaits>\\d+),(?P<nsupClearWaits>\\d+),(?P<nsupGeneWaits>\\d+). Total time: (?P<nsupTotalMs>\\d+) ms"
+    -
+        setName: "nsup"
+        search: "nsup-done"
+        replace:
+            -
+                regex: "non-expirable"
+                sub: "evict-threads 0 expire-threads 0 non-expirable"
+            -
+                regex: "master-objects"
+                sub: "evict-threads 0 expire-threads 0 master-objects"
+        export:
+            - "{(?P<Namespace>[^}]+)} nsup-done: evict-threads (?P<nsupEvictThrds>\\d+) expire-threads (?P<nsupExpireThrds>\\d+) non-expirable (?P<nsupNonExpirabl>\\d+) expired \\((?P<nsupExpireTotal>\\d+),(?P<nsupExpireNow>\\d+)\\) evicted \\((?P<nsupEvictTotal>\\d+),(?P<nsupEvictNow>\\d+)\\) evict-ttl (?P<nsupEvictTtl>[0-9\\-]+) total-ms (?P<nsupTotalMs>\\d+)"
+            - "{(?P<Namespace>[^}]+)} nsup-done: evict-threads (?P<nsupEvictThrds>\\d+) expire-threads (?P<nsupExpireThrds>\\d+) master-objects \\((?P<nsupMasterObj>\\d+),(?P<nsupNonExpirabl>\\d+)\\) expired \\((?P<nsupExpireTotal>\\d+),(?P<nsupExpireNow>\\d+)\\) evicted \\((?P<nsupEvictTotal>\\d+),(?P<nsupEvictNow>\\d+)\\) evict-ttl (?P<nsupEvictTtl>[0-9\\-]+) waits \\((?P<nsupGeneWaits>\\d+),(?P<nsupClearWaits>\\d+)\\) total-ms (?P<nsupTotalMs>\\d+)"
+    -
+        setName: "nsup"
+        search: "nsup-start"
+        export:
+            - "{(?P<Namespace>[^}]+)} nsup-start: expire-threads (?P<nsupExpireThrds>\\d+)"
+            - "{(?P<Namespace>[^}]+)} nsup-start: evict-threads (?P<nsupEvictThrds>\\d+) evict-ttl (?P<nsupEvictTtl>\\d+) evict-void-time \\((?P<nsupEvictVoidEf>\\d+),(?P<nsupEvictVoidSp>\\d+)\\)"
+            - "{(?P<Namespace>[^}]+)} nsup-start: evict-ttl (?P<nsupEvictTtl>\\d+) evict-void-time \\((?P<nsupEvictVoidEf>\\d+),(?P<nsupEvictVoidSp>\\d+)\\)"
+    -
+        setName: "clusterSize"
+        search: "applied cluster size"
+        export:
+            - "applied cluster size (?P<ClusterSize>\\d+)"
+    -
+        setName: "tombraider"
+        search: "tombstones"
+        export:
+            - "{(?P<Namespace>[^}]+)} tombstones: all (?P<TombAll>\\d+) xdr \\((?P<TombXdr>\\d+),(?P<TombXdrCem>\\d+)\\) master (?P<TombMaster>\\d+) prole (?P<TombProle>\\d+) non-replica (?P<TombNonRepl>\\d+)"
+            - "{(?P<Namespace>[^}]+)} tombstones: all (?P<TombAll>\\d+) xdr (?P<TombXdr>\\d+) master (?P<TombMaster>\\d+) prole (?P<TombProle>\\d+) non-replica (?P<TombNonRepl>\\d+)"
+            - "{(?P<Namespace>[^}]+)} tombstones: all (?P<TombAll>\\d+) master (?P<TombMaster>\\d+) prole (?P<TombProle>\\d+) non-replica (?P<TombNonRepl>\\d+)"
+    -
+        setName: "xdrFromProxy"
+        search: "xdr-from-proxy: write"
+        export:
+            - "{(?P<Namespace>[^}]+)} xdr-from-proxy: write \\((?P<XdrWrFrPrxOk>\\d+),(?P<XdrWrFrPrxErr>\\d+),(?P<XdrWrFrPrxTout>\\d+)\\) delete \\((?P<XdrDelFrPrxOk>\\d+),(?P<XdrDelFrPrxErr>\\d+),(?P<XdrDelFrPrxTout>\\d+),(?P<XdrDelFrPrxNFou>\\d+)\\)"
+    -
+        setName: "xdrClient"
+        search: "xdr-client: write"
+        export:
+            - "{(?P<Namespace>[^}]+)} xdr-client: write \\((?P<XdrClWrOk>\\d+),(?P<XdrClWrErr>\\d+),(?P<XdrClWrTout>\\d+)\\) delete \\((?P<XdrClDelOk>\\d+),(?P<XdrClDelErr>\\d+),(?P<XdrClDelTout>\\d+),(?P<XdrClDelNFou>\\d+)\\)"
+    -
+        setName: "indexFlash"
+        search: "index-flash-usage: used-bytes"
+        export:
+            - "{(?P<Namespace>[^}]+)} index-flash-usage: used-bytes (?P<IdxFlashUseByte>\\d+) used-pct (?P<IdxFlashUsePct>\\d+) alloc-bytes (?P<IdxFlashAlBt>\\d+) alloc-pct (?P<IdxFlashAlPct>\\d+)"
+            - "{(?P<Namespace>[^}]+)} index-flash-usage: used-bytes (?P<IdxFlashUseByte>\\d+) used-pct (?P<IdxFlashUsePct>\\d+)"
+    -
+        setName: "indexPmem"
+        search: " index-pmem-usage"
+        export:
+            - "{(?P<Namespace>[^}]+)} index-pmem-usage: used-bytes (?P<IdxPmemUseByte>\\d+) used-pct (?P<IdxPmemUsePct>\\d+)"
+    -
+        setName: "indexPmem"
+        search: " sindex-pmem-usage"
+        export:
+            - "{(?P<Namespace>[^}]+)} sindex-pmem-usage: used-bytes (?P<SdxPmemUseByte>\\d+) used-pct (?P<SdxPmemUsePct>\\d+)"
+    -
+        setName: "dataPmem"
+        search: "pmem-usage"
+        export:
+            - "{(?P<Namespace>[^}]+)} pmem-usage: used-bytes (?P<PmemUseByte>\\d+) avail-pct (?P<PmemAvailPct>\\d+)"
+    -
+        setName: "UdfSub"
+        search: "udf-sub: tsvc"
+        export:
+            - "{(?P<Namespace>[^}]+)} udf-sub: tsvc \\((?P<UdfSubTsvcErr>\\d+),(?P<UdfSubTsvcTout>\\d+)\\) udf \\((?P<UdfSubUdfOk>\\d+),(?P<UdfSubUdfErr>\\d+),(?P<UdfSubUdfTout>\\d+),(?P<UdfSubUdfFOut>\\d+)\\) lang \\((?P<UdfSubLangRdOk>\\d+),(?P<UdfSubLangWrOk>\\d+),(?P<UdfSubLangDelOk>\\d+),(?P<UdfSubLangErr>\\d+)\\)"
+            - "{(?P<Namespace>[^}]+)} udf-sub: tsvc \\((?P<UdfSubTsvcErr>\\d+),(?P<UdfSubTsvcTout>\\d+)\\) udf \\((?P<UdfSubUdfOk>\\d+),(?P<UdfSubUdfErr>\\d+),(?P<UdfSubUdfOkTout>\\d+)\\) lang \\((?P<UdfSubLangRdOk>\\d+),(?P<UdfSubLangWrOk>\\d+),(?P<UdfSubLangDelOk>\\d+),(?P<UdfSubLangErr>\\d+)\\)"
+    -
+        setName: "ReRepl"
+        search: "re-repl: tsvc"
+        export:
+            - "{(?P<Namespace>[^}]+)} re-repl: tsvc \\((?P<ReReplTsvcErr>\\d+),(?P<ReReplTsvcTout>\\d+)\\) all-triggers \\((?P<ReReplAllTrgOk>\\d+),(?P<ReReplAllTrgErr>\\d+),(?P<ReReplAllTrgTou>\\d+)\\) unreplicated-records (?P<ReReplUn>\\d+)"
+            - "{(?P<Namespace>[^}]+)} re-repl: tsvc \\((?P<ReReplTsvcErr>\\d+),(?P<ReReplTsvcTout>\\d+)\\) all-triggers \\((?P<ReReplAllTrgOk>\\d+),(?P<ReReplAllTrgErr>\\d+),(?P<ReReplAllTrgTou>\\d+)\\)"
+    -
+        setName: "ReRepl"
+        search: "re-repl: all-triggers"
+        export:
+            - "{(?P<Namespace>[^}]+)} re-repl: all-triggers \\((?P<ReReplAllTrgOk>\\d+),(?P<ReReplAllTrgErr>\\d+),(?P<ReReplAllTrgTou>\\d+)\\) unreplicated-records (?P<ReReplUn>\\d+)"
+            - "{(?P<Namespace>[^}]+)} re-repl: all-triggers \\((?P<ReReplAllTrgOk>\\d+),(?P<ReReplAllTrgErr>\\d+),(?P<ReReplAllTrgTou>\\d+)\\)"
+    -
+        setName: "sindexgc"
+        search: "sindex-gc"
+        export:
+            - "{(?P<Namespace>[^}]+)} sindex-gc-done: cleaned \\((?P<sindexGcClnA>\\d+),(?P<sindexGcClnC>\\d+)\\) total-ms (?P<sindexGcMs>\\d+)"
+            - "{(?P<Namespace>[^}]+)} sindex-gc-done: processed (?P<sindexGcProc>\\d+) found (?P<sindexGcFound>\\d+) deleted (?P<sindexGcDel>\\d+) total-ms (?P<sindexGcMs>\\d+)"
+            - "{(?P<Namespace>[^}]+)} sindex-gc: Processed: (?P<sindexGcProc>\\d+), found:(?P<sindexGcFound>\\d+), deleted: (?P<sindexGcDel>\\d+): Total time: (?P<sindexGcMs>\\d+) ms"
+    -
+        setName: "opsSub"
+        search: "ops-sub: tsvc"
+        export:
+            - "{(?P<Namespace>[^}]+)} ops-sub: tsvc \\((?P<OpsSubTsvcErr>\\d+),(?P<OpsSubTsvcTout>\\d+)\\) write \\((?P<OpsSubWrOk>\\d+),(?P<OpsSubWrErr>\\d+),(?P<OpsSubWrTout>\\d+),(?P<OpsSubWrFOut>\\d+)\\)"
+    -
+        setName: "xdr5Dc"
+        search: "xdr-dc"
+        export:
+            - "xdr-dc (?P<xdr5dc>[^:]+): nodes (?P<xdr5nodes>\\d+) latency-ms (?P<xdr5latencyms>\\d+)"
+            - "{(?P<Namespace>[^}]+)} xdr-dc (?P<xdr5dc>[^:]+): lag (?P<xdr5lag>\\d+) throughput (?P<xdr5throughput>\\d+) in-queue (?P<xdr5inqueue>\\d+) in-progress (?P<xdr5outstanding>\\d+) complete \\((?P<xdr5DoneOk>\\d+),(?P<xdr5DoneAbandon>\\d+),(?P<xdr5DoneNotFnd>\\d+),(?P<xdr5DoneFOut>\\d+)\\) retries \\((?P<xdr5RetrNoNode>\\d+),(?P<xdr5RetrConnRst>\\d+),(?P<xdr5RetrDest>\\d+)\\) recoveries \\((?P<xdr5Recov>\\d+),(?P<xdr5RecovPend>\\d+)\\) hot-keys (?P<xdr5HotKeys>\\d+)"
+            - "xdr-dc (?P<xdr5dc>[^:]+): nodes (?P<xdr5nodes>\\d+) lag (?P<xdr5lag>\\d+) throughput (?P<xdr5throughput>\\d+) latency-ms (?P<xdr5latencyms>\\d+) in-queue (?P<xdr5inqueue>\\d+) in-progress (?P<xdr5outstanding>\\d+) complete \\((?P<xdr5DoneOk>\\d+),(?P<xdr5DoneAbandon>\\d+),(?P<xdr5DoneNotFnd>\\d+),(?P<xdr5DoneFOut>\\d+)\\) retries \\((?P<xdr5RetrNoNode>\\d+),(?P<xdr5RetrConnRst>\\d+),(?P<xdr5RetrDest>\\d+)\\) recoveries \\((?P<xdr5Recov>\\d+),(?P<xdr5RecovPend>\\d+)\\) hot-keys (?P<xdr5HotKeys>\\d+)"
+            - "xdr-dc (?P<xdr5dc>[^:]+): lag (?P<xdr5lag>\\d+) throughput (?P<xdr5throughput>\\d+) latency-ms (?P<xdr5latencyms>\\d+) in-queue (?P<xdr5inqueue>\\d+) in-progress (?P<xdr5outstanding>\\d+) complete \\((?P<xdr5DoneOk>\\d+),(?P<xdr5DoneAbandon>\\d+),(?P<xdr5DoneNotFnd>\\d+),(?P<xdr5DoneFOut>\\d+)\\) retries \\((?P<xdr5RetrNoNode>\\d+),(?P<xdr5RetrConnRst>\\d+),(?P<xdr5RetrDest>\\d+)\\) recoveries \\((?P<xdr5Recov>\\d+),(?P<xdr5RecovPend>\\d+)\\) hot-keys (?P<xdr5HotKeys>\\d+)"
+            - "xdr-dc (?P<xdr5dc>[^:]+): lag (?P<xdr5lag>\\d+) throughput (?P<xdr5throughput>\\d+) latency-ms (?P<xdr5latencyms>\\d+) in-queue (?P<xdr5inqueue>\\d+) outstanding (?P<xdr5outstanding>\\d+) complete \\((?P<xdr5DoneOk>\\d+),(?P<xdr5DoneAbandon>\\d+),(?P<xdr5DoneNotFnd>\\d+),(?P<xdr5DoneFOut>\\d+)\\) retries \\((?P<xdr5RetrConnRst>\\d+),(?P<xdr5RetrDest>\\d+)\\) recoveries \\((?P<xdr5Recov>\\d+),(?P<xdr5RecovPend>\\d+)\\) hot-keys (?P<xdr5HotKeys>\\d+)"
+            - "xdr-dc (?P<xdr5dc>[^:]+): lag (?P<xdr5lag>\\d+) throughput (?P<xdr5throughput>\\d+) latency-ms (?P<xdr5latencyms>\\d+) in-queue (?P<xdr5inqueue>\\d+) in-progress (?P<xdr5outstanding>\\d+) complete \\((?P<xdr5DoneOk>\\d+),(?P<xdr5DoneAbandon>\\d+),(?P<xdr5DoneNotFnd>\\d+),(?P<xdr5DoneFOut>\\d+)\\) retries \\((?P<xdr5RetrConnRst>\\d+),(?P<xdr5RetrDest>\\d+)\\) recoveries \\((?P<xdr5Recov>\\d+),(?P<xdr5RecovPend>\\d+)\\) hot-keys (?P<xdr5HotKeys>\\d+)"
+    -
+        setName: "xdr5Dc"
+        search: "xdr-tomb-raid-done"
+        export:
+            - "{(?P<Namespace>[^}]+)} xdr-tomb-raid-done: dropped (?P<xdr5tombDrop>\\d+) total-ms (?P<xdr5tombMs>\\d+)"
+    -
+        setName: "warnings"
+        search: ": WARNING ("
+        replace: # https://golang.org/pkg/regexp/#Regexp.ReplaceAllString
+            -
+                regex: "WARNING "
+                sub: "WARNING (norepeat:0) "
+        export:
+            - " \\((?P<warnCtx>[^)]+)\\): \\((?P<warnC>[^)]+)\\) \\(repeated:(?P<repeated>\\d+)\\) (?P<warnMessage>.+$)"
+            - " \\(norepeat:(?P<repeated>\\d+)\\) \\((?P<warnCtx>[^)]+)\\): \\((?P<warnC>[^)]+)\\) (?P<warnMessage>.+$)"
+    -
+        setName: "errors"
+        search: ": ERROR ("
+        replace: # https://golang.org/pkg/regexp/#Regexp.ReplaceAllString
+            -
+                regex: "ERROR "
+                sub: "ERROR (norepeat:0) "
+        export:
+            - " \\((?P<errCtx>[^)]+)\\): \\((?P<errC>[^)]+)\\) \\(repeated:(?P<repeated>\\d+)\\) (?P<errMessage>.+$)"
+            - " \\(norepeat:(?P<repeated>\\d+)\\) \\((?P<errCtx>[^)]+)\\): \\((?P<errC>[^)]+)\\) (?P<errMessage>.+$)"
+
+dryrun: # used to supress "WARN line match not found" for certain lines when in dryrun mode - useful for finding patterns in files that we don't account for. LIke grep -v ;)
+    - "INFO (info): (hist.c:"
+    - "INFO (security)"
+    - "WARNING (security)"
+    - "WARNING (hb)"
+    - "WARNING (socket)"
+    - "collecting ttl & object size info"
+    - "config-set"
+    - "icing"
+    - "Connected to"
+    - "WARN"
+    - "ERROR"
+    - "DEBUG"
+    - "DETAIL"
+    - "error"
+    - "HLC"
+    - "Sindex-ticker:"
+    - "contig-free"
+#(?P<>\\d+)
+#(?P<>[0-9\\.]+)
+#TODO: FUTURE: somehow get scans running - will need a counter, also somehow add restarts the same way, shutdowns the same way, and config-set the same way
+#May 10 2020 06:26:43 GMT: INFO (scan): (scan.c:739) finished basic scan job 9882459170755789253 (0)
+#May 10 2020 05:02:17 GMT: INFO (scan): (scan.c:669) starting basic scan job 10579198543566081297 {profiledata:(null)} rps 0 sample-pct 100 socket-timeout 86400000 from 172.23.2.22:34536
+#May 10 2020 01:36:45 GMT: INFO (xdr): (xdr_handlers.c:1137) Failed node recovery for bb91416cc015202 pending, 1230545 records left to check (at 6181/s, ~3m19s left)
+#export config-set into table-format - so we can have a table with everything they executed
+# export errors/timeouts with IPs and such
+# also FAILED ASSERTION, config-set, and xdr dc-state
+
+#egrep 'ticker|nsup|hlc|sindex|\{[^}]+\}' ingest.log |egrep -v 'nsup-start($|: expire$)|basic scan job'
+#regexp.MustCompile("^(\\w*)(?:\\[(.*)\\])?\\:\\s(.*)$")
+#test("feat: this is a feature")
+#test("feat[JIRA-xxxx]: this is Jira feature")
+
+#### 297 datapoints found in versions 3.9+
