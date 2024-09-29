@@ -1,0 +1,115 @@
+# docker-compose.yml
+
+
+version: '3.8'
+
+services:
+
+  aerospike1:
+    container_name: aerospike1
+    image: aerospike/aerospike-server-enterprise:latest
+    command: [ "--config-file","/etc/aerospike/custom_aerospike.conf" ]
+    stdin_open: true
+
+    volumes:
+      - shared_aerospike_logs:/var/logs/aerospike
+      - ./aerospike.conf:/etc/aerospike/custom_aerospike.conf
+    ports:
+      - "3000:3000"
+
+  aerospike_tools:
+    container_name: aerospiketools
+    image: aerospike/aerospike-tools:latest
+    depends_on:
+      - aerospike1
+    command: [asadm, -haerospike1]
+    stdin_open: true
+
+  exporter1:
+   image: aerospike/aerospike-prometheus-exporter:latest
+
+   container_name: exporter1
+   environment:
+    - AS_HOST=host.docker.internal
+    - AS_PORT=3000
+    - "METRIC_LABELS=type='development',source='aerospike',latitude='0',longitude='0'"
+
+   ports:
+    - "9145:9145"
+
+  # elasticsearch, fluentbit, kibana
+  elasticsearch1:
+   image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+   container_name: elasticsearch1
+
+   volumes:
+      - source: ./elasticsearch.yml
+        target: /usr/share/elasticsearch/config/elasticsearch.yml:Z
+        type: bind
+      - source: elasticsearch_data
+        target: /usr/share/elasticsearch/data:Z
+        type: volume
+   
+   ports:
+    - "9200:9200"
+    - "9300:9300"
+    
+   environment:
+    node.name: elasticsearch1
+    ES_JAVA_OPTS: -Xms512m -Xmx512m
+    # default username/password --> elastic/elastic
+    ELASTIC_PASSWORD: elastic
+    discovery.type: single-node
+
+  fluentbit1:
+   image: fluent/fluent-bit:latest
+   container_name: fluentbit1
+   command: [ "-c","/etc/fluent-bit/fluent-bit.conf" ]
+   
+   depends_on:
+      - aerospike1
+
+   volumes:
+      - source: ./aerospike-fluent-bit.conf
+        target: /etc/fluent-bit/fluent-bit.conf
+        type: bind
+      - source: ./aerospike-fluent-bit-parsers.conf
+        target: /etc/fluent-bit/parsers.conf
+        type: bind
+      - source: ./aerospike-fluent-bit-filters.conf
+        target: /etc/fluent-bit/aerospike-fluent-bit-filters.conf
+        type: bind
+      - source: fluentbit_data
+        target: /tmp/storage:Z
+        type: volume
+      - shared_aerospike_logs:/var/logs/aerospike
+
+   ports:
+    - "2020:2020"
+
+  kibana1:
+   image: docker.elastic.co/kibana/kibana:8.13.4
+   container_name: kibana1
+
+   volumes:
+      - source: ./kibana.yml
+        target: /usr/share/kibana/config/kibana.yml:Z
+        type: bind
+      - source: kibana_data
+        target: /usr/share/kibana/data:Z
+        type: volume
+   
+   ports:
+    - "5601:5601"
+    
+   environment:
+      # default password --> kibana
+      KIBANA_SYSTEM_PASSWORD: kibana
+   
+volumes:
+  elasticsearch_data: {}
+  kibana_data: {}
+  fluentbit_data: {}
+  aerospike_data: {}
+  shared_aerospike_logs: {}
+
