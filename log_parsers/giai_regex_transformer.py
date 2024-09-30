@@ -11,8 +11,8 @@ G_TOOL_LOG_FILENAME="process_output.log"
 G_LOCAL_GIAI_REGEX_FILENAME="configs/giai_regex_patterns.txt"
 G_MODIFIED_GIAI_REGEX_FILENAME="configs/modified_giai_regex_patterns.txt"
 G_FLUENTBIT_MASTER_CONF_FILENAME="configs/fluentbit/master-fluent-bit-partial.conf"
-G_FLUENTBIT_FILTER_SECTIONS_CONF_FILE="configs/fluentbit/fluent-bit-filters-section.conf"
-G_FLUENTBIT_PARSERS_CONF_FILE="configs/fluentbit/fluent-bit-aerospike-parsers.conf"
+G_FLUENTBIT_FILTER_SECTIONS_CONF_FILE="configs/fluentbit/aerospike-fluent-bit-filters.conf"
+G_FLUENTBIT_PARSERS_CONF_FILE="configs/fluentbit/aerospike-fluent-bit-parsers.conf"
 G_SPLUNK_PROPS_CONF_FILE="configs/splunk/splunk_local_props.conf"
 G_SPLUNK_TRANSFORMERS_CONF_FILE="configs/splunk/splunk_local_transforms.conf"
 
@@ -236,7 +236,8 @@ def get_patterns_file_from_github():
     import os
     import shutil
     use_local_patterns = os.environ.get("USE_LOCAL_PATTERNS_FILE")
-    if len(use_local_patterns.strip())>0:
+    # export USE_LOCAL_PATTERNS_FILE=true
+    if use_local_patterns and len(use_local_patterns.strip())>0:
         print("Using local patterns file ... ")
         shutil.copyfile(G_LOCAL_GIAI_REGEX_FILENAME, G_GIAI_DOWNLOADED_PATTERNS_FILENAME)    
     else:
