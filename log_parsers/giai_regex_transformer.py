@@ -1,15 +1,18 @@
 import re
+import sys
+import yaml
 
-G_GIAI_REGEX_FILENAME="configs/giai_regex_patterns.txt"
+G_GIAI_PATTERNS_GITHUB_URL = "https://raw.githubusercontent.com/aerospike/agi-stack/refs/heads/main/ingest/app/patterns.yml?token=GHSAT0AAAAAAB4VMHQ4M4XT45OA267N4CBQZX2JMYA"
 
+# local patterns file
+G_GIAI_DOWNLOADED_PATTERNS_FILENAME="configs/patterns.yml"
 G_TOOL_LOG_FILENAME="process_output.log"
 
+G_LOCAL_GIAI_REGEX_FILENAME="configs/giai_regex_patterns.txt"
 G_MODIFIED_GIAI_REGEX_FILENAME="configs/modified_giai_regex_patterns.txt"
 G_FLUENTBIT_MASTER_CONF_FILENAME="configs/fluentbit/master-fluent-bit-partial.conf"
-
 G_FLUENTBIT_FILTER_SECTIONS_CONF_FILE="configs/fluentbit/fluent-bit-filters-section.conf"
 G_FLUENTBIT_PARSERS_CONF_FILE="configs/fluentbit/fluent-bit-aerospike-parsers.conf"
-
 G_SPLUNK_PROPS_CONF_FILE="configs/splunk/splunk_local_props.conf"
 G_SPLUNK_TRANSFORMERS_CONF_FILE="configs/splunk/splunk_local_transforms.conf"
 
@@ -18,74 +21,6 @@ unique_regex_set = set()
 
 # global regex to count words
 g_word_pattern = re.compile(r'\w+')
-
-# BEGIN giai regex processing
-def read_giai_regex(): 
-    count = 0
-    with open(G_GIAI_REGEX_FILENAME) as fp:
-        Lines = fp.readlines()
-        for line in Lines:
-            giai_unique_regex_set.add( line.strip())
-            
-def parse_modify_and_save_regex():  
-    read_giai_regex()   
-    unique_regex_str="" 
-    ignored_line_str=""
-    for line in giai_unique_regex_set:
-        l = line
-        
-        # remove leading / trailing spaces
-        l = l.strip() 
-        
-        if  not l.startswith("#") and l.startswith("-") : 
-            l = l.replace("\"","")
-            l = l.replace("\\(","(")
-            l = l.replace("\\)",")")
-            l = l.replace("\\\d","\\d")
-            l = l.replace("\\\(","\\(")
-            l = l.replace("\\\)","\)")        
-            l = l.replace("\\[","[")        
-            l = l.replace("\\]","]")        
-
-            # if there is a comment in between the regex, pick only the regex and ignore the rest of comments
-            if "#" in l:
-                l= l[:line.find("#")-2]
-                l= l.strip(" ")
-            
-            # remove leading hypen (-)
-            l= l[1:]
-            l= l.strip(" ")
-                
-            temp_regx= l
-            if check_if_parsable_regex(l):
-                l = "^(?P<datetimestamp>\w+ \d+ \d+ \d+:\d+:\d+) (?P<timezone>\S+): (?P<log_level>\S+) \((?P<source>\S+)\): \((?P<source_location>[^)]+)\)\s+"+ l + "$"
-                
-                if check_valid_regex( temp_regx):
-                    unique_regex_str = unique_regex_str + "# Giai line ==> "+line +"\n"
-                    unique_regex_str = unique_regex_str + l +"\n"
-                    unique_regex_set.add ("# Giai line ==> "+line)           
-                    unique_regex_set.add (l)
-                else:
-                    ignored_line_str = ignored_line_str + "# Giai line, Ignoring, invalid regex syntax issues ==> "+temp_regx +"\n"
-            else:
-                ignored_line_str = ignored_line_str + "# Giai line, Ignoring, invalid regex is very small ==> "+temp_regx +"\n"
-                
-        else:
-            # print("# Giai line, Ignoring ==> "+line)           
-            ignored_line_str = ignored_line_str + "# Giai line, Ignoring ==> "+line +"\n"
-            # unique_regex_set.add ("# Giai line, Ignoring ==> "+line) 
-
-    # save to modified patterns to file
-    fh_modified_pattterns_conf = open(G_MODIFIED_GIAI_REGEX_FILENAME, "w")
-    fh_modified_pattterns_conf.write(unique_regex_str)    
-    fh_modified_pattterns_conf.close()  
-    # print( unique_regex_str)  
-    
-    # sace output log
-    fh_modified_pattterns_conf = open(G_TOOL_LOG_FILENAME, "w")
-    fh_modified_pattterns_conf.write(ignored_line_str)    
-    fh_modified_pattterns_conf.close()  
-# END giai regex processing
 
 # BEGIN fluent-bit parsers.conf and filter.conf generation
 def read_fluentbit_conf_sections(): 
@@ -162,7 +97,7 @@ def construct_fluentbit_filters_from_giai():
         p= p+ "    Time_Key    datetime\n"        
         
         all_filters_together = all_filters_together + "    Parser aero_log_parser_type_"+ str(idx)+"\n"        
-        individual_filters = individual_filters + f + "\n"
+        # individual_filters = individual_filters + f + "\n"
         all_parser_line = all_parser_line+ p + "\n"
         
     
@@ -297,7 +232,121 @@ def read_modified_giai_regexs():
             if not line.startswith("#"): 
                 unique_regex_set.add( line.strip())
 
+def get_patterns_file_from_github():
+    import os
+    import shutil
+    use_local_patterns = os.environ.get("USE_LOCAL_PATTERNS_FILE")
+    if len(use_local_patterns.strip())>0:
+        print("Using local patterns file ... ")
+        shutil.copyfile(G_LOCAL_GIAI_REGEX_FILENAME, G_GIAI_DOWNLOADED_PATTERNS_FILENAME)    
+    else:
+        import urllib.request
+        print("Downloading patterns.yml from GitHub aerospike/agi_stack repo . ")
+        downloaded_fileloc, http_msg= urllib.request.urlretrieve (G_GIAI_PATTERNS_GITHUB_URL)
+        shutil.copyfile(downloaded_fileloc, G_GIAI_DOWNLOADED_PATTERNS_FILENAME)    
+
+def parse_patterns_yaml():
+    with open(G_GIAI_DOWNLOADED_PATTERNS_FILENAME, "r") as fh:
+        data = yaml.safe_load(fh)
+        patterns = (data.get("patterns"))
+        unique_regex_str = ""
+        ignored_line_str = ""
+        for item in patterns:
+            for rex in item["export"]:
+                output, is_valid=parse_export_regex(rex)
+                if is_valid:
+                    unique_regex_str = unique_regex_str + output +"\n"
+                else:
+                    ignored_line_str = ignored_line_str + output +"\n"         
+                
+        # save to modified patterns to file
+        fh_modified_pattterns_conf = open(G_MODIFIED_GIAI_REGEX_FILENAME, "w")
+        fh_modified_pattterns_conf.write(unique_regex_str)    
+        fh_modified_pattterns_conf.close()  
+        # print( unique_regex_str)  
+        
+        # sace output log
+        fh_modified_pattterns_conf = open(G_TOOL_LOG_FILENAME, "w")
+        fh_modified_pattterns_conf.write(ignored_line_str)    
+        fh_modified_pattterns_conf.close()  
+
+def parse_export_regex(p_regex):
+    l = p_regex
+    # remove leading / trailing spaces
+    l = l.strip() 
+    ret_reg = p_regex
+    
+    if  not l.startswith("#") : 
+        l = l.replace("\"","")
+        l = l.replace("\\(","(")
+        l = l.replace("\\)",")")
+        l = l.replace("\\\d","\\d")
+        l = l.replace("\\\(","\\(")
+        l = l.replace("\\\)","\)")        
+        l = l.replace("\\[","[")        
+        l = l.replace("\\]","]")        
+
+        # if there is a comment in between the regex, pick only the regex and ignore the rest of comments
+        if "#" in l:
+            l= l[:p_regex.find("#")-2]
+            l= l.strip(" ")
+        
+        # remove leading hypen (-)
+        # print(l)
+        # l= l[1:]
+        # l= l.strip(" ")
+            
+        if check_if_parsable_regex(l):
+            ret_reg = "^(?P<datetimestamp>\w+ \d+ \d+ \d+:\d+:\d+) (?P<timezone>\S+): (?P<log_level>\S+) \((?P<source>\S+)\): \((?P<source_location>[^)]+)\)\s+"+ l + "$"
+            
+            if check_valid_regex( p_regex):
+                unique_regex_str = "# Giai line ==> "+p_regex +"\n"
+                unique_regex_str = unique_regex_str + ret_reg 
+                unique_regex_set.add ("# Giai line ==> "+p_regex)           
+                unique_regex_set.add (ret_reg)
+                
+                return unique_regex_str, True
+            else:
+                ret_reg = "# Giai line, Ignoring, invalid regex syntax issues ==> "+p_regex 
+                return ret_reg, False
+        else:
+            ret_reg = "# Giai line, Ignoring, invalid regex is very small ==> "+p_regex 
+            return ret_reg, False
+            
+    else:
+        ret_reg = "# Giai line, Ignoring ==> "+p_regex
+    
+    return ret_reg, False
+    
+    
+# end common functions
+
 if __name__ == '__main__':
-    parse_modify_and_save_regex()
-    generate_fluentbit_conf_files()
-    generate_splunk_conf_files()
+    is_fluent_bit_conf= False
+    is_splunk_conf= False
+    
+    print("Usage: python3 giai_regex_transformer.py <Optional: tool-name>")
+    print("\t tool-name supported values: all,fluentbit, splunk ")
+    
+    # no conf, both fluent-bit and splunk
+    # 
+    # first-arg is always python scriptname, i.e. sys.argv[0] is giai_regex_transformer.py
+    if len(sys.argv)==1 or sys.argv[1].lower()=="all":
+        is_fluent_bit_conf=True
+        is_splunk_conf=True
+    elif sys.argv[1].lower()=="fluentbit":
+        is_fluent_bit_conf=True
+    elif sys.argv[1].lower()=="splunk":
+        is_splunk_conf=True
+        
+    # download file from GitHub into config/patterns.txt
+    # 
+    get_patterns_file_from_github()
+    parse_patterns_yaml()    
+
+    if is_fluent_bit_conf==True:    
+       generate_fluentbit_conf_files()
+       
+    if is_splunk_conf==True:    
+       generate_splunk_conf_files()
+    
