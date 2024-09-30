@@ -13,8 +13,8 @@ G_MODIFIED_GIAI_REGEX_FILENAME="configs/modified_giai_regex_patterns.txt"
 G_FLUENTBIT_MASTER_CONF_FILENAME="configs/fluentbit/master-fluent-bit-partial.conf"
 G_FLUENTBIT_FILTER_SECTIONS_CONF_FILE="configs/fluentbit/aerospike-fluent-bit-filters.conf"
 G_FLUENTBIT_PARSERS_CONF_FILE="configs/fluentbit/aerospike-fluent-bit-parsers.conf"
-G_SPLUNK_PROPS_CONF_FILE="configs/splunk/splunk_local_props.conf"
-G_SPLUNK_TRANSFORMERS_CONF_FILE="configs/splunk/splunk_local_transforms.conf"
+G_SPLUNK_PROPS_CONF_FILE="configs/splunk/aerospike_splunk_local_props.conf"
+G_SPLUNK_TRANSFORMERS_CONF_FILE="configs/splunk/aerospike_splunk_local_transforms.conf"
 
 giai_unique_regex_set = set()
 unique_regex_set = set()
