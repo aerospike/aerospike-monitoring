@@ -2,19 +2,15 @@ import re
 import sys
 import yaml
 
-G_GIAI_PATTERNS_GITHUB_URL = "https://raw.githubusercontent.com/aerospike/agi-stack/refs/heads/main/ingest/app/patterns.yml?token=GHSAT0AAAAAAB4VMHQ4M4XT45OA267N4CBQZX2JMYA"
-
 # local patterns file
-G_GIAI_DOWNLOADED_PATTERNS_FILENAME="configs/patterns.yml"
-G_TOOL_LOG_FILENAME="process_output.log"
+G_GIAI_DOWNLOADED_PATTERNS_FILENAME="./patterns.yml"
+G_TOOL_LOG_FILENAME="/tmp/process_output.log"
 
-G_LOCAL_GIAI_REGEX_FILENAME="configs/giai_regex_patterns.txt"
-G_MODIFIED_GIAI_REGEX_FILENAME="configs/modified_giai_regex_patterns.txt"
-G_FLUENTBIT_MASTER_CONF_FILENAME="configs/fluentbit/master-fluent-bit-partial.conf"
-G_FLUENTBIT_FILTER_SECTIONS_CONF_FILE="configs/fluentbit/aerospike-fluent-bit-filters.conf"
-G_FLUENTBIT_PARSERS_CONF_FILE="configs/fluentbit/aerospike-fluent-bit-parsers.conf"
-G_SPLUNK_PROPS_CONF_FILE="configs/splunk/aerospike_splunk_local_props.conf"
-G_SPLUNK_TRANSFORMERS_CONF_FILE="configs/splunk/aerospike_splunk_local_transforms.conf"
+G_MODIFIED_GIAI_REGEX_FILENAME="/tmp/modified_giai_regex_patterns.txt"
+G_FLUENTBIT_FILTER_SECTIONS_CONF_FILE="fluentbit/aerospike-fluent-bit-filters.conf"
+G_FLUENTBIT_PARSERS_CONF_FILE="fluentbit/aerospike-fluent-bit-parsers.conf"
+G_SPLUNK_PROPS_CONF_FILE="splunk/aerospike_splunk_local_props.conf"
+G_SPLUNK_TRANSFORMERS_CONF_FILE="splunk/aerospike_splunk_local_transforms.conf"
 
 giai_unique_regex_set = set()
 unique_regex_set = set()
@@ -23,15 +19,6 @@ unique_regex_set = set()
 g_word_pattern = re.compile(r'\w+')
 
 # BEGIN fluent-bit parsers.conf and filter.conf generation
-def read_fluentbit_conf_sections(): 
-    conf_lines = ""
-    with open(G_FLUENTBIT_MASTER_CONF_FILENAME) as fp:
-        Lines = fp.readlines()
-        for line in Lines:
-            conf_lines = conf_lines + line
-            
-    return conf_lines
-
 def construct_fluentbit_all_filters_prefix(filter_details):
     s= ""
     s= s+ "[FILTER]\n"
@@ -136,11 +123,6 @@ def generate_fluentbit_conf_files():
     all_fluent_bit_configs = all_fluent_bit_configs + record_modifier_filter+"\n"
     all_fluent_bit_configs = all_fluent_bit_configs + all_filters_together+"\n"
 
-    # Add the SERVICE section    
-    # fluentbit_conf_sections= read_fluentbit_conf_sections()
-    # Add output section
-    # all_fluent_bit_configs = all_fluent_bit_configs + output_sections+"\n"
-    
     fh_fluentbit_conf = open(G_FLUENTBIT_FILTER_SECTIONS_CONF_FILE, "w")
     fh_fluentbit_conf.write(fluentbit_conf_sections+"\n")    
     fh_fluentbit_conf.write(all_fluent_bit_configs+"\n")
@@ -227,38 +209,27 @@ def convert_group_names_to_lower(p_regex):
 
 def read_modified_giai_regexs(): 
     with open(G_MODIFIED_GIAI_REGEX_FILENAME) as fp:
-        Lines = fp.readlines()
-        for line in Lines:
+        lines = fp.readlines()
+        for line in lines:
             if not line.startswith("#"): 
                 unique_regex_set.add( line.strip())
-
-def get_patterns_file_from_github():
-    import os
-    import shutil
-    use_local_patterns = os.environ.get("USE_LOCAL_PATTERNS_FILE")
-    # export USE_LOCAL_PATTERNS_FILE=true
-    if use_local_patterns and len(use_local_patterns.strip())>0:
-        print("Using local patterns file ... ")
-        shutil.copyfile(G_LOCAL_GIAI_REGEX_FILENAME, G_GIAI_DOWNLOADED_PATTERNS_FILENAME)    
-    else:
-        import urllib.request
-        print("Downloading patterns.yml from GitHub aerospike/agi_stack repo . ")
-        downloaded_fileloc, http_msg= urllib.request.urlretrieve (G_GIAI_PATTERNS_GITHUB_URL)
-        shutil.copyfile(downloaded_fileloc, G_GIAI_DOWNLOADED_PATTERNS_FILENAME)    
 
 def parse_patterns_yaml():
     with open(G_GIAI_DOWNLOADED_PATTERNS_FILENAME, "r") as fh:
         data = yaml.safe_load(fh)
-        patterns = (data.get("patterns"))
+        defs= data.get("defs")
         unique_regex_str = ""
         ignored_line_str = ""
-        for item in patterns:
-            for rex in item["export"]:
-                output, is_valid=parse_export_regex(rex)
-                if is_valid:
-                    unique_regex_str = unique_regex_str + output +"\n"
-                else:
-                    ignored_line_str = ignored_line_str + output +"\n"         
+        for each_def in defs:                
+            patterns = each_def.get("patterns")
+            for item in patterns:
+                for rex in item["export"]:
+                    output, is_valid=parse_export_regex(rex)
+                    if is_valid:
+                        unique_regex_str = unique_regex_str + output +"\n"
+                    else:
+                        # print(" invalid reg ", output)
+                        ignored_line_str = ignored_line_str + output +"\n"         
                 
         # save to modified patterns to file
         fh_modified_pattterns_conf = open(G_MODIFIED_GIAI_REGEX_FILENAME, "w")
@@ -340,9 +311,6 @@ if __name__ == '__main__':
     elif sys.argv[1].lower()=="splunk":
         is_splunk_conf=True
         
-    # download file from GitHub into config/patterns.txt
-    # 
-    get_patterns_file_from_github()
     parse_patterns_yaml()    
 
     if is_fluent_bit_conf==True:    

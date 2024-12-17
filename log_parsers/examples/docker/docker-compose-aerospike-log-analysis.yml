@@ -44,10 +44,10 @@ services:
 
    volumes:
       - source: ./elasticsearch.yml
-        target: /usr/share/elasticsearch/config/elasticsearch.yml:Z
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
         type: bind
       - source: elasticsearch_data
-        target: /usr/share/elasticsearch/data:Z
+        target: /usr/share/elasticsearch/data
         type: volume
    
    ports:
@@ -75,17 +75,20 @@ services:
         type: bind
       - source: ./aerospike-fluent-bit-parsers.conf
         target: /etc/fluent-bit/parsers.conf
+        # target: /etc/fluent-bit/aerospike-fluent-bit-parsers.conf
         type: bind
       - source: ./aerospike-fluent-bit-filters.conf
         target: /etc/fluent-bit/aerospike-fluent-bit-filters.conf
         type: bind
       - source: fluentbit_data
-        target: /tmp/storage:Z
+        target: /tmp/storage
         type: volume
       - shared_aerospike_logs:/var/logs/aerospike
 
    ports:
     - "2020:2020"
+   environment:
+      CLUSTER_NAME: aero_docker_cluster
 
   kibana1:
    image: docker.elastic.co/kibana/kibana:8.13.4
@@ -93,18 +96,22 @@ services:
 
    volumes:
       - source: ./kibana.yml
-        target: /usr/share/kibana/config/kibana.yml:Z
+        target: /usr/share/kibana/config/kibana.yml
         type: bind
       - source: kibana_data
-        target: /usr/share/kibana/data:Z
+        target: /usr/share/kibana/data
         type: volume
    
    ports:
     - "5601:5601"
-    
+
+   depends_on:
+      - elasticsearch1
+
    environment:
       # default password --> kibana
       KIBANA_SYSTEM_PASSWORD: kibana
+      ELASTICSEARCH_SERVICEACCOUNTTOKEN: AAEAAWVsYXN0aWMva2liYW5hL3Rva2VuMTotQ3AyOE1uNlR2S05xdWo1LW5IVk9n
    
 volumes:
   elasticsearch_data: {}
