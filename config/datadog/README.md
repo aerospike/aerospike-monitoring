@@ -27,10 +27,10 @@ cd examples/otel
 ### Step 2: Configure Docker Compose and OpenTelemetry Collector
 
 #### datadog-docker-compose.yml
-The `docker-compose.yml` file contains services such as `aerospike-prometheus-exporter` and `otel-collector`. These services are connected to a shared network (`aerospike_otel_nw`) with specific environment configurations and volume mounts.
+The [datadog-docker-compose.yml](https://github.com/aerospike/aerospike-monitoring/blob/master/examples/otel/datadog-docker-compose.yml) file contains services such as `aerospike-prometheus-exporter` and `otel-collector` that require specific environment configurations and volume mounts.
 
 #### datadog-otel-collector-config.yml
-This file configures the OpenTelemetry Collector with receivers, processors, exporters, and service pipelines for handling traces.
+The [datadog-otel-collector-config.yml](https://github.com/aerospike/aerospike-monitoring/blob/master/examples/otel/datadog-otel-collector-config.yml) configures the OpenTelemetry Collector with receivers, processors, exporters, and service pipelines for handling traces.
 
 **Important:** Update the `datadog-api-site` and `datadog-api-key` in this configuration file to match your Datadog account details.
 ![OpenTelemetry Collector API Config](assets/otel-collector-api-config.png)
@@ -70,7 +70,7 @@ Edit the `conf.yaml` file to update the `openmetrics_endpoint` with the IP addre
 ```yaml
 openmetrics_endpoint: "http://<AEROSPIKE_PROMETHEUS_EXPORTER_IP>:9145/metrics"
 ```
-![Conf YAML Endpoint Configuration](assets/conf-yaml-endpoint.png)
+![Conf YAML Endpoint Configuration](assets/conf-endpoint.png)
 
 ---
 
@@ -124,7 +124,6 @@ After updating the necessary configurations, run the script using the following 
 ```bash
 python datadog_alerts_creation.py
 ```
-> **Note**: While rerunning the script, if any new alerts are added, the script will create them, but if any current alerts are altered, it will keep the previous alert and create a new one.
 ---
 
 ## Useful Links
