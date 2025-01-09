@@ -26,7 +26,7 @@ an Aerospike cluster, plus Prometheus, Grafana, and Alert Manager.
 
 A single command is needed to deploy containers for the entire monitoring stack for a single node cluster.
 ```
-$ cd examples/docker-compose
+$ cd examples/docker
 $ docker-compose up
 ```
 See [documentation](examples/docker/).
