@@ -1,3 +1,4 @@
+# 
 # Aerospike Monitoring with Datadog via OpenTelemetry Collector
 
 This guide outlines the steps required to set up **Aerospike monitoring with Datadog** using the **OpenTelemetry Collector (otel-collector)** and **Datadog Agent**. It covers the installation and configuration of both components to ensure metrics from Aerospike are properly sent to Datadog for monitoring.
@@ -32,6 +33,7 @@ The `docker-compose.yml` file contains services such as `aerospike-prometheus-ex
 This file configures the OpenTelemetry Collector with receivers, processors, exporters, and service pipelines for handling traces.
 
 **Important:** Update the `datadog-api-site` and `datadog-api-key` in this configuration file to match your Datadog account details.
+![OpenTelemetry Collector API Config](assets/otel-collector-api-config.png)
 
 ### Step 3: Run the Docker Compose Command
 
@@ -68,10 +70,12 @@ Edit the `conf.yaml` file to update the `openmetrics_endpoint` with the IP addre
 ```yaml
 openmetrics_endpoint: "http://<AEROSPIKE_PROMETHEUS_EXPORTER_IP>:9145/metrics"
 ```
+![Conf YAML Endpoint Configuration](assets/conf-yaml-endpoint.png)
 
 ---
 
 ## Importing Dashboards into Datadog UI
+Datadog allows you to import predefined or custom dashboards into the UI. Follow the steps below to import your Aerospike monitoring dashboards into Datadog.
 
 ### Step 1: Log in to Datadog
 
@@ -81,13 +85,16 @@ Open your web browser and log in to your **Datadog** account.
 
 In the Datadog UI, click on the **"Dashboards"** tab located in the left-hand sidebar. Then, click the **"New Dashboard"** button at the top-right of the page.
 
+![Datadog Dashboard UI](assets/datadog-dashboard-ui.png)
+
 ### Step 3: Import the Dashboard JSON
 
 In the **"New Dashboard"** screen, click on the **"Configure"** option on the top-right side and select **Import Dashboard JSON**.
 
 - Copy the contents of your dashboard JSON file and paste it, or drag the JSON file into the field.
 - Click **"Import"** to load the dashboard.
-
+  
+![Datadog Dashboard Import](assets/datadog-dashbaord-import.png)
 ---
 
 ## Creating Bulk Monitoring Alerts in Datadog
@@ -108,6 +115,7 @@ The `datadog_alerts_creation.py` script reads alert rules from a JSON file and c
 - `api_key` and `app_key`: These should be updated with your actual **Datadog API** and **Application** keys.
 - `datadog_site`: Update this with the site where your **Datadog** account is hosted.
 - `aerospike_rules.json`: This JSON file contains multiple monitor configurations, such as monitor name, type, query, and message.
+- Make sure to adjust the **thresholds** according to your requirements.
 
 ### Run the Python Script
 
@@ -116,7 +124,7 @@ After updating the necessary configurations, run the script using the following 
 ```bash
 python datadog_alerts_creation.py
 ```
-
+> **Note**: While rerunning the script, if any new alerts are added, the script will create them, but if any current alerts are altered, it will keep the previous alert and create a new one.
 ---
 
 ## Useful Links
