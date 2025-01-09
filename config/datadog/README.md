@@ -112,8 +112,8 @@ The `datadog_monitors_creation.py` script reads alert rules from a JSON file and
 
 #### Important
 
-- `api_key` and `app_key`: These should be updated with your actual **Datadog API** and **Application** keys.
-- `datadog_site`: Update this with the site where your **Datadog** account is hosted.
+- `api_key` and `app_key`: During runtime, you will be prompted to enter your actual Datadog API Key and Datadog Application Key.
+- `datadog_site`: During runtime, you will also be prompted to enter the Datadog site where your account is hosted (e.g., `datadoghq.com`, `us5.datadoghq.com`).
 - `aerospike_rules.json`: This JSON file contains multiple monitor configurations, such as monitor name, type, query, and message.
 - Make sure to adjust the **thresholds** according to your requirements.
 
