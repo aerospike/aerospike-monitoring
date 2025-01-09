@@ -1,433 +1,791 @@
 {
-    "title": "Unique Data Usage",
-    "description": "Unique Data dashboard, display the master objects and bytes consumed at both cluster level and each namespace in the cluster",
-    "widgets": [
-      {
-        "id": 1977243958910192,
-        "definition": {
-          "type": "image",
-          "url": "/static/images/logos/aerospike_small.svg",
-          "sizing": "cover",
-          "has_background": true,
-          "has_border": true,
-          "vertical_align": "center",
-          "horizontal_align": "center"
-        },
-        "layout": {
-          "x": 0,
-          "y": 0,
-          "width": 2,
-          "height": 1
-        }
+  "title": "Unique Data Usage",
+  "description": "Unique Data dashboard, display the master objects and bytes consumed at both cluster level and each namespace in the cluster",
+  "widgets": [
+    {
+      "id": 1977243958910192,
+      "definition": {
+        "type": "image",
+        "url": "/static/images/logos/aerospike_small.svg",
+        "sizing": "cover",
+        "has_background": true,
+        "has_border": true,
+        "vertical_align": "center",
+        "horizontal_align": "center"
       },
-      {
-        "id": 4150774383318072,
-        "definition": {
-          "type": "note",
-          "content": "**All Cluster - Summary**",
-          "background_color": "vivid_purple",
-          "font_size": "24",
-          "text_align": "center",
-          "show_tick": false,
-          "tick_pos": "50%",
-          "tick_edge": "left"
-        },
-        "layout": {
-          "x": 2,
-          "y": 0,
-          "width": 10,
-          "height": 1
-        }
-      },
-      {
-        "id": 8142057437817140,
-        "definition": {
-          "title": "Cluster - All Master Objects",
-          "title_size": "16",
-          "title_align": "left",
-          "type": "query_value",
-          "requests": [
-            {
-              "response_format": "scalar",
-              "queries": [
-                {
-                  "data_source": "metrics",
-                  "name": "query1",
-                  "query": "sum:aerospike.aerospike_namespace_master_objects{$aerospike_cluster}",
-                  "aggregator": "last"
-                }
-              ],
-              "conditional_formats": [
-                {
-                  "comparator": ">=",
-                  "value": 0,
-                  "palette": "white_on_green"
-                }
-              ],
-              "formulas": [
-                {
-                  "formula": "query1"
-                }
-              ]
-            }
-          ],
-          "autoscale": false,
-          "precision": 0,
-          "timeseries_background": {
-            "type": "bars"
-          }
-        },
-        "layout": {
-          "x": 0,
-          "y": 1,
-          "width": 3,
-          "height": 2
-        }
-      },
-      {
-        "id": 6803820697630468,
-        "definition": {
-          "title": "Cluster- Unique Data Bytes",
-          "title_size": "16",
-          "title_align": "left",
-          "type": "query_value",
-          "requests": [
-            {
-              "response_format": "scalar",
-              "queries": [
-                {
-                  "data_source": "metrics",
-                  "name": "query1",
-                  "query": "sum:aerospike.aerospike_namespace_data_used_bytes{$aerospike_cluster}",
-                  "aggregator": "last"
-                },
-                {
-                  "data_source": "metrics",
-                  "name": "query3",
-                  "query": "avg:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster}",
-                  "aggregator": "last"
-                },
-                {
-                  "data_source": "metrics",
-                  "name": "query2",
-                  "query": "avg:aerospike.aerospike_namespace_data_compression_ratio{$aerospike_cluster}",
-                  "aggregator": "last"
-                },
-                {
-                  "data_source": "metrics",
-                  "name": "query4",
-                  "query": "sum:aerospike.aerospike_namespace_master_objects{$aerospike_cluster}",
-                  "aggregator": "last"
-                }
-              ],
-              "conditional_formats": [
-                {
-                  "comparator": ">=",
-                  "value": 0,
-                  "palette": "white_on_green"
-                }
-              ],
-              "formulas": [
-                {
-                  "formula": "((query1 / query3) / query2) - (query4 * 39)"
-                }
-              ]
-            }
-          ],
-          "autoscale": false,
-          "precision": 0,
-          "timeseries_background": {
-            "type": "area"
-          }
-        },
-        "layout": {
-          "x": 3,
-          "y": 1,
-          "width": 3,
-          "height": 2
-        }
-      },
-      {
-        "id": 87378624183088,
-        "definition": {
-          "title": "Cluster wise - Historical - Usage Bytes",
-          "title_size": "16",
-          "title_align": "left",
-          "show_legend": true,
-          "legend_layout": "vertical",
-          "legend_columns": [
-            "avg",
-            "min",
-            "max"
-          ],
-          "time": {},
-          "type": "timeseries",
-          "requests": [
-            {
-              "formulas": [
-                {
-                  "alias": "Cluster",
-                  "formula": "((query1 / query3) / query2) - (query4 * 39)"
-                }
-              ],
-              "queries": [
-                {
-                  "data_source": "metrics",
-                  "name": "query1",
-                  "query": "sum:aerospike.aerospike_namespace_data_used_bytes{$aerospike_cluster} by {aerospike_cluster}"
-                },
-                {
-                  "data_source": "metrics",
-                  "name": "query3",
-                  "query": "avg:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster} by {aerospike_cluster}"
-                },
-                {
-                  "data_source": "metrics",
-                  "name": "query2",
-                  "query": "avg:aerospike.aerospike_namespace_data_compression_ratio{$aerospike_cluster} by {aerospike_cluster}"
-                },
-                {
-                  "data_source": "metrics",
-                  "name": "query4",
-                  "query": "sum:aerospike.aerospike_namespace_master_objects{$aerospike_cluster} by {aerospike_cluster}"
-                }
-              ],
-              "response_format": "timeseries",
-              "style": {
-                "palette": "dog_classic",
-                "order_by": "values",
-                "line_type": "solid",
-                "line_width": "normal"
-              },
-              "display_type": "line"
-            }
-          ],
-          "yaxis": {
-            "include_zero": false
-          }
-        },
-        "layout": {
-          "x": 6,
-          "y": 1,
-          "width": 6,
-          "height": 2
-        }
-      },
-      {
-        "id": 3697440803839372,
-        "definition": {
-          "type": "note",
-          "content": "**All Namespace - Summary**",
-          "background_color": "vivid_purple",
-          "font_size": "24",
-          "text_align": "center",
-          "show_tick": false,
-          "tick_pos": "50%",
-          "tick_edge": "left"
-        },
-        "layout": {
-          "x": 0,
-          "y": 3,
-          "width": 12,
-          "height": 1
-        }
-      },
-      {
-        "id": 5043870538796918,
-        "definition": {
-          "title": "Namespace - All Master Objects",
-          "title_size": "16",
-          "title_align": "left",
-          "type": "query_value",
-          "requests": [
-            {
-              "response_format": "scalar",
-              "queries": [
-                {
-                  "data_source": "metrics",
-                  "name": "query1",
-                  "query": "sum:aerospike.aerospike_namespace_master_objects{$aerospike_cluster, $ns}",
-                  "aggregator": "last"
-                }
-              ],
-              "conditional_formats": [
-                {
-                  "comparator": ">=",
-                  "value": 0,
-                  "palette": "white_on_green"
-                }
-              ],
-              "formulas": [
-                {
-                  "formula": "query1"
-                }
-              ]
-            }
-          ],
-          "autoscale": false,
-          "precision": 0,
-          "timeseries_background": {
-            "type": "bars"
-          }
-        },
-        "layout": {
-          "x": 0,
-          "y": 4,
-          "width": 3,
-          "height": 2
-        }
-      },
-      {
-        "id": 98814438093994,
-        "definition": {
-          "title": "Namespace - Unique Data Bytes",
-          "title_size": "16",
-          "title_align": "left",
-          "type": "query_value",
-          "requests": [
-            {
-              "response_format": "scalar",
-              "queries": [
-                {
-                  "data_source": "metrics",
-                  "name": "query1",
-                  "query": "sum:aerospike.aerospike_namespace_data_used_bytes{$aerospike_cluster,$aerospike_service, $ns}",
-                  "aggregator": "last"
-                },
-                {
-                  "data_source": "metrics",
-                  "name": "query2",
-                  "query": "avg:aerospike.aerospike_namespace_data_compression_ratio{$aerospike_cluster,$aerospike_service, $ns}",
-                  "aggregator": "last"
-                },
-                {
-                  "data_source": "metrics",
-                  "name": "query4",
-                  "query": "avg:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster,$aerospike_service, $ns}",
-                  "aggregator": "last"
-                },
-                {
-                  "data_source": "metrics",
-                  "name": "query3",
-                  "query": "sum:aerospike.aerospike_namespace_master_objects{$aerospike_cluster,$aerospike_service, $ns}",
-                  "aggregator": "last"
-                }
-              ],
-              "conditional_formats": [
-                {
-                  "comparator": ">=",
-                  "value": 0,
-                  "palette": "white_on_green"
-                }
-              ],
-              "formulas": [
-                {
-                  "formula": "((query1 / query2) / query4) - (query3 * 39)"
-                }
-              ]
-            }
-          ],
-          "autoscale": false,
-          "precision": 0,
-          "timeseries_background": {
-            "type": "area"
-          }
-        },
-        "layout": {
-          "x": 3,
-          "y": 4,
-          "width": 3,
-          "height": 2
-        }
-      },
-      {
-        "id": 6515061620501036,
-        "definition": {
-          "title": "Namespace wise - Historical - Usage Bytes",
-          "title_size": "16",
-          "title_align": "left",
-          "show_legend": true,
-          "legend_layout": "vertical",
-          "legend_columns": [
-            "avg",
-            "min",
-            "max"
-          ],
-          "time": {},
-          "type": "timeseries",
-          "requests": [
-            {
-              "formulas": [
-                {
-                  "alias": "Namespace",
-                  "formula": "((query1 / query2) / query4) - (query3 * 39)"
-                }
-              ],
-              "queries": [
-                {
-                  "data_source": "metrics",
-                  "name": "query1",
-                  "query": "sum:aerospike.aerospike_namespace_data_used_bytes{$aerospike_cluster, $aerospike_service, $ns} by {aerospike_cluster,ns}"
-                },
-                {
-                  "data_source": "metrics",
-                  "name": "query2",
-                  "query": "avg:aerospike.aerospike_namespace_data_compression_ratio{$aerospike_cluster, $aerospike_service, $ns} by {aerospike_cluster,ns}"
-                },
-                {
-                  "data_source": "metrics",
-                  "name": "query4",
-                  "query": "avg:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster, $aerospike_service, $ns} by {aerospike_cluster,ns}"
-                },
-                {
-                  "data_source": "metrics",
-                  "name": "query3",
-                  "query": "sum:aerospike.aerospike_namespace_master_objects{$aerospike_cluster, $aerospike_service, $ns} by {aerospike_cluster,ns}"
-                }
-              ],
-              "response_format": "timeseries",
-              "style": {
-                "palette": "dog_classic",
-                "order_by": "values",
-                "line_type": "solid",
-                "line_width": "normal"
-              },
-              "display_type": "line"
-            }
-          ],
-          "yaxis": {
-            "include_zero": false
-          }
-        },
-        "layout": {
-          "x": 6,
-          "y": 4,
-          "width": 6,
-          "height": 2
-        }
+      "layout": {
+        "x": 0,
+        "y": 0,
+        "width": 2,
+        "height": 1
       }
-    ],
-    "template_variables": [
-      {
-        "name": "aerospike_cluster",
-        "prefix": "aerospike_cluster",
-        "available_values": [],
-        "default": "*"
+    },
+    {
+      "id": 4150774383318072,
+      "definition": {
+        "type": "note",
+        "content": "**All Cluster - Summary**",
+        "background_color": "vivid_purple",
+        "font_size": "24",
+        "text_align": "center",
+        "show_tick": false,
+        "tick_pos": "50%",
+        "tick_edge": "left"
       },
-      {
-        "name": "aerospike_service",
-        "prefix": "aerospike_service",
-        "available_values": [],
-        "default": "*"
-      },
-      {
-        "name": "ns",
-        "prefix": "ns",
-        "available_values": [],
-        "default": "*"
+      "layout": {
+        "x": 2,
+        "y": 0,
+        "width": 10,
+        "height": 1
       }
-    ],
-    "layout_type": "ordered",
-    "notify_list": [],
-    "reflow_type": "fixed"
-  }
+    },
+    {
+      "id": 664641732167924,
+      "definition": {
+        "title": "Cluster - Master Objects",
+        "title_size": "16",
+        "title_align": "left",
+        "type": "query_value",
+        "requests": [
+          {
+            "formulas": [
+              {
+                "formula": "((count_nonzero(query1) / count_nonzero(query2)) * (abs(count_nonzero(query3) + count_nonzero(query4)) + 1) * (count_nonzero(query5) / count_nonzero(query6))) * query10"
+              }
+            ],
+            "queries": [
+              {
+                "name": "query1",
+                "data_source": "metrics",
+                "query": "avg:aerospike.aerospike_namespace_ns_cluster_size{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query2",
+                "data_source": "metrics",
+                "query": "count:aerospike.aerospike_namespace_ns_cluster_size{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query3",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_migrate_rx_partitions_remaining{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query4",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_migrate_tx_partitions_remaining{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query5",
+                "data_source": "metrics",
+                "query": "min:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query6",
+                "data_source": "metrics",
+                "query": "max:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query10",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_master_objects{$aerospike_cluster}",
+                "aggregator": "last"
+              }
+            ],
+            "response_format": "scalar",
+            "conditional_formats": [
+              {
+                "comparator": ">=",
+                "value": 0,
+                "palette": "white_on_green"
+              }
+            ]
+          }
+        ],
+        "autoscale": true,
+        "precision": 2,
+        "timeseries_background": {
+          "type": "area"
+        }
+      },
+      "layout": {
+        "x": 0,
+        "y": 1,
+        "width": 6,
+        "height": 2
+      }
+    },
+    {
+      "id": 2613050418736474,
+      "definition": {
+        "title": "Cluster - Historical - Usage Bytes",
+        "title_size": "16",
+        "title_align": "left",
+        "type": "query_value",
+        "requests": [
+          {
+            "formulas": [
+              {
+                "formula": "((count_nonzero(query1) / count_nonzero(query2)) * (abs(count_nonzero(query3) + count_nonzero(query4)) + 1) * (count_nonzero(query5) / count_nonzero(query6)) * (query7 / query8) / query9) - (query10 * 39)"
+              }
+            ],
+            "queries": [
+              {
+                "name": "query1",
+                "data_source": "metrics",
+                "query": "avg:aerospike.aerospike_namespace_ns_cluster_size{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query2",
+                "data_source": "metrics",
+                "query": "count:aerospike.aerospike_namespace_ns_cluster_size{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query3",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_migrate_rx_partitions_remaining{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query4",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_migrate_tx_partitions_remaining{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query5",
+                "data_source": "metrics",
+                "query": "min:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query6",
+                "data_source": "metrics",
+                "query": "max:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query7",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_data_used_bytes{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query8",
+                "data_source": "metrics",
+                "query": "avg:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query9",
+                "data_source": "metrics",
+                "query": "avg:aerospike.aerospike_namespace_data_compression_ratio{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query10",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_master_objects{$aerospike_cluster}",
+                "aggregator": "last"
+              }
+            ],
+            "response_format": "scalar",
+            "conditional_formats": [
+              {
+                "comparator": ">=",
+                "value": 0,
+                "palette": "white_on_green"
+              }
+            ]
+          }
+        ],
+        "autoscale": true,
+        "precision": 2,
+        "timeseries_background": {
+          "type": "area"
+        }
+      },
+      "layout": {
+        "x": 6,
+        "y": 1,
+        "width": 6,
+        "height": 2
+      }
+    },
+    {
+      "id": 5347648771800356,
+      "definition": {
+        "title": "Cluster - Master Objects",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": true,
+        "legend_layout": "vertical",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "formulas": [
+              {
+                "alias": "Master Objects",
+                "formula": "((count_nonzero(query1) / count_nonzero(query2)) * (abs(count_nonzero(query3) + count_nonzero(query4)) + 1) * (count_nonzero(query5) / count_nonzero(query6))) * query10"
+              }
+            ],
+            "queries": [
+              {
+                "name": "query1",
+                "data_source": "metrics",
+                "query": "avg:aerospike.aerospike_namespace_ns_cluster_size{$aerospike_cluster} by {aerospike_cluster}"
+              },
+              {
+                "name": "query2",
+                "data_source": "metrics",
+                "query": "count:aerospike.aerospike_namespace_ns_cluster_size{$aerospike_cluster} by {aerospike_cluster}"
+              },
+              {
+                "name": "query3",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_migrate_rx_partitions_remaining{$aerospike_cluster} by {aerospike_cluster}"
+              },
+              {
+                "name": "query4",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_migrate_tx_partitions_remaining{$aerospike_cluster} by {aerospike_cluster}"
+              },
+              {
+                "name": "query5",
+                "data_source": "metrics",
+                "query": "min:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster} by {aerospike_cluster}"
+              },
+              {
+                "name": "query6",
+                "data_source": "metrics",
+                "query": "max:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster} by {aerospike_cluster}"
+              },
+              {
+                "name": "query10",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_master_objects{$aerospike_cluster} by {aerospike_cluster}"
+              }
+            ],
+            "response_format": "timeseries",
+            "style": {
+              "palette": "dog_classic",
+              "order_by": "values",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "line"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 3,
+        "width": 6,
+        "height": 2
+      }
+    },
+    {
+      "id": 786731484745024,
+      "definition": {
+        "title": "Cluster - Historical - Usage Bytes ",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": true,
+        "legend_layout": "vertical",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max"
+        ],
+        "type": "timeseries",
+        "requests": [
+          {
+            "formulas": [
+              {
+                "alias": "Usage Bytes",
+                "formula": "((count_nonzero(query1) / count_nonzero(query2)) * (abs(count_nonzero(query3) + count_nonzero(query4)) + 1) * (count_nonzero(query5) / count_nonzero(query6)) * (query7 / query8) / query9) - (query10 * 39)"
+              }
+            ],
+            "queries": [
+              {
+                "name": "query1",
+                "data_source": "metrics",
+                "query": "avg:aerospike.aerospike_namespace_ns_cluster_size{$aerospike_cluster} by {aerospike_cluster}"
+              },
+              {
+                "name": "query2",
+                "data_source": "metrics",
+                "query": "count:aerospike.aerospike_namespace_ns_cluster_size{$aerospike_cluster} by {aerospike_cluster}"
+              },
+              {
+                "name": "query3",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_migrate_rx_partitions_remaining{$aerospike_cluster} by {aerospike_cluster}"
+              },
+              {
+                "name": "query4",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_migrate_tx_partitions_remaining{$aerospike_cluster} by {aerospike_cluster}"
+              },
+              {
+                "name": "query5",
+                "data_source": "metrics",
+                "query": "min:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster} by {aerospike_cluster}"
+              },
+              {
+                "name": "query6",
+                "data_source": "metrics",
+                "query": "max:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster} by {aerospike_cluster}"
+              },
+              {
+                "name": "query7",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_data_used_bytes{$aerospike_cluster} by {aerospike_cluster}"
+              },
+              {
+                "name": "query8",
+                "data_source": "metrics",
+                "query": "avg:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster} by {aerospike_cluster}"
+              },
+              {
+                "name": "query9",
+                "data_source": "metrics",
+                "query": "avg:aerospike.aerospike_namespace_data_compression_ratio{$aerospike_cluster} by {aerospike_cluster}"
+              },
+              {
+                "name": "query10",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_master_objects{$aerospike_cluster} by {aerospike_cluster}"
+              }
+            ],
+            "response_format": "timeseries",
+            "style": {
+              "palette": "dog_classic",
+              "order_by": "values",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "line"
+          }
+        ]
+      },
+      "layout": {
+        "x": 6,
+        "y": 3,
+        "width": 6,
+        "height": 2
+      }
+    },
+    {
+      "id": 3697440803839372,
+      "definition": {
+        "type": "note",
+        "content": "**All Namespace - Summary**",
+        "background_color": "vivid_purple",
+        "font_size": "24",
+        "text_align": "center",
+        "show_tick": false,
+        "tick_pos": "50%",
+        "tick_edge": "left"
+      },
+      "layout": {
+        "x": 0,
+        "y": 5,
+        "width": 12,
+        "height": 1
+      }
+    },
+    {
+      "id": 3691399502293040,
+      "definition": {
+        "title": "Namespace - Master Objects",
+        "title_size": "16",
+        "title_align": "left",
+        "time": {},
+        "type": "query_value",
+        "requests": [
+          {
+            "formulas": [
+              {
+                "formula": "((count_nonzero(query1) / count_nonzero(query2)) * (abs(count_nonzero(query3) + count_nonzero(query4)) + 1) * (count_nonzero(query5) / count_nonzero(query6))) * query10"
+              }
+            ],
+            "queries": [
+              {
+                "name": "query1",
+                "data_source": "metrics",
+                "query": "avg:aerospike.aerospike_namespace_ns_cluster_size{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query2",
+                "data_source": "metrics",
+                "query": "count:aerospike.aerospike_namespace_ns_cluster_size{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query3",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_migrate_rx_partitions_remaining{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query4",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_migrate_tx_partitions_remaining{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query5",
+                "data_source": "metrics",
+                "query": "min:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query6",
+                "data_source": "metrics",
+                "query": "max:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query10",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_master_objects{$aerospike_cluster}",
+                "aggregator": "last"
+              }
+            ],
+            "response_format": "scalar",
+            "conditional_formats": [
+              {
+                "comparator": ">=",
+                "value": 0,
+                "palette": "white_on_green"
+              }
+            ]
+          }
+        ],
+        "autoscale": true,
+        "precision": 2,
+        "timeseries_background": {
+          "type": "area"
+        }
+      },
+      "layout": {
+        "x": 0,
+        "y": 6,
+        "width": 6,
+        "height": 2
+      }
+    },
+    {
+      "id": 4726187279072424,
+      "definition": {
+        "title": "Namespace - Historical - Usage Bytes",
+        "title_size": "16",
+        "title_align": "left",
+        "time": {},
+        "type": "query_value",
+        "requests": [
+          {
+            "formulas": [
+              {
+                "formula": "((count_nonzero(query1) / count_nonzero(query2)) * (abs(query3 + query4) + 1) * (count_nonzero(query5) / count_nonzero(query6)) * (query7 / query8) / query9) - (query10 * 39)"
+              }
+            ],
+            "queries": [
+              {
+                "name": "query1",
+                "data_source": "metrics",
+                "query": "avg:aerospike.aerospike_namespace_ns_cluster_size{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query2",
+                "data_source": "metrics",
+                "query": "count:aerospike.aerospike_namespace_ns_cluster_size{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query3",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_migrate_rx_partitions_remaining{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query4",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_migrate_tx_partitions_remaining{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query5",
+                "data_source": "metrics",
+                "query": "min:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query6",
+                "data_source": "metrics",
+                "query": "max:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query7",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_data_used_bytes{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query8",
+                "data_source": "metrics",
+                "query": "avg:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query9",
+                "data_source": "metrics",
+                "query": "avg:aerospike.aerospike_namespace_data_compression_ratio{$aerospike_cluster}",
+                "aggregator": "last"
+              },
+              {
+                "name": "query10",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_master_objects{$aerospike_cluster}",
+                "aggregator": "last"
+              }
+            ],
+            "response_format": "scalar",
+            "conditional_formats": [
+              {
+                "comparator": ">",
+                "value": 0,
+                "palette": "white_on_green"
+              }
+            ]
+          }
+        ],
+        "autoscale": true,
+        "precision": 2,
+        "timeseries_background": {
+          "type": "area"
+        }
+      },
+      "layout": {
+        "x": 6,
+        "y": 6,
+        "width": 6,
+        "height": 2
+      }
+    },
+    {
+      "id": 1671347359965940,
+      "definition": {
+        "title": "Namespace - Master Objects",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": true,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "time": {},
+        "type": "timeseries",
+        "requests": [
+          {
+            "formulas": [
+              {
+                "alias": "Master Objects",
+                "formula": "((count_nonzero(query1) / count_nonzero(query2)) * (abs(query3 + query4) + 1) * (count_nonzero(query5) / count_nonzero(query6))) * query10"
+              }
+            ],
+            "queries": [
+              {
+                "name": "query1",
+                "data_source": "metrics",
+                "query": "avg:aerospike.aerospike_namespace_ns_cluster_size{$aerospike_cluster, $ns} by {ns}"
+              },
+              {
+                "name": "query2",
+                "data_source": "metrics",
+                "query": "count:aerospike.aerospike_namespace_ns_cluster_size{$aerospike_cluster, $ns} by {ns}"
+              },
+              {
+                "name": "query3",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_migrate_rx_partitions_remaining{$aerospike_cluster, $ns} by {ns}"
+              },
+              {
+                "name": "query4",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_migrate_tx_partitions_remaining{$aerospike_cluster, $ns} by {ns}"
+              },
+              {
+                "name": "query5",
+                "data_source": "metrics",
+                "query": "min:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster, $ns} by {ns}"
+              },
+              {
+                "name": "query6",
+                "data_source": "metrics",
+                "query": "max:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster, $ns} by {ns}"
+              },
+              {
+                "name": "query10",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_master_objects{$aerospike_cluster, $ns} by {aerospike_cluster,ns}"
+              }
+            ],
+            "response_format": "timeseries",
+            "style": {
+              "palette": "dog_classic",
+              "order_by": "values",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "line"
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 8,
+        "width": 6,
+        "height": 2
+      }
+    },
+    {
+      "id": 3246633159923182,
+      "definition": {
+        "title": "Namespace - Historical - Usage Bytes ",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": true,
+        "legend_layout": "auto",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max",
+          "value",
+          "sum"
+        ],
+        "time": {},
+        "type": "timeseries",
+        "requests": [
+          {
+            "formulas": [
+              {
+                "alias": "Usage Bytes",
+                "formula": "((count_nonzero(query1) / count_nonzero(query2)) * (abs(query3 + query4) + 1) * (count_nonzero(query5) / count_nonzero(query6)) * (query7 / query8) / query9) - (query10 * 39)"
+              }
+            ],
+            "queries": [
+              {
+                "name": "query1",
+                "data_source": "metrics",
+                "query": "avg:aerospike.aerospike_namespace_ns_cluster_size{$aerospike_cluster, $ns} by {ns}"
+              },
+              {
+                "name": "query2",
+                "data_source": "metrics",
+                "query": "count:aerospike.aerospike_namespace_ns_cluster_size{$aerospike_cluster, $ns} by {ns}"
+              },
+              {
+                "name": "query3",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_migrate_rx_partitions_remaining{$aerospike_cluster, $ns} by {ns}"
+              },
+              {
+                "name": "query4",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_migrate_tx_partitions_remaining{$aerospike_cluster, $ns} by {ns}"
+              },
+              {
+                "name": "query5",
+                "data_source": "metrics",
+                "query": "min:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster, $ns} by {ns}"
+              },
+              {
+                "name": "query6",
+                "data_source": "metrics",
+                "query": "max:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster, $ns} by {ns}"
+              },
+              {
+                "name": "query7",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_data_used_bytes{$aerospike_cluster, $ns} by {aerospike_cluster,ns}"
+              },
+              {
+                "name": "query8",
+                "data_source": "metrics",
+                "query": "avg:aerospike.aerospike_namespace_effective_replication_factor{$aerospike_cluster, $ns} by {aerospike_cluster,ns}"
+              },
+              {
+                "name": "query9",
+                "data_source": "metrics",
+                "query": "avg:aerospike.aerospike_namespace_data_compression_ratio{$aerospike_cluster, $ns} by {aerospike_cluster,ns}"
+              },
+              {
+                "name": "query10",
+                "data_source": "metrics",
+                "query": "sum:aerospike.aerospike_namespace_master_objects{$aerospike_cluster, $ns} by {aerospike_cluster,ns}"
+              }
+            ],
+            "response_format": "timeseries",
+            "style": {
+              "palette": "dog_classic",
+              "order_by": "values",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "line"
+          }
+        ]
+      },
+      "layout": {
+        "x": 6,
+        "y": 8,
+        "width": 6,
+        "height": 2
+      }
+    }
+  ],
+  "template_variables": [
+    {
+      "name": "aerospike_cluster",
+      "prefix": "aerospike_cluster",
+      "available_values": [],
+      "default": "*"
+    },
+    {
+      "name": "aerospike_service",
+      "prefix": "aerospike_service",
+      "available_values": [],
+      "default": "*"
+    },
+    {
+      "name": "ns",
+      "prefix": "ns",
+      "available_values": [],
+      "default": "*"
+    }
+  ],
+  "layout_type": "ordered",
+  "notify_list": [],
+  "reflow_type": "fixed"
+}
