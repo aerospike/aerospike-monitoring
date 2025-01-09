@@ -97,18 +97,18 @@ In the **"New Dashboard"** screen, click on the **"Configure"** option on the to
 ![Datadog Dashboard Import](assets/datadog-dashbaord-import.png)
 ---
 
-## Creating Bulk Monitoring Alerts in Datadog
+## Creating Monitors in Datadog
 
-To create bulk monitoring alerts in Datadog, you can use the provided **Python script**. This script reads multiple monitor configurations from a JSON file and creates monitors via the **Datadog API**.
+To create Monitors in Datadog, you can use the provided **Python script**. This script reads multiple monitor configurations from a JSON file and creates monitors via the **Datadog API**.
 
 ### Prerequisites
 
 - **Datadog API Key** and **Application Key** are required.
 - Python must be installed on your machine.
 
-### Steps to Create Bulk Alerts
+### Steps to Create Monitors
 
-The `datadog_alerts_creation.py` script reads alert rules from a JSON file and creates corresponding monitors in Datadog using the Datadog API.
+The `datadog_monitors_creation.py` script reads alert rules from a JSON file and creates corresponding monitors in Datadog using the Datadog API.
 
 #### Important
 
@@ -122,7 +122,7 @@ The `datadog_alerts_creation.py` script reads alert rules from a JSON file and c
 After updating the necessary configurations, run the script using the following command:
 
 ```bash
-python datadog_alerts_creation.py
+python datadog_monitors_creation.py
 ```
 ---
 
