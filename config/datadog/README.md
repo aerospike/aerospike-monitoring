@@ -27,10 +27,10 @@ cd examples/otel
 ### Step 2: Configure Docker Compose and OpenTelemetry Collector
 
 #### datadog-docker-compose.yml
-The [datadog-docker-compose.yml](https://github.com/aerospike/aerospike-monitoring/blob/master/examples/otel/datadog-docker-compose.yml) file contains services such as `aerospike-prometheus-exporter` and `otel-collector` that require specific environment configurations and volume mounts.
+The [datadog-docker-compose.yml](../../examples/otel/datadog-docker-compose.yml) file contains services such as `aerospike-prometheus-exporter` and `otel-collector` that require specific environment configurations and volume mounts.
 
 #### datadog-otel-collector-config.yml
-The [datadog-otel-collector-config.yml](https://github.com/aerospike/aerospike-monitoring/blob/master/examples/otel/datadog-otel-collector-config.yml) configures the OpenTelemetry Collector with receivers, processors, exporters, and service pipelines for handling traces.
+The [datadog-otel-collector-config.yml](../../examples/otel/datadog-otel-collector-config.yml) configures the OpenTelemetry Collector with receivers, processors, exporters, and service pipelines for handling traces.
 
 **Important:** Update the `datadog-api-site` and `datadog-api-key` in this configuration file to match your Datadog account details.
 ![OpenTelemetry Collector API Config](assets/otel-collector-api-config.png)
@@ -97,24 +97,24 @@ In the **"New Dashboard"** screen, click on the **"Configure"** option on the to
 ![Datadog Dashboard Import](assets/datadog-dashbaord-import.png)
 ---
 
-## Creating Bulk Monitoring Alerts in Datadog
+## Creating Monitors/Alerts in Datadog
 
-To create bulk monitoring alerts in Datadog, you can use the provided **Python script**. This script reads multiple monitor configurations from a JSON file and creates monitors via the **Datadog API**.
+To create Monitors/Alerts in Datadog, you can use the provided **Python script**. This script reads multiple monitor configurations from a JSON file and creates monitors via the **Datadog API**.
 
 ### Prerequisites
 
 - **Datadog API Key** and **Application Key** are required.
 - Python must be installed on your machine.
 
-### Steps to Create Bulk Alerts
+### Steps to Create Monitors
 
-The `datadog_alerts_creation.py` script reads alert rules from a JSON file and creates corresponding monitors in Datadog using the Datadog API.
+The `datadog_monitors_creation.py` script reads alert rules from a JSON file and creates corresponding monitors in Datadog using the Datadog API.
 
 #### Important
 
-- `api_key` and `app_key`: These should be updated with your actual **Datadog API** and **Application** keys.
-- `datadog_site`: Update this with the site where your **Datadog** account is hosted.
-- `aerospike_rules.json`: This JSON file contains multiple monitor configurations, such as monitor name, type, query, and message.
+- `api_key` and `app_key`: During runtime, you will be prompted to enter your actual Datadog API Key and Datadog Application Key.
+- `datadog_site`: During runtime, you will also be prompted to enter the Datadog site where your account is hosted (e.g., `datadoghq.com`, `us5.datadoghq.com`).
+- `aerospike_datadog_monitors.json`: This JSON file contains multiple monitor configurations, such as monitor name, type, query, and message.
 - Make sure to adjust the **thresholds** according to your requirements.
 
 ### Run the Python Script
@@ -122,7 +122,7 @@ The `datadog_alerts_creation.py` script reads alert rules from a JSON file and c
 After updating the necessary configurations, run the script using the following command:
 
 ```bash
-python datadog_alerts_creation.py
+python3 datadog_monitors_creation.py
 ```
 ---
 
