@@ -8,7 +8,7 @@ receivers:
     config:
       scrape_configs:
       - job_name: 'otel_as_demos'
-        scrape_interval: 10s
+        scrape_interval: 15s
         static_configs:
           - targets: ['as_prom_exporter:9145']
 
@@ -19,11 +19,27 @@ exporters:
   datadog:
     api: 
       site: datadoghq.com
-      key: <DATADOG-APP-KEY>
-      
-  logging:
-
+      key: <DATADOG-APP-KEY> 
+    metrics:
+     sums:
+       cumulative_monotonic_mode: raw_value
 processors:
+  metricstransform:
+    transforms:
+      - include: ^aerospike_(.*)$$
+        match_type: regexp
+        action: update
+        new_name: aerospike.aerospike_$$1
+      - include: ^aerospike(.*)$$
+        match_type: regexp
+        action: update
+        operations:
+          - action: update_label
+            label: service
+            new_label: aerospike_service
+          - action: update_label
+            label: cluster_name
+            new_label: aerospike_cluster
   batch:
         send_batch_max_size: 100
         send_batch_size: 10
@@ -42,9 +58,8 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [logging, datadog ]
+      exporters: [datadog ]
     metrics:
       receivers: [prometheus ]
-      processors: [batch]
-      exporters: [logging , prometheus, datadog]
-
+      processors: [metricstransform, batch]
+      exporters: [prometheus, datadog]
