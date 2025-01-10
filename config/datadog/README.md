@@ -1,5 +1,5 @@
 # 
-# Aerospike Monitoring with Datadog via OpenTelemetry Collector
+# Aerospike Monitoring with Datadog using OTel Collector and Datadog Agent
 
 This guide outlines the steps required to set up **Aerospike monitoring with Datadog** using the **OpenTelemetry Collector (otel-collector)** and **Datadog Agent**. It covers the installation and configuration of both components to ensure metrics from Aerospike are properly sent to Datadog for monitoring.
 
