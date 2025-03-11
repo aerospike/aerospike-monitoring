@@ -397,6 +397,22 @@ groups:
       summary: "Read/write queue too high for {{ $labels.instance }}/{{ $labels.ns }}/{{ $labels.device_index }}"
       description: "Read/write queue is greater than 100 for namespace {{ $labels.ns }} on device {{ $labels.device_index }} in node {{ $labels.instance }}. May indicate underperforming storage subsystem or hotkeys."
 
+  - alert: DetailLogEnabled
+    expr: sum by (job, cluster_name, service) (aerospike_node_stats_pseudo_log_detail{job="aerospike"}) > 0
+    labels:
+      severity: critical
+    annotations:
+      summary: "DETAIL Log level is ENABLED in node {{ $labels.service }} "
+      description: "DETAIL Log level is ENABLED in node {{ $labels.service }} "
+
+  - alert: DebugLogEnabled
+    expr: sum by (job, cluster_name, service) (aerospike_node_stats_pseudo_log_debug{job="aerospike"}) > 0
+    labels:
+      severity: critical
+    annotations:
+      summary: "DEBUG Log level is ENABLED in node {{ $labels.service }} "
+      description: "DEBUG Log level is ENABLED in node {{ $labels.service }} "
+
 - name: aerospike_aerospike.rules > SET
   rules:
   - alert: pre7x_NamespaceSetQuotaWarning
