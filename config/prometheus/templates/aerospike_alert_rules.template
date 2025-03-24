@@ -398,6 +398,22 @@ groups:
       summary: "{% raw %}Read/write queue too high for {{ $labels.instance }}/{{ $labels.ns }}/{{ $labels.device_index }}{% endraw %}"
       description: "Read/write queue is greater than {{ thresholds.rw_in_progress_warning | default(aerospike_rw_in_progress_warning_q_size) }}{% raw %} for namespace {{ $labels.ns }} on device {{ $labels.device_index }} in node {{ $labels.instance }}. May indicate underperforming storage subsystem or hotkeys.{% endraw %}"
 
+  - alert: DetailLogEnabled
+    expr: sum by (job, cluster_name, service) (aerospike_node_stats_pseudo_log_detail{job="aerospike"}) > 0
+    labels:
+      severity: critical
+    annotations:
+      summary: "{% raw %}DETAIL Log level is ENABLED in node {{ $labels.service }} {% endraw %}"
+      description: "{% raw %}DETAIL Log level is ENABLED in node {{ $labels.service }} {% endraw %}"
+
+  - alert: DebugLogEnabled
+    expr: sum by (job, cluster_name, service) (aerospike_node_stats_pseudo_log_debug{job="aerospike"}) > 0
+    labels:
+      severity: critical
+    annotations:
+      summary: "{% raw %}DEBUG Log level is ENABLED in node {{ $labels.service }} {% endraw %}"
+      description: "{% raw %}DEBUG Log level is ENABLED in node {{ $labels.service }} {% endraw %}"
+      
 - name: aerospike_{{ thresholds.cluster }}.rules > SET
   rules:
   - alert: pre7x_NamespaceSetQuotaWarning
