@@ -1,7 +1,9 @@
 # Aerospike Monitoring Stack
 This repo contains the contains examples for deploying the [Aerospike Monitoring Stack](https://aerospike.com/docs/monitorstack) including [Grafana dashboards](./config/grafana/), [Prometheus Aerospike server alerts](./config/prometheus/aerospike_rules.yml) and  [Prometheus Aerospike connector alerts](./config/prometheus/aerospike_connector_rules.yml)
 
-For more details about installing Aerospike Monitoring Stack see [Aerospike see the product documentation](https://www.aerospike.com/docs/tools/monitorstack).
+For more details about installing Aerospike Monitoring Stack see [Aerospike product documentation](https://www.aerospike.com/docs/tools/monitorstack).
+
+For more details about Aerospike Server Metrics reference see [Aerospike System Metrics reference](https://aerospike.com/docs/reference/metrics).
 
 ## Additional Plugin depedencies
 Some of the dashboard depends on external grafana plugins to render the panels, each dashboard and the plug-in dependency is mentioned below
