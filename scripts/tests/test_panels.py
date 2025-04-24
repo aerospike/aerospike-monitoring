@@ -1,8 +1,8 @@
 import requests
 import json
 
-from processing.commons import read_dashboard_queries, loop_for_comparision, loop_for_count, loop_for_names, construct_key
-from configs import fn_baseline_queries, fn_mock_queries
+from .processing.commons import read_dashboard_queries, loop_for_comparision, loop_for_count, loop_for_names, construct_key
+from .configs import fn_baseline_queries, fn_mock_queries
 
 #makes two sets and then compares them to get the count
 def test_panel_count():

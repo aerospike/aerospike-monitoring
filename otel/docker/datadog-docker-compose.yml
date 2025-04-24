@@ -1,8 +1,20 @@
 version: "3.7"
 services:
 
+  aerospike:
+    container_name: aerospike
+    image: aerospike/aerospike-server-enterprise:latest
+#    volumes:
+#      - .:/etc/aerospike
+#      - "./aerospike.conf:/etc/aerospike/aerospike.conf"
+#    command: [ "--config-file","/etc/aerospike/aerospike.conf" ]
+    ports:
+      - "3000:3000"
+
   exporter:
     image: aerospike/aerospike-prometheus-exporter:latest
+    ports:
+      - "9145:9145"
     networks:
       - aerospike_otel_nw
     container_name: as_prom_exporter
@@ -15,14 +27,17 @@ services:
 
   # Collector
   otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    ports:
+      - "30145:30145"
     networks:
       - aerospike_otel_nw
-    image: otel/opentelemetry-collector-contrib:latest
     container_name: as_otel_contrib
+    
     privileged: true
     restart: always
     volumes:
-    - source: ./dynatrace-otel-collector-config.yml 
+    - source: ./datadog-otel-collector-config.yml 
       target: /etc/otel-collector-config.yml 
       type: bind
     command: ["--config=/etc/otel-collector-config.yml"]

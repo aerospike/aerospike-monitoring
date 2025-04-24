@@ -3,9 +3,9 @@ import json
 
 from deepdiff import DeepDiff
 
-from processing.run_queries import save_query_results_to_file
-from processing.run_queries import run_queries, is_key_query_in_ignorelist
-import processing.globals
+from .processing.run_queries import save_query_results_to_file
+from .processing.run_queries import run_queries, is_key_query_in_ignorelist
+# import .processing.globals
 
 fn_fullform_queries = "mockdata/queries_to_test.queries"
 fn_mockquery_results = "mockdata/mock_query_results.queries"
