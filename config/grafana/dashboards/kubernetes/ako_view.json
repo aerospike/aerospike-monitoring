@@ -56,7 +56,7 @@
   "description": "This dashboard visualizes the controller-runtime and workqueue metrics. It provides insights into the performance, behavior, and reconciliation efficiency of the Aerospike Operator.",
   "editable": true,
   "fiscalYearStartMonth": 0,
-  "graphTooltip": 0,
+  "graphTooltip": 1,
   "id": null,
   "links": [],
   "panels": [
@@ -76,7 +76,7 @@
     {
       "gridPos": {
         "h": 2,
-        "w": 12,
+        "w": 8,
         "x": 0,
         "y": 1
       },
@@ -96,8 +96,8 @@
     {
       "gridPos": {
         "h": 2,
-        "w": 12,
-        "x": 12,
+        "w": 16,
+        "x": 8,
         "y": 1
       },
       "id": 61,
@@ -107,7 +107,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "<p style=\"text-align:center;background-color:rgb(4, 123, 196);font-size:25px\"><b>REST Clients & Webhook Requests </b></p>\n\n",
+        "content": "<p style=\"text-align:center;background-color:rgb(4, 123, 196);font-size:25px\"><b>REST Clients</b></p>\n\n",
         "mode": "html"
       },
       "pluginVersion": "11.6.0",
@@ -138,8 +138,8 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 4,
-        "w": 12,
+        "h": 5,
+        "w": 8,
         "x": 0,
         "y": 3
       },
@@ -203,15 +203,15 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 6,
-        "x": 12,
+        "w": 8,
+        "x": 8,
         "y": 3
       },
       "id": 55,
       "options": {
         "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "center",
+        "graphMode": "area",
+        "justifyMode": "auto",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
@@ -220,7 +220,7 @@
           "values": false
         },
         "showPercentChange": false,
-        "textMode": "auto",
+        "textMode": "value_and_name",
         "wideLayout": true
       },
       "pluginVersion": "11.6.0",
@@ -239,7 +239,7 @@
           "refId": "A"
         }
       ],
-      "title": "REST Client Successful Requests  by Status Codes (rate) (total)",
+      "title": "Success (rate) (total)",
       "type": "stat"
     },
     {
@@ -267,16 +267,16 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 6,
-        "x": 18,
+        "w": 8,
+        "x": 16,
         "y": 3
       },
       "id": 58,
       "options": {
         "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "auto",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "vertical",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [],
@@ -284,7 +284,7 @@
           "values": false
         },
         "showPercentChange": false,
-        "textMode": "auto",
+        "textMode": "value_and_name",
         "wideLayout": true
       },
       "pluginVersion": "11.6.0",
@@ -303,8 +303,28 @@
           "refId": "A"
         }
       ],
-      "title": "REST Client Failure Requests by Status Code (rate) (total)",
+      "title": "Failures (rate) (total)",
       "type": "stat"
+    },
+    {
+      "gridPos": {
+        "h": 2,
+        "w": 16,
+        "x": 8,
+        "y": 7
+      },
+      "id": 69,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<p style=\"text-align:center;background-color:rgb(4, 123, 196);font-size:25px\"><b>Webhook Requests </b></p>\n\n",
+        "mode": "html"
+      },
+      "pluginVersion": "11.6.0",
+      "type": "text"
     },
     {
       "datasource": {
@@ -330,10 +350,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 4,
-        "w": 12,
+        "h": 5,
+        "w": 8,
         "x": 0,
-        "y": 7
+        "y": 8
       },
       "id": 56,
       "options": {
@@ -344,7 +364,7 @@
         "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [],
-          "fields": "/^aerospike\\-operator\\-controller\\-manager\\-654995fd7d\\-nl52p$/",
+          "fields": "",
           "values": false
         },
         "showPercentChange": false,
@@ -397,15 +417,15 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 4,
-        "x": 12,
-        "y": 7
+        "w": 7,
+        "x": 8,
+        "y": 9
       },
       "id": 62,
       "options": {
         "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "center",
+        "graphMode": "area",
+        "justifyMode": "auto",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
@@ -414,7 +434,7 @@
           "values": false
         },
         "showPercentChange": false,
-        "textMode": "auto",
+        "textMode": "value_and_name",
         "wideLayout": true
       },
       "pluginVersion": "11.6.0",
@@ -425,14 +445,14 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (code,) (rate(controller_runtime_webhook_requests_total{job=\"$job_name\", code=~\"2..\"}[$__rate_interval]))",
+          "expr": "sum by (code) (rate(controller_runtime_webhook_requests_total{job=\"$job_name\", code=~\"2..\"}[$__rate_interval]))",
           "format": "time_series",
           "legendFormat": "{{code}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Webhook  Successful Requests by Status Code (rate) (total)",
+      "title": "Success (rate) (total)",
       "type": "stat"
     },
     {
@@ -460,15 +480,15 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 4,
-        "x": 16,
-        "y": 7
+        "w": 6,
+        "x": 15,
+        "y": 9
       },
       "id": 53,
       "options": {
         "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "center",
+        "graphMode": "area",
+        "justifyMode": "auto",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
         "reduceOptions": {
@@ -477,7 +497,7 @@
           "values": false
         },
         "showPercentChange": false,
-        "textMode": "auto",
+        "textMode": "value_and_name",
         "wideLayout": true
       },
       "pluginVersion": "11.6.0",
@@ -488,14 +508,14 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum by (code,) (rate(controller_runtime_webhook_requests_total{job=\"$job_name\", code!~\"2..\"}[$__rate_interval]))",
+          "expr": "sum by (code) (rate(controller_runtime_webhook_requests_total{job=\"$job_name\", code!~\"2..\"}[$__rate_interval]))",
           "format": "time_series",
-          "legendFormat": "Status Code:{{code}}",
+          "legendFormat": "{{code}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Webhook Failures Requests by Status Code (rate) (total)",
+      "title": "Failures (rate) (total)",
       "type": "stat"
     },
     {
@@ -523,14 +543,14 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 4,
-        "x": 20,
-        "y": 7
+        "w": 3,
+        "x": 21,
+        "y": 9
       },
       "id": 54,
       "options": {
         "colorMode": "background",
-        "graphMode": "none",
+        "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
@@ -554,12 +574,12 @@
           "expr": "sum(controller_runtime_webhook_requests_in_flight {job=~\"$job_name\", webhook=~\".*\"}) ",
           "hide": false,
           "instant": false,
-          "legendFormat": "__auto",
+          "legendFormat": "  ",
           "range": true,
           "refId": "B"
         }
       ],
-      "title": "Webhook Requests In Flight (total)",
+      "title": "In Flight (total)",
       "type": "stat"
     },
     {
@@ -567,7 +587,7 @@
         "h": 2,
         "w": 24,
         "x": 0,
-        "y": 11
+        "y": 13
       },
       "id": 59,
       "options": {
@@ -609,12 +629,12 @@
         "h": 4,
         "w": 12,
         "x": 0,
-        "y": 13
+        "y": 15
       },
       "id": 22,
       "options": {
         "colorMode": "background",
-        "graphMode": "none",
+        "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
@@ -673,12 +693,12 @@
         "h": 4,
         "w": 12,
         "x": 12,
-        "y": 13
+        "y": 15
       },
       "id": 43,
       "options": {
         "colorMode": "background",
-        "graphMode": "none",
+        "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
@@ -736,12 +756,12 @@
         "h": 4,
         "w": 12,
         "x": 0,
-        "y": 17
+        "y": 19
       },
       "id": 44,
       "options": {
         "colorMode": "background",
-        "graphMode": "none",
+        "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
@@ -800,12 +820,12 @@
         "h": 4,
         "w": 12,
         "x": 12,
-        "y": 17
+        "y": 19
       },
       "id": 27,
       "options": {
         "colorMode": "background",
-        "graphMode": "none",
+        "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
         "percentChangeColorMode": "standard",
@@ -843,7 +863,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 23
       },
       "id": 4,
       "panels": [
@@ -907,7 +927,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 22
+            "y": 24
           },
           "id": 28,
           "options": {
@@ -1009,7 +1029,7 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 22
+            "y": 24
           },
           "id": 29,
           "options": {
@@ -1110,7 +1130,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 69
+            "y": 29
           },
           "id": 30,
           "options": {
@@ -1212,7 +1232,7 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 69
+            "y": 29
           },
           "id": 45,
           "options": {
@@ -1313,7 +1333,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 74
+            "y": 34
           },
           "id": 46,
           "options": {
@@ -1379,7 +1399,7 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 74
+            "y": 34
           },
           "id": 36,
           "options": {
@@ -1460,7 +1480,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 79
+            "y": 39
           },
           "id": 33,
           "options": {
@@ -1541,7 +1561,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 79
+            "y": 39
           },
           "id": 68,
           "options": {
@@ -1622,7 +1642,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 85
+            "y": 45
           },
           "id": 38,
           "options": {
@@ -1738,7 +1758,7 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 85
+            "y": 45
           },
           "id": 15,
           "options": {
@@ -1839,7 +1859,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 90
+            "y": 50
           },
           "id": 23,
           "options": {
@@ -1941,7 +1961,7 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 90
+            "y": 50
           },
           "id": 67,
           "options": {
@@ -2054,7 +2074,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 95
+            "y": 55
           },
           "id": 16,
           "options": {
@@ -2155,7 +2175,7 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 95
+            "y": 55
           },
           "id": 39,
           "options": {
@@ -2257,7 +2277,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 100
+            "y": 60
           },
           "id": 40,
           "options": {
@@ -2357,7 +2377,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 100
+            "y": 60
           },
           "id": 65,
           "options": {
@@ -2406,9 +2426,10 @@
   "refresh": "1m",
   "schemaVersion": 41,
   "tags": [
-    "Monitoring",
     "AKO",
-    "kubernetes"
+    "kubernetes",
+    "monitoring",
+    "operator"
   ],
   "templating": {
     "list": [
@@ -2467,13 +2488,13 @@
     ]
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Aerospike Kubernetes Operator View",
   "uid": "cegdnk1bq99tsb",
-  "version": 2,
+  "version": 12,
   "weekStart": ""
 }
