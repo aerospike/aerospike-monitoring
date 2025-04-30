@@ -878,14 +878,14 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(\naerospike_namespace_memory_used_index_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}\nor\naerospike_namespace_memory_used_sindex_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}\nor\naerospike_namespace_memory_used_set_index_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}\nor\naerospike_namespace_index_pmem_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}\nor\naerospike_namespace_sindex_pmem_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}\n)",
+              "expr": "sum(aerospike_namespace_memory_used_index_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
               "format": "time_series",
               "hide": false,
               "instant": true,
               "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "6.x",
-              "refId": "6_index_used"
+              "legendFormat": "Primary - Memory Used (pre 7x)",
+              "refId": "6_memory_used_index"
             },
             {
               "datasource": {
@@ -894,7 +894,71 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(\naerospike_namespace_index_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}\n)",
+              "expr": "sum(aerospike_namespace_memory_used_sindex_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+              "format": "time_series",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "Sindex - Memory Used (pre 7x)",
+              "refId": "6_memory_used_sindex"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum(aerospike_namespace_memory_used_set_index_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+              "format": "time_series",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "Set - Memory Used (pre 7x)",
+              "refId": "6_memory_used_set_index"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum(aerospike_namespace_index_pmem_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+              "format": "time_series",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "Primary - Pmem Used (pre 7x)",
+              "refId": "6_index_pmem_used"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum(aerospike_namespace_sindex_pmem_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+              "format": "time_series",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "Sindex - Pmem Used (pre 7x)",
+              "refId": "6_sindex_pmem_used"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum(aerospike_namespace_index_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
               "format": "time_series",
               "hide": false,
               "instant": true,
@@ -910,7 +974,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(\naerospike_namespace_sindex_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}\n)",
+              "expr": "sum(aerospike_namespace_sindex_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
               "format": "time_series",
               "hide": false,
               "instant": true,
@@ -926,7 +990,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(\naerospike_namespace_set_index_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}\n)",
+              "expr": "sum(aerospike_namespace_set_index_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
               "format": "time_series",
               "hide": false,
               "instant": true,
@@ -942,7 +1006,7 @@
               },
               "editorMode": "code",
               "exemplar": true,
-              "expr": "sum(\naerospike_namespace_indexes_memory_budget{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+              "expr": "sum(aerospike_namespace_indexes_memory_budget{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
               "format": "time_series",
               "hide": false,
               "instant": true,
@@ -2859,7 +2923,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
@@ -3018,7 +3083,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": null
                   },
                   {
                     "color": "red",
