@@ -46,7 +46,7 @@ Update `Aerospike_CR_DD_Sidecar_Openmetrics.yaml` as needed and apply:
 # - name: secret name  
 # DD_SITE: Your Datadog site (e.g., us5.datadoghq.com) 
 # - name: secret name  
-# prometheus_url: Prometheus exporter endpoint (e.g., http://localhost:9145/metrics)
+# openmetrics_endpoint: Aerospike Prometheus exporter endpoint (e.g., http://localhost:9145/metrics)
 # cluster_name: Custom tag for identifying your Aerospike cluster in Datadog (e.g., aerospike_cluster) 
 # service: Custom tag for identifying the service (e.g., aerospike_service) 
 # name: Name of the Datadog scrape config ConfigMap (e.g., datadog-scrape-config) 
@@ -106,14 +106,14 @@ Use the following annotations in your Yaml file as per integration
         ad.datadoghq.com/aerospike-prometheus-exporter.instances: |
           [
             {
-              "prometheus_url": "http://%%host%%:9145/metrics",
+              "openmetrics_endpoint": "http://%%host%%:9145/metrics",
               "namespace": "aerospike",
-              "metrics": ["*"],
-              "labels_mapper": {
+              "metrics": [".*"],
+              "rename_labels": {
                 "cluster_name": "aerospike_cluster",
                 "service": "aerospike_service"
               },
-              "tags": ["env:dev123"]
+              "tags": ["env:dev"]
             }
           ]
 ```
