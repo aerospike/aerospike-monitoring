@@ -1,44 +1,82 @@
-# Aerospike Monitoring Stack
-This repo contains the contains examples for deploying the [Aerospike Monitoring Stack](https://aerospike.com/docs/monitorstack) including [Grafana dashboards](./config/grafana/), [Prometheus Aerospike server alerts](./config/prometheus/aerospike_rules.yml) and  [Prometheus Aerospike connector alerts](./config/prometheus/aerospike_connector_rules.yml)
+# Configure Grafana
 
-For more details about installing Aerospike Monitoring Stack see [Aerospike product documentation](https://www.aerospike.com/docs/tools/monitorstack).
+This document describes how to configure a Grafana server to add the Prometheus datasource, Alertmanager datasource, and Aerospike dashboards.
 
-For more details about Aerospike Server Metrics reference see [Aerospike System Metrics reference](https://aerospike.com/docs/reference/metrics).
+## Overview
 
-## Additional Plugin depedencies
-Some of the dashboard depends on external grafana plugins to render the panels, each dashboard and the plug-in dependency is mentioned below
-### Multi-cluster-view dashboard
-This dashboard uses 2 grafana external plugin 
-#### [grafana-polystat-panel](https://grafana.com/grafana/plugins/grafana-polystat-panel)
-Installation
+The configuration involves:
+1. Editing the `grafana.ini` file
+2. Adding Prometheus and AlertManager datasources
+3. Adding or upgrading dashboards
+
+## Edit the `grafana.ini` file
+
+1. Open the file `/etc/grafana/grafana.ini` for editing.
+
+> **Note**: If you are running Grafana in a Docker container, log in to the running container as root. Only the root user has permission to write to this file.
+
+2. Make the file writeable:
+```bash
+chmod 664 /etc/grafana/grafana.ini
 ```
-grafana-cli plugins install grafana-polystat-panel
+
+3. Configure the provisioning directory in the `[paths]` section:
+```ini
+[paths]
+# folder that contains provisioning config files that grafana will apply on startup and while running.
+provisioning = /etc/grafana/provisioning
 ```
-#### [jdbranham-diagram-panel](https://grafana.com/grafana/plugins/jdbranham-diagram-panel)
-Installation
+
+4. If you installed Grafana on an Aerospike cluster node, change the HTTP port (default is 3000, which conflicts with Aerospike):
+```ini
+[server]
+# The http port to use
+http_port = 3100
 ```
-grafana-cli plugins install jdbranham-diagram-panel
+
+## Add Prometheus and AlertManager Datasources
+
+1. Install the Alertmanager plugin:
+```bash
+grafana-cli plugins install camptocamp-prometheus-alertmanager-datasource
 ```
 
-## Examples for Testing
-If you need to test dashboard changes the following examples will setup
-an Aerospike cluster, plus Prometheus, Grafana, and Alert Manager. 
-
-### Easy single node Aerospike cluster
-
-A single command is needed to deploy containers for the entire monitoring stack for a single node cluster.
+2. Create the datasources directory:
+```bash
+mkdir -p /etc/grafana/provisioning/datasources
+cd /etc/grafana/provisioning/datasources
 ```
-$ cd examples/docker
-$ docker-compose up
+
+3. Download Aerospike's example configuration:
+```bash
+wget https://raw.githubusercontent.com/aerospike/aerospike-monitoring/master/config/grafana/provisioning/datasources/all.yaml
 ```
-See [documentation](examples/docker/).
 
-### Open Telemetry
+4. Edit the URLs in the file to point to your Prometheus and AlertManager servers with their respective ports.
 
-[Open Telemetry](https://opentelemetry.io/) makes it easier to integrate with partner solutions like Datadog,
-New Relic, or Cloudwatch. See the [OTEL reference architecture](examples/otel/) for
-more details. 
+## Add or Upgrade Dashboards
 
-### AeroLab
+> **Caution**: The following procedure overwrites any changes you have made to your dashboards. To preserve existing dashboards, rename them and change their ID before proceeding.
 
-Deploy monitoring stack using [AeroLab](https://github.com/aerospike/aerolab).  See [documentation](examples/aerolab/).
+1. Download the latest version of the monitoring stack:
+```bash
+wget https://github.com/aerospike/aerospike-monitoring/archive/refs/tags/v3.8.0.tar.gz
+```
+
+2. Extract the downloaded archive:
+```bash
+tar -xvf v3.8.0.tar.gz
+```
+
+3. Copy the dashboards folder to the provisioning directory:
+```bash
+cp -R ./aerospike-monitoring/config/grafana/dashboards /var/lib/grafana/dashboards
+```
+
+4. Restart Grafana to apply all changes.
+
+## Additional Resources
+
+- [Aerospike Monitoring Stack](https://github.com/aerospike/aerospike-monitoring)
+- [Grafana Documentation](https://grafana.com/docs/)
+- [Prometheus AlertManager Datasource Plugin](https://grafana.com/grafana/plugins/camptocamp-prometheus-alertmanager-datasource/) 
