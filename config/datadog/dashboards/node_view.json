@@ -361,11 +361,6 @@
         "type": "treemap",
         "requests": [
           {
-            "formulas": [
-              {
-                "formula": "query1"
-              }
-            ],
             "queries": [
               {
                 "name": "query1",
@@ -377,7 +372,12 @@
             "response_format": "scalar",
             "style": {
               "palette": "datadog16"
-            }
+            },
+            "formulas": [
+              {
+                "formula": "query1"
+              }
+            ]
           }
         ]
       },
@@ -2026,7 +2026,13 @@
             ],
             "formulas": [
               {
-                "formula": "(query2 / query3) * 100"
+                "formula": "(query2 / query3) * 100",
+                "number_format": {
+                  "unit": {
+                    "type": "canonical_unit",
+                    "unit_name": "percent"
+                  }
+                }
               }
             ],
             "sort": {
@@ -2152,7 +2158,7 @@
       "layout": {
         "x": 0,
         "y": 2,
-        "width": 6,
+        "width": 4,
         "height": 2
       }
     },
@@ -2237,9 +2243,68 @@
         }
       },
       "layout": {
-        "x": 6,
+        "x": 4,
         "y": 2,
-        "width": 6,
+        "width": 4,
+        "height": 2
+      }
+    },
+    {
+      "id": 1546930353854895,
+      "definition": {
+        "title": "% Set Quota used by Namespace",
+        "title_size": "16",
+        "title_align": "left",
+        "show_legend": true,
+        "legend_layout": "vertical",
+        "legend_columns": [
+          "avg",
+          "min",
+          "max"
+        ],
+        "time": {},
+        "type": "timeseries",
+        "requests": [
+          {
+            "formulas": [
+              {
+                "number_format": {
+                  "unit": {
+                    "type": "canonical_unit",
+                    "unit_name": "percent"
+                  }
+                },
+                "alias": "Set Quota used",
+                "formula": "(query2 / query3) * 100"
+              }
+            ],
+            "queries": [
+              {
+                "data_source": "metrics",
+                "name": "query2",
+                "query": "sum:aerospike.aerospike_sets_data_used_bytes{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns,set}"
+              },
+              {
+                "data_source": "metrics",
+                "name": "query3",
+                "query": "sum:aerospike.aerospike_sets_stop_writes_size{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns,set}"
+              }
+            ],
+            "response_format": "timeseries",
+            "style": {
+              "palette": "dog_classic",
+              "order_by": "values",
+              "line_type": "solid",
+              "line_width": "normal"
+            },
+            "display_type": "line"
+          }
+        ]
+      },
+      "layout": {
+        "x": 8,
+        "y": 2,
+        "width": 4,
         "height": 2
       }
     },
@@ -2869,7 +2934,6 @@
                 "min",
                 "max"
               ],
-              "time": {},
               "type": "timeseries",
               "requests": [
                 {
@@ -3365,7 +3429,7 @@
         "x": 0,
         "y": 17,
         "width": 12,
-        "height": 1
+        "height": 5
       }
     }
   ],
