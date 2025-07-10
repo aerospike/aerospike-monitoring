@@ -247,7 +247,7 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "(sum((sum((sum ( (((aerospike_namespace_memory_used_data_bytes {job=\"$job_name\",  } + aerospike_namespace_memory_used_index_bytes {job=\"$job_name\",  })\nunless # we pick namespace which are in memory but not using Disk or Pmem\n(aerospike_namespace_device_used_bytes {job=\"$job_name\",  } or aerospike_namespace_pmem_used_bytes {job=\"$job_name\",  } )\n) \n/aerospike_namespace_effective_replication_factor {job=\"$job_name\",  }\n) \n- on (job, cluster_name, instance, service,ns) ( # begin calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n   sum (\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*|^5.*\"}*35) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) (\n        aerospike_node_up{job=\"$job_name\", build=~\"^6.*|^7.*\"}*39) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build!~\"^7.*\"}*0)\n      ) \n   by (job, cluster_name, instance, service,ns) \n  ) # end of header-byte calculation by aerospike version\n) by (service, ns)) or vector(0) ) by (ns))) \n+ on (job, cluster_name, instance, service,ns)\nsum (\n  ( # device-used-bytes + pmem-used-bytes\n    ( # sum disk device used bytes\n      ( sum by (ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\",  }) /\n      ( sum by (ns) ( (aerospike_namespace_device_compression_ratio{job=\"$job_name\",  } )) \n      *\n      avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\",  } ))\n    )\n  or\n    ( sum by (ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\",  }) /\n    ( avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\",  } ))\n  )\n) # end devide-used-bytes\nor\n( \n    ( sum by (ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\",  }) /\n    ( sum by (ns) ( (aerospike_namespace_pmem_compression_ratio{job=\"$job_name\",  } ))  \n      * avg by (ns) (aerospike_namespace_effective_replication_factor{job=\"$job_name\",  }) ))\nor\n    ( sum by (ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\",  }) /\n    ( avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\",  }) ))     \n)\n)\n- on (job, cluster_name, instance, service,ns) ( # begin calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n   sum (\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*|^5.*\"}*35) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) (\n        aerospike_node_up{job=\"$job_name\", build=~\"^6.*|^7.*\"}*39) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build!~\"^7.*\"}*0) ) \n   by (ns)\n) # end of header-byte calculation by aerospike version\nor vector(0)) # end of disk+pmem used bytes\n\n) # end paranthesis for whole sum",
+          "expr": "(sum((sum((sum ( (((aerospike_namespace_memory_used_data_bytes {job=\"$job_name\",  } + aerospike_namespace_memory_used_index_bytes {job=\"$job_name\",  })\nunless # we pick namespace which are in memory but not using Disk or Pmem\n(aerospike_namespace_device_used_bytes {job=\"$job_name\",  } or aerospike_namespace_pmem_used_bytes {job=\"$job_name\",  } )\n) \n/aerospike_namespace_effective_replication_factor {job=\"$job_name\",  }\n) \n) by (service, ns)) or vector(0) ) by (ns))) \n+ on (job, cluster_name, instance, service,ns)\nsum (\n  ( # device-used-bytes + pmem-used-bytes\n    ( # sum disk device used bytes\n      ( sum by (ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\",  }) /\n      ( sum by (ns) ( (aerospike_namespace_device_compression_ratio{job=\"$job_name\",  } )) \n      *\n      avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\",  } ))\n    )\n  or\n    ( sum by (ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\",  }) /\n    ( avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\",  } ))\n  )\n) # end devide-used-bytes\nor\n( \n    ( sum by (ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\",  }) /\n    ( sum by (ns) ( (aerospike_namespace_pmem_compression_ratio{job=\"$job_name\",  } ))  \n      * avg by (ns) (aerospike_namespace_effective_replication_factor{job=\"$job_name\",  }) ))\nor\n    ( sum by (ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\",  }) /\n    ( avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\",  }) ))     \n)\n)\nor vector(0)) # end of disk+pmem used bytes\n\n) # end paranthesis for whole sum",
           "hide": true,
           "legendFormat": "Unique Data Bytes",
           "range": true,
@@ -259,7 +259,7 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "(sum((sum((sum ( (((aerospike_namespace_data_used_bytes {job=\"$job_name\",  })/\naerospike_namespace_data_compression_ratio {job=\"$job_name\", }\n) \n/aerospike_namespace_effective_replication_factor {job=\"$job_name\",  }\n) \n- on (job, cluster_name, instance, service,ns) ( # begin calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n   sum (\n       aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*|^5.*\"}*35) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) (\n        aerospike_node_up{job=\"$job_name\", build=~\"^6.*|^7.*\"}*39) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build!~\"^7.*\"}*0) ) \n   by (job, cluster_name, instance, service,ns) \n  ) # end of header-byte calculation by aerospike version\n) by (service, ns)) or vector(0) ) by (ns))) \n\n) # end paranthesis for whole sum",
+          "expr": "(sum((sum((sum ( (((aerospike_namespace_data_used_bytes {job=\"$job_name\",  })/\naerospike_namespace_data_compression_ratio {job=\"$job_name\", }\n) \n/aerospike_namespace_effective_replication_factor {job=\"$job_name\",  }\n) \n) by (service, ns)) or vector(0) ) by (ns))) \n) # end paranthesis for whole sum",
           "hide": true,
           "legendFormat": "Unique Data Bytes",
           "range": true,
@@ -396,7 +396,7 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "(sum by (cluster_name,) ((sum((sum ( (((aerospike_namespace_memory_used_data_bytes {job=\"$job_name\",  } + aerospike_namespace_memory_used_index_bytes {job=\"$job_name\",  })\nunless # we pick namespace which are in memory but not using Disk or Pmem\n(aerospike_namespace_device_used_bytes {job=\"$job_name\",  } or aerospike_namespace_pmem_used_bytes {job=\"$job_name\",  } )\n) \n/aerospike_namespace_effective_replication_factor {job=\"$job_name\",  }\n) \n- on (job, cluster_name, instance, service,ns) ( # begin calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n   sum (\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*|^5.*\"}*35) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) (\n        aerospike_node_up{job=\"$job_name\", build=~\"^6.*|^7.*\"}*39) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build!~\"^7.*\"}*0)\n      ) \n   by (job, cluster_name, instance, service,ns) \n  ) # end of header-byte calculation by aerospike version\n) by (cluster_name, ns)) or on() vector(0) ) by ( cluster_name))) \n+ on (job, cluster_name, instance, service,ns)\nsum by (cluster_name,) (\n  ( # device-used-bytes + pmem-used-bytes\n    ( # sum disk device used bytes\n      ( sum by (cluster_name,ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\",  }) /\n      ( sum by (cluster_name,ns) ( (aerospike_namespace_device_compression_ratio{job=\"$job_name\",  } )) \n      *\n      avg by (cluster_name,ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\",  } ))\n    )\n  or\n    ( sum by (cluster_name,ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\",  }) /\n    ( avg by (cluster_name,ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\",  } ))\n  )\n) # end devide-used-bytes\nor\n( \n    ( sum by (cluster_name,ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\",  }) /\n    ( sum by (cluster_name, ns) ( (aerospike_namespace_pmem_compression_ratio{job=\"$job_name\",  } ))  \n      * avg by (cluster_name,ns) (aerospike_namespace_effective_replication_factor{job=\"$job_name\",  }) ))\nor\n    ( sum by (cluster_name,ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\",  }) /\n    ( avg by (cluster_name,ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\",  }) ))     \n)\n)\n- on (job, cluster_name, instance, service,ns) ( # begin calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n   sum (\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) (\n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*\"}*35) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^5.*\"}*35) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) (\n        aerospike_node_up{job=\"$job_name\", build!~\"^5.*\"}*39) ) \n   by (cluster_name, ns)\n) # end of header-byte calculation by aerospike version\nor on() vector(0)) # end of disk+pmem used bytes\n\n) # end paranthesis for whole sum",
+          "expr": "(sum by (cluster_name,) ((sum((sum ( (((aerospike_namespace_memory_used_data_bytes {job=\"$job_name\",  } + aerospike_namespace_memory_used_index_bytes {job=\"$job_name\",  })\nunless # we pick namespace which are in memory but not using Disk or Pmem\n(aerospike_namespace_device_used_bytes {job=\"$job_name\",  } or aerospike_namespace_pmem_used_bytes {job=\"$job_name\",  } )\n) \n/aerospike_namespace_effective_replication_factor {job=\"$job_name\",  }\n) \n) by (cluster_name, ns)) or on() vector(0) ) by ( cluster_name))) \n+ on (job, cluster_name, instance, service,ns)\nsum by (cluster_name,) (\n  ( # device-used-bytes + pmem-used-bytes\n    ( # sum disk device used bytes\n      ( sum by (cluster_name,ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\",  }) /\n      ( sum by (cluster_name,ns) ( (aerospike_namespace_device_compression_ratio{job=\"$job_name\",  } )) \n      *\n      avg by (cluster_name,ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\",  } ))\n    )\n  or\n    ( sum by (cluster_name,ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\",  }) /\n    ( avg by (cluster_name,ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\",  } ))\n  )\n) # end devide-used-bytes\nor\n( \n    ( sum by (cluster_name,ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\",  }) /\n    ( sum by (cluster_name, ns) ( (aerospike_namespace_pmem_compression_ratio{job=\"$job_name\",  } ))  \n      * avg by (cluster_name,ns) (aerospike_namespace_effective_replication_factor{job=\"$job_name\",  }) ))\nor\n    ( sum by (cluster_name,ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\",  }) /\n    ( avg by (cluster_name,ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\",  }) ))     \n)\n)\nor on() vector(0)) # end of disk+pmem used bytes\n) # end paranthesis for whole sum",
           "hide": true,
           "legendFormat": "Cluster Name : {{cluster_name}}",
           "range": true,
@@ -408,7 +408,7 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "(sum by (cluster_name) ((sum((sum ( (((aerospike_namespace_data_used_bytes {job=\"$job_name\",  })/\naerospike_namespace_data_compression_ratio {job=\"$job_name\", }\n) \n/aerospike_namespace_effective_replication_factor {job=\"$job_name\",  }\n) \n- on (job, cluster_name, instance, service,ns) ( # begin calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n   sum (\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*|^5.*\"}*35) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) (\n        aerospike_node_up{job=\"$job_name\", build=~\"^6.*|^7.*\"}*39) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build!~\"^7.*\"}*0)\n      ) \n   by (job, cluster_name, instance, service,ns) \n  ) # end of header-byte calculation by aerospike version\n) by ( cluster_name, ns)) or on() vector(0) ) by (cluster_name))) \n\n) # end paranthesis for whole sum",
+          "expr": "(sum by (cluster_name) ((sum((sum ( (((aerospike_namespace_data_used_bytes {job=\"$job_name\",  })/\naerospike_namespace_data_compression_ratio {job=\"$job_name\", }\n) \n/aerospike_namespace_effective_replication_factor {job=\"$job_name\",  }\n) \n) by ( cluster_name, ns)) or on() vector(0) ) by (cluster_name))) \n\n) # end paranthesis for whole sum",
           "hide": true,
           "legendFormat": "Cluster Name: {{cluster_name}}",
           "range": true,
@@ -456,7 +456,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 32
+            "y": 27
           },
           "id": 60,
           "maxDataPoints": 100,
@@ -549,7 +549,7 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 32
+            "y": 27
           },
           "id": 62,
           "maxDataPoints": 100,
@@ -601,7 +601,7 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "(sum((sum((sum ( (((aerospike_namespace_memory_used_data_bytes {job=\"$job_name\", cluster_name=~\"$cluster\",  } + aerospike_namespace_memory_used_index_bytes {job=\"$job_name\", cluster_name=~\"$cluster\",  })\nunless # we pick namespace which are in memory but not using Disk or Pmem\n(aerospike_namespace_device_used_bytes {job=\"$job_name\", cluster_name=~\"$cluster\",  } or aerospike_namespace_pmem_used_bytes {job=\"$job_name\", cluster_name=~\"$cluster\",  } )\n) \n/aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\",  }\n) \n- on (job, cluster_name, instance, service,ns) ( # begin calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n   sum (\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*|^5.*\"}*35) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) (\n        aerospike_node_up{job=\"$job_name\", build=~\"^6.*|^7.*\"}*39) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build!~\"^7.*\"}*0) ) \n   by (job, cluster_name, instance, service,ns) \n  ) # end of header-byte calculation by aerospike version\n) by (service, ns)) or vector(0) ) by (ns))) \n+ on (job, cluster_name, instance, service,ns)\nsum (\n  ( # device-used-bytes + pmem-used-bytes\n    ( # sum disk device used bytes\n      ( sum by (ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\",  }) /\n      ( sum by (ns) ( (aerospike_namespace_device_compression_ratio{job=\"$job_name\", cluster_name=~\"$cluster\",  } )) \n      *\n      avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\",  } ))\n    )\n  or\n    ( sum by (ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\",  }) /\n    ( avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", } ))\n  )\n) # end devide-used-bytes\nor\n( \n    ( sum by (ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", }) /\n    ( sum by (ns) ( (aerospike_namespace_pmem_compression_ratio{job=\"$job_name\", cluster_name=~\"$cluster\",  } ))  \n      * avg by (ns) (aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", }) ))\nor\n    ( sum by (ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\",  }) /\n    ( avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\",  }) ))     \n)\n)\n- on (job, cluster_name, instance, service,ns) ( # begin calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n   sum (\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*|^5.*\"}*35) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) (\n        aerospike_node_up{job=\"$job_name\", build=~\"^6.*|^7.*\"}*39) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build!~\"^7.*\"}*0) ) \n   by (ns)\n) # end of header-byte calculation by aerospike version\nor vector(0)) # end of disk+pmem used bytes\n\n) # end paranthesis for whole sum",
+              "expr": "(sum((sum((sum ( (((aerospike_namespace_memory_used_data_bytes {job=\"$job_name\", cluster_name=~\"$cluster\",  } + aerospike_namespace_memory_used_index_bytes {job=\"$job_name\", cluster_name=~\"$cluster\",  })\nunless # we pick namespace which are in memory but not using Disk or Pmem\n(aerospike_namespace_device_used_bytes {job=\"$job_name\", cluster_name=~\"$cluster\",  } or aerospike_namespace_pmem_used_bytes {job=\"$job_name\", cluster_name=~\"$cluster\",  } )\n) \n/aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\",  }\n) \n) by (service, ns)) or vector(0) ) by (ns))) \n+ on (job, cluster_name, instance, service,ns)\nsum (\n  ( # device-used-bytes + pmem-used-bytes\n    ( # sum disk device used bytes\n      ( sum by (ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\",  }) /\n      ( sum by (ns) ( (aerospike_namespace_device_compression_ratio{job=\"$job_name\", cluster_name=~\"$cluster\",  } )) \n      *\n      avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\",  } ))\n    )\n  or\n    ( sum by (ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\",  }) /\n    ( avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", } ))\n  )\n) # end devide-used-bytes\nor\n( \n    ( sum by (ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", }) /\n    ( sum by (ns) ( (aerospike_namespace_pmem_compression_ratio{job=\"$job_name\", cluster_name=~\"$cluster\",  } ))  \n      * avg by (ns) (aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", }) ))\nor\n    ( sum by (ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\",  }) /\n    ( avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\",  }) ))     \n)\n)\nor vector(0)) # end of disk+pmem used bytes\n\n) # end paranthesis for whole sum",
               "hide": true,
               "legendFormat": "Unique Data Bytes",
               "range": true,
@@ -613,7 +613,7 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "(sum((sum((sum ( (((aerospike_namespace_data_used_bytes {job=\"$job_name\", cluster_name=~\"$cluster\",  } ) /\naerospike_namespace_data_compression_ratio {job=\"$job_name\", cluster_name=~\"$cluster\", }\n) \n/aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\",  }\n) \n- on (job, cluster_name, instance, service,ns) ( # begin calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n   sum (\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*|^5.*\"}*35) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) (\n        aerospike_node_up{job=\"$job_name\", build=~\"^6.*|^7.*\"}*39) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build!~\"^7.*\"}*0) ) \n   by (job, cluster_name, instance, service,ns) \n  ) # end of header-byte calculation by aerospike version\n) by (service, ns)) or vector(0) ) by (ns))) \n\n) # end paranthesis for whole sum",
+              "expr": "(sum((sum((sum ( (((aerospike_namespace_data_used_bytes {job=\"$job_name\", cluster_name=~\"$cluster\",  } ) /\naerospike_namespace_data_compression_ratio {job=\"$job_name\", cluster_name=~\"$cluster\", }\n) \n/aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\",  }\n) \n) by (service, ns)) or vector(0) ) by (ns))) \n\n) # end paranthesis for whole sum",
               "hide": true,
               "legendFormat": "Unique Data Bytes",
               "range": true,
@@ -698,7 +698,7 @@
             "h": 11,
             "w": 24,
             "x": 0,
-            "y": 38
+            "y": 14
           },
           "id": 74,
           "interval": "5m",
@@ -746,7 +746,7 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "(sum((sum((sum ( (((aerospike_namespace_memory_used_data_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", } + aerospike_namespace_memory_used_index_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", })\nunless # we pick namespace which are in memory but not using Disk or Pmem\n(aerospike_namespace_device_used_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", } or aerospike_namespace_pmem_used_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", } )\n) \n/aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\", }\n) \n- on (job, cluster_name, instance, service,ns) ( # begin calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n   sum (\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*|^5.*\"}*35) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) (\n        aerospike_node_up{job=\"$job_name\", build=~\"^6.*|^7.*\"}*39) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build!~\"^7.*\"}*0)) \n   by (job, cluster_name, instance, service,ns) \n  ) # end of header-byte calculation by aerospike version\n) by (service, ns)) or vector(0) ) by (ns))) \n+ on (job, cluster_name, instance, service,ns)\nsum (\n  ( # device-used-bytes + pmem-used-bytes\n    ( # sum disk device used bytes\n      ( sum by (ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", }) /\n      ( sum by (ns) ( (aerospike_namespace_device_compression_ratio{job=\"$job_name\", cluster_name=~\"$cluster\", } )) \n      *\n      avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", } ))\n    )\n  or\n    ( sum by (ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", }) /\n    ( avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", } ))\n  )\n) # end devide-used-bytes\nor\n( \n    ( sum by (ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", }) /\n    ( sum by (ns) ( (aerospike_namespace_pmem_compression_ratio{job=\"$job_name\", cluster_name=~\"$cluster\", } ))  \n      * avg by (ns) (aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", }) ))\nor\n    ( sum by (ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", }) /\n    ( avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", }) ))     \n)\n)\n- on (job, cluster_name, instance, service,ns) ( # begin calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n   sum (\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*|^5.*\"}*35) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) (\n        aerospike_node_up{job=\"$job_name\", build=~\"^6.*|^7.*\"}*39) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build!~\"^7.*\"}*0)\n        ) \n   by (ns)\n) # end of header-byte calculation by aerospike version\nor vector(0)) # end of disk+pmem used bytes\n\n) # end paranthesis for whole sum",
+              "expr": "(sum((sum((sum ( (((aerospike_namespace_memory_used_data_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", } + aerospike_namespace_memory_used_index_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", })\nunless # we pick namespace which are in memory but not using Disk or Pmem\n(aerospike_namespace_device_used_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", } or aerospike_namespace_pmem_used_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", } )\n) \n/aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\", }\n) \n) by (service, ns)) or vector(0) ) by (ns))) \n+ on (job, cluster_name, instance, service,ns)\nsum (\n  ( # device-used-bytes + pmem-used-bytes\n    ( # sum disk device used bytes\n      ( sum by (ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", }) /\n      ( sum by (ns) ( (aerospike_namespace_device_compression_ratio{job=\"$job_name\", cluster_name=~\"$cluster\", } )) \n      *\n      avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", } ))\n    )\n  or\n    ( sum by (ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", }) /\n    ( avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", } ))\n  )\n) # end devide-used-bytes\nor\n( \n    ( sum by (ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", }) /\n    ( sum by (ns) ( (aerospike_namespace_pmem_compression_ratio{job=\"$job_name\", cluster_name=~\"$cluster\", } ))  \n      * avg by (ns) (aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", }) ))\nor\n    ( sum by (ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", }) /\n    ( avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", }) ))     \n)\n)\nor vector(0)) # end of disk+pmem used bytes\n\n) # end paranthesis for whole sum",
               "hide": true,
               "legendFormat": "{{ns}}",
               "range": true,
@@ -759,7 +759,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "(sum  ((sum by (ns) ((sum ( (((aerospike_namespace_data_used_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", }\n/aerospike_namespace_data_compression_ratio {job=\"$job_name\", cluster_name=~\"$cluster\", }) \n) \n/aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\", }\n) \n- on (job, cluster_name, instance, service,ns) ( # begin calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n   sum (\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*|^5.*\"}*35) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) (\n        aerospike_node_up{job=\"$job_name\", build=~\"^6.*|^7.*\"}*39) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build!~\"^7.*\"}*0) ) \n   by (job, cluster_name, instance, service,ns) \n  ) # end of header-byte calculation by aerospike version\n) by (service, ns)) or vector(0) ) )) \n\n) # end paranthesis for whole sum",
+              "expr": "(sum  ((sum by (ns) ((sum ( (((aerospike_namespace_data_used_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", }\n/aerospike_namespace_data_compression_ratio {job=\"$job_name\", cluster_name=~\"$cluster\", }) \n) \n/aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\", }\n) \n) by (service, ns)) or vector(0) ) )) \n\n) # end paranthesis for whole sum",
               "hide": true,
               "instant": false,
               "legendFormat": "__auto",
@@ -775,7 +775,7 @@
       "type": "row"
     },
     {
-      "collapsed": false,
+      "collapsed": true,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -783,196 +783,197 @@
         "y": 14
       },
       "id": 84,
-      "panels": [],
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Display Unique Data Utilization by namespaces in bytes",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "#6a9f78"
+                  },
+                  {
+                    "color": "#299c46",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 3,
+            "w": 24,
+            "x": 0,
+            "y": 15
+          },
+          "id": 94,
+          "maxDataPoints": 100,
+          "maxPerRow": 2,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "vertical",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "text": {},
+            "textMode": "value_and_name",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.0.1+security-01",
+          "repeat": "namespace",
+          "repeatDirection": "h",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "(sum (aerospike_namespace_master_objects{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}) by (ns) )  ",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "master objects - ",
+              "range": true,
+              "refId": "master objects"
+            },
+            {
+              "datasource": {
+                "type": "__expr__",
+                "uid": "${DS_EXPRESSION}"
+              },
+              "expression": "$Q_MEMORY_USAGE * $QR_RULE_CAN_SHOW",
+              "hide": false,
+              "refId": "in Memory -",
+              "type": "math"
+            },
+            {
+              "datasource": {
+                "type": "__expr__",
+                "uid": "${DS_EXPRESSION}"
+              },
+              "expression": "$Q_DISK_USAGE * $QR_RULE_CAN_SHOW",
+              "hide": false,
+              "refId": "bytes on Disk -",
+              "type": "math"
+            },
+            {
+              "datasource": {
+                "type": "__expr__",
+                "uid": "${DS_EXPRESSION}"
+              },
+              "expression": "$Q_PMEM_DISK_USAGE * $QR_RULE_CAN_SHOW",
+              "hide": false,
+              "refId": "on Pmem -",
+              "type": "math"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "# above query should work only if the below condition satisfy\n(sum( # Running individual exporter for each node in a cluster\n    (avg by (ns) ( aerospike_namespace_ns_cluster_size {job=\"$job_name\", cluster_name=~\"$cluster\",  ns=~\"$namespace|$^\"}))\n    == bool \n    (count by (ns) (aerospike_namespace_ns_cluster_size {job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"} ))\n) by (ns)> bool 0)\n* # migration check with RX + TX metric - for each Namespace\n(\n    (sum (aerospike_namespace_migrate_rx_partitions_remaining {job=\"$job_name\", cluster_name=~\"$cluster\",  ns=~\"$namespace|$^\"}+ aerospike_namespace_migrate_tx_partitions_remaining {job=\"$job_name\", cluster_name=~\"$cluster\",  ns=~\"$namespace|$^\"}) \nby (ns) == bool 0)\n)\n* # Consistent Effective Replication factor across all nodes\n(sum(\n    min by (ns) (aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\",  ns=~\"$namespace|$^\"}) \n    == bool \n    max by (ns) (aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\",  ns=~\"$namespace|$^\"})\n) by (ns) > bool 0)",
+              "hide": true,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "QR_RULE_CAN_SHOW"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "((\n (sum by (ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"} / aerospike_namespace_device_compression_ratio{job=\"$job_name\", cluster_name=~\"$cluster\",  ns=~\"$namespace|$^\"})\n ) /\n(avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}))\nOR\n (sum by (ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"} )\n ) /\n(avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}))\n)\n)",
+              "format": "time_series",
+              "hide": true,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{service}} {{ns}} - on Disk ",
+              "range": true,
+              "refId": "Q_DISK_USAGE"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "((\n (sum by (ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\",  ns=~\"$namespace|$^\"} / aerospike_namespace_pmem_compression_ratio{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})\n ) /\n(avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}))\nOR\n (sum by (ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"} )\n ) /\n(avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}))\n)\n)",
+              "format": "time_series",
+              "hide": true,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "{{service}} {{ns}} - on Disk ",
+              "range": true,
+              "refId": "Q_PMEM_DISK_USAGE"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "((sum((sum ( ((((aerospike_namespace_memory_used_data_bytes{job=\"$job_name\", cluster_name=~\"$cluster\",  ns=~\"$namespace|$^\"} + aerospike_namespace_memory_used_index_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})  )\nunless # We pick up namespace which use memory, but not Disk or Pmem\n(aerospike_namespace_device_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"} or aerospike_namespace_pmem_used_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})\n) \n/aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}\n) \n) by (service, ns)) ) by (ns))\n)",
+              "hide": true,
+              "instant": false,
+              "legendFormat": "{{ns}} - in Memory",
+              "range": true,
+              "refId": "Q_MEMORY_USAGE"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "(sum((sum((sum ( (((aerospike_namespace_data_used_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"} ) /\naerospike_namespace_data_compression_ratio {job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}\n) \n/aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}\n) \n) by (service, ns))  ) by (ns))) \n\n) # end paranthesis for whole sum",
+              "hide": false,
+              "legendFormat": "Unique Bytes -",
+              "range": true,
+              "refId": "7_DATA_USAGE"
+            }
+          ],
+          "title": "Namespace - $namespace",
+          "transformations": [
+            {
+              "id": "labelsToFields",
+              "options": {}
+            }
+          ],
+          "type": "stat"
+        }
+      ],
       "title": "Namespace - $cluster",
       "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-      },
-      "description": "Display Unique Data Utilization by namespaces in bytes",
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "#6a9f78"
-              },
-              {
-                "color": "#299c46",
-                "value": 1
-              }
-            ]
-          },
-          "unit": "none"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 24,
-        "x": 0,
-        "y": 15
-      },
-      "id": 94,
-      "maxDataPoints": 100,
-      "maxPerRow": 2,
-      "options": {
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "center",
-        "orientation": "vertical",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "text": {},
-        "textMode": "value_and_name",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.0.1+security-01",
-      "repeat": "namespace",
-      "repeatDirection": "h",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "(sum (aerospike_namespace_master_objects{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}) by (ns) )  ",
-          "hide": false,
-          "instant": false,
-          "interval": "",
-          "legendFormat": "master objects - ",
-          "range": true,
-          "refId": "master objects"
-        },
-        {
-          "datasource": {
-            "type": "__expr__",
-            "uid": "${DS_EXPRESSION}"
-          },
-          "expression": "$Q_MEMORY_USAGE * $QR_RULE_CAN_SHOW",
-          "hide": false,
-          "refId": "in Memory -",
-          "type": "math"
-        },
-        {
-          "datasource": {
-            "type": "__expr__",
-            "uid": "${DS_EXPRESSION}"
-          },
-          "expression": "$Q_DISK_USAGE * $QR_RULE_CAN_SHOW",
-          "hide": false,
-          "refId": "bytes on Disk -",
-          "type": "math"
-        },
-        {
-          "datasource": {
-            "type": "__expr__",
-            "uid": "${DS_EXPRESSION}"
-          },
-          "expression": "$Q_PMEM_DISK_USAGE * $QR_RULE_CAN_SHOW",
-          "hide": false,
-          "refId": "on Pmem -",
-          "type": "math"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "# above query should work only if the below condition satisfy\n(sum( # Running individual exporter for each node in a cluster\n    (avg by (ns) ( aerospike_namespace_ns_cluster_size {job=\"$job_name\", cluster_name=~\"$cluster\",  ns=~\"$namespace|$^\"}))\n    == bool \n    (count by (ns) (aerospike_namespace_ns_cluster_size {job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"} ))\n) by (ns)> bool 0)\n* # migration check with RX + TX metric - for each Namespace\n(\n    (sum (aerospike_namespace_migrate_rx_partitions_remaining {job=\"$job_name\", cluster_name=~\"$cluster\",  ns=~\"$namespace|$^\"}+ aerospike_namespace_migrate_tx_partitions_remaining {job=\"$job_name\", cluster_name=~\"$cluster\",  ns=~\"$namespace|$^\"}) \nby (ns) == bool 0)\n)\n* # Consistent Effective Replication factor across all nodes\n(sum(\n    min by (ns) (aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\",  ns=~\"$namespace|$^\"}) \n    == bool \n    max by (ns) (aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\",  ns=~\"$namespace|$^\"})\n) by (ns) > bool 0)",
-          "hide": true,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "QR_RULE_CAN_SHOW"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "((\n (sum by (ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"} / aerospike_namespace_device_compression_ratio{job=\"$job_name\", cluster_name=~\"$cluster\",  ns=~\"$namespace|$^\"})\n ) /\n(avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}))\nOR\n (sum by (ns) (aerospike_namespace_device_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"} )\n ) /\n(avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}))\n)- on (job, cluster_name, instance, service,ns)  ( # begin calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n   sum (\n    aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n    group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*\"}*35) !=0\n    or\n    aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n    group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^5.*\"}*35) !=0\n    or\n    aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n    group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^6.*\"}*39) !=0) by (ns)\n   ) # end calculation of header-byte by server-version\n)",
-          "format": "time_series",
-          "hide": true,
-          "instant": false,
-          "interval": "",
-          "legendFormat": "{{service}} {{ns}} - on Disk ",
-          "range": true,
-          "refId": "Q_DISK_USAGE"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "((\n (sum by (ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\",  ns=~\"$namespace|$^\"} / aerospike_namespace_pmem_compression_ratio{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})\n ) /\n(avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}))\nOR\n (sum by (ns) (aerospike_namespace_pmem_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"} )\n ) /\n(avg by (ns) ( aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}))\n)- on (job, cluster_name, instance, service,ns) ( # begin calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n   sum (\n    aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n    group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*\"}*35) !=0\n    or\n    aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n    group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^5.*\"}*35) !=0\n    or\n    aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n    group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^6.*\"}*39) !=0) by (ns)\n   ) # end calculation of header-byte by server-version\n)",
-          "format": "time_series",
-          "hide": true,
-          "instant": false,
-          "interval": "",
-          "legendFormat": "{{service}} {{ns}} - on Disk ",
-          "range": true,
-          "refId": "Q_PMEM_DISK_USAGE"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "exemplar": false,
-          "expr": "((sum((sum ( ((((aerospike_namespace_memory_used_data_bytes{job=\"$job_name\", cluster_name=~\"$cluster\",  ns=~\"$namespace|$^\"} + aerospike_namespace_memory_used_index_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})  )\nunless # We pick up namespace which use memory, but not Disk or Pmem\n(aerospike_namespace_device_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"} or aerospike_namespace_pmem_used_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})\n) \n/aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}\n) \n- on (job, cluster_name, instance, service,ns) \n  ( # calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n  sum (\n    aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n    group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*\"}*35) \n    or\n    aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n    group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^5.*\"}*35) \n    or\n    aerospike_namespace_master_objects{job=\"$job_name\"} * on (job, cluster_name, service) \n    group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build!~\"^5.*\"}*39) ) \n  by (job, cluster_name, instance, service,ns)\n  ) \n) by (service, ns)) ) by (ns))\n)",
-          "hide": true,
-          "instant": false,
-          "legendFormat": "{{ns}} - in Memory",
-          "range": true,
-          "refId": "Q_MEMORY_USAGE"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "(sum((sum((sum ( (((aerospike_namespace_data_used_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"} ) /\naerospike_namespace_data_compression_ratio {job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}\n) \n/aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}\n) \n- on (job, cluster_name, instance, service,ns) ( # begin calculate the header byte size 39bytes if as-version>=6 and 34 if as-version<6\n   sum (\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build=~\"^4.*|^5.*\"}*35) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) (\n        aerospike_node_up{job=\"$job_name\", build=~\"^6.*|^7.*\"}*39) \n      or\n      aerospike_namespace_master_objects{job=\"$job_name\",  } * on (job, cluster_name, service) \n      group_left(build) ( \n        aerospike_node_up{job=\"$job_name\", build!~\"^7.*\"}*0)\n        ) \n   by (job, cluster_name, instance, service,ns) \n  ) # end of header-byte calculation by aerospike version\n) by (service, ns))  ) by (ns))) \n\n) # end paranthesis for whole sum",
-          "hide": false,
-          "legendFormat": "Unique Bytes -",
-          "range": true,
-          "refId": "7_DATA_USAGE"
-        }
-      ],
-      "title": "Namespace - $namespace",
-      "transformations": [
-        {
-          "id": "labelsToFields",
-          "options": {}
-        }
-      ],
-      "type": "stat"
     }
   ],
-  "refresh": "",
+  "refresh": false,
   "schemaVersion": 41,
   "tags": [
     "usecase",
@@ -1082,6 +1083,6 @@
   "timezone": "",
   "title": "Unique Data Usage",
   "uid": "QFY8EJfVk",
-  "version": 9,
+  "version": 15,
   "weekStart": ""
 }
