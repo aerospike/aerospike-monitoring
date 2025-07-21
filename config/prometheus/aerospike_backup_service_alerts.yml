@@ -1,0 +1,83 @@
+groups:
+- name: aerospike_backup_alerts
+  rules:
+  - alert: AerospikeBackupServiceDown
+    expr: up{job="aerospike_backup_service"} == 0
+    for: 30s
+    labels:
+      severity: warn
+    annotations:
+      summary: "Aerospike Backup Service job {{ $labels.instance }} down"
+      description: "{{ $labels.instance }} has been down for more than 1m."
+    
+  - alert: AerospikeBackupTooOld
+    expr: (time() - aerospike_backup_service_last_successful_backup_timestamp) > 86400
+    for: 180s
+    labels:
+      severity: critical
+    annotations:
+      summary: "No recent backup for routine {{ $labels.routine }}"
+      description: "The last successful backup for routine {{ $labels.routine }} was more than 24 hours ago."
+
+  - alert: AerospikeBackupJobFailure
+    expr: increase(aerospike_backup_service_backup_events_total{outcome="failure"}[15m]) > 0
+    for: 180s
+    labels:
+      severity: warn
+    annotations:
+      summary: "Backup job failure detected in routine {{ $labels.routine }}"
+      description: "At least one backup job for the routine {{ $labels.routine }} in {{ $labels.instance }} has been failed in the last 15 minutes."  
+
+  - alert: AerospikeBackupJobSkip
+    expr: increase(aerospike_backup_service_backup_events_total{outcome="skip"}[15m]) > 0
+    for: 30s
+    labels:
+      severity: warn
+    annotations:
+      summary: "Backup job skip detected in routine {{ $labels.routine }}"
+      description: "At least one backup job for the routine {{ $labels.routine }} in {{ $labels.instance }} has been 'skipped' in the past 15 minutes."
+    
+  - alert: AerospikeBackupJobRetry
+    expr: increase(aerospike_backup_service_backup_events_total{outcome="retry"}[15m]) > 0
+    for: 180s
+    labels:
+      severity: warn
+    annotations:
+      summary: "Backup job retry detected in routine {{ $labels.routine }}"
+      description: "At least one backup job for the routine {{ $labels.routine }} in {{ $labels.instance }} has been 'retried' in the past 15 minutes."
+
+  - alert: AerospikeFullBackupJobLatencyWarn
+    expr: increase(aerospike_backup_service_backup_duration_seconds_bucket{le="1537.734375", type="full"}[30m]) > 0
+    for: 180s
+    labels:
+      severity: warn
+    annotations:
+      summary: "Backup job latency in routine {{ $labels.routine }} and type {{ $labels.type }}"
+      description: "At least one backup job for the routine {{ $labels.routine }} in {{ $labels.instance }} has been running for nearly 30 minutes with the type 'full'"
+
+  - alert: AerospikeFullBackupJobLatencyCritical
+    expr: increase(aerospike_backup_service_backup_duration_seconds_bucket{le="3459.90234375", type="full"}[60m]) > 0
+    for: 180s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Backup job latency in routine {{ $labels.routine }} and type {{ $labels.type }}"
+      description: "At least one backup job for the routine {{ $labels.routine }} in {{ $labels.instance }} has been running for nearly 1 hour with the type 'full'"
+
+  - alert: AerospikeIncrementalBackupJobLatencyWarn
+    expr: increase(aerospike_backup_service_backup_duration_seconds_bucket{le="1025.15625", type="incremental"}[15m]) > 0
+    for: 180s
+    labels:
+      severity: warn
+    annotations:
+      summary: "Backup job latency in routine {{ $labels.routine }} and type {{ $labels.type }}"
+      description: "At least one backup job for the routine {{ $labels.routine }} in {{ $labels.instance }} has been running for nearly 15 minutes with the type 'incremental'"
+
+  - alert: AerospikeIncrementalBackupJobLatencyCritical
+    expr: increase(aerospike_backup_service_backup_duration_seconds_bucket{le="1537.734375", type="incremental"}[30m]) > 0
+    for: 180s
+    labels:
+      severity: critical
+    annotations:
+      summary: "Backup job latency in routine {{ $labels.routine }} and type {{ $labels.type }}"
+      description: "At least one backup job for the routine {{ $labels.routine }} in {{ $labels.instance }} has been running for nearly 30 minutes with the type 'incremental'"
