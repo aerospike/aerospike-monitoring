@@ -4,7 +4,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "9.3.2"
+      "version": "12.0.1+security-01"
     },
     {
       "type": "datasource",
@@ -53,7 +53,6 @@
   "graphTooltip": 1,
   "id": null,
   "links": [],
-  "liveNow": false,
   "panels": [
     {
       "collapsed": false,
@@ -83,8 +82,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           }
@@ -92,8 +90,8 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 3,
+        "h": 4,
+        "w": 4,
         "x": 0,
         "y": 1
       },
@@ -103,6 +101,7 @@
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -110,9 +109,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -120,8 +121,8 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "count (aerospike_backup_service_runs_total{job=~\"$job_name\", instance=~\"$instance\"})",
-          "legendFormat": "__auto",
+          "expr": "count (aerospike_backup_service_restore_in_progress{job=~\"$job_name\", instance=~\"$instance\"})",
+          "legendFormat": " ",
           "range": true,
           "refId": "A"
         }
@@ -134,7 +135,7 @@
         "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
-      "description": "Total backup runs, \nTotal  incremental  backup runs.",
+      "description": "Total backup success count, \nTotal incremental backup success count.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -145,8 +146,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           }
@@ -154,9 +154,9 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 7,
-        "x": 3,
+        "h": 4,
+        "w": 5,
+        "x": 4,
         "y": 1
       },
       "id": 6,
@@ -165,6 +165,7 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -172,9 +173,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -182,25 +185,13 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": " sum(aerospike_backup_service_runs_total{job=~\"$job_name\", instance=~\"$instance\"})",
-          "legendFormat": "Full",
+          "expr": "count by (type) (aerospike_backup_service_backup_events_total{job=~\"$job_name\", instance=~\"$instance\", type=~\"$type\", outcome=\"success\", routine=~\"$routine\"})",
+          "legendFormat": "{{type}}",
           "range": true,
-          "refId": "Full Runs"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": " sum(aerospike_backup_service_incremental_runs_total{job=~\"$job_name\", instance=~\"$instance\"})",
-          "hide": false,
-          "legendFormat": "Incremental",
-          "range": true,
-          "refId": "Incremental Runs"
+          "refId": "Success"
         }
       ],
-      "title": "Runs Count (Total)",
+      "title": "Success (count)",
       "type": "stat"
     },
     {
@@ -219,8 +210,11 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 1
               }
             ]
           }
@@ -228,9 +222,9 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 7,
-        "x": 10,
+        "h": 4,
+        "w": 5,
+        "x": 9,
         "y": 1
       },
       "id": 15,
@@ -239,6 +233,7 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -246,9 +241,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -256,25 +253,13 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": " sum(rate(aerospike_backup_service_failure_total{job=~\"$job_name\", instance=~\"$instance\"}[$__rate_interval]))",
-          "legendFormat": "Full",
+          "expr": "count by (type) (aerospike_backup_service_backup_events_total{job=~\"$job_name\", instance=~\"$instance\", type=~\"$type\",outcome=\"failure\", routine=~\"$routine\"})",
+          "legendFormat": "{{type}}",
           "range": true,
-          "refId": "Full"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": " sum(rate(aerospike_backup_service_incremental_failure_total{job=~\"$job_name\", instance=~\"$instance\"}[$__rate_interval]))",
-          "hide": false,
-          "legendFormat": "Incremental",
-          "range": true,
-          "refId": "Incremental"
+          "refId": "Failures"
         }
       ],
-      "title": "Failures Count (Total)",
+      "title": "Failures (count)",
       "type": "stat"
     },
     {
@@ -293,8 +278,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
           }
@@ -302,9 +286,9 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 7,
-        "x": 17,
+        "h": 4,
+        "w": 5,
+        "x": 14,
         "y": 1
       },
       "id": 16,
@@ -313,6 +297,7 @@
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -320,9 +305,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -330,25 +317,13 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": " sum(rate(aerospike_backup_service_skip_total{job=~\"$job_name\", instance=~\"$instance\"}[$__rate_interval]))",
-          "legendFormat": "Full",
+          "expr": "count by (type) (aerospike_backup_service_backup_events_total{job=~\"$job_name\", instance=~\"$instance\", type=~\"$type\",outcome=\"skip\", routine=~\"$routine\"})",
+          "legendFormat": "{{type}}",
           "range": true,
-          "refId": "Full"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": " sum(rate(aerospike_backup_service_incremental_skip_total{job=~\"$job_name\", instance=~\"$instance\"}[$__rate_interval]))",
-          "hide": false,
-          "legendFormat": "Incremental",
-          "range": true,
-          "refId": "Incremental"
+          "refId": "Skip"
         }
       ],
-      "title": "Skip Count (Total)",
+      "title": "Skip (count)",
       "type": "stat"
     },
     {
@@ -356,7 +331,7 @@
         "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
-      "description": "Full backup duration in milliseconds,\nIncremental backup duration in milliseconds.",
+      "description": "Total backup retries, \nTotal incremental backup retries.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -367,27 +342,26 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               }
             ]
-          },
-          "unit": "ms"
+          }
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 5,
-        "w": 7,
-        "x": 0,
-        "y": 6
+        "h": 4,
+        "w": 5,
+        "x": 19,
+        "y": 1
       },
-      "id": 17,
+      "id": 42,
       "options": {
         "colorMode": "background",
         "graphMode": "area",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -395,9 +369,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -405,10 +381,75 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(aerospike_backup_service_duration_millis{job=~\"$job_name\", instance=~\"$instance\"})",
-          "legendFormat": "Full",
+          "expr": "count by (type) (aerospike_backup_service_backup_events_total{job=~\"$job_name\", instance=~\"$instance\", type=~\"$type\",outcome=~\"retry\", routine=~\"$routine\"})",
+          "legendFormat": "{{type}}",
           "range": true,
-          "refId": "full"
+          "refId": "Retry"
+        }
+      ],
+      "title": "Retry (count)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "Full and incremental backup duration buckets.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 0,
+        "y": 5
+      },
+      "id": 53,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.1+security-01",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "avg (histogram_quantile(0.5, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", routine=~\"$routine\", type=~\"(?i)full\", })))",
+          "hide": false,
+          "legendFormat": "p50",
+          "range": true,
+          "refId": "p50"
         },
         {
           "datasource": {
@@ -416,14 +457,137 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "sum(aerospike_backup_service_incremental_duration_millis{job=~\"$job_name\", instance=~\"$instance\"})",
-          "hide": false,
-          "legendFormat": "Incremental",
+          "expr": "avg (histogram_quantile(0.95, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", routine=~\"$routine\", type=~\"(?i)full\", })))",
+          "legendFormat": "p95",
           "range": true,
-          "refId": "incremental"
+          "refId": "p95"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "avg (histogram_quantile(0.99, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", routine=~\"$routine\", type=~\"(?i)full\", })))",
+          "hide": false,
+          "legendFormat": "p99",
+          "range": true,
+          "refId": "p99"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "avg (histogram_quantile(0.999, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", routine=~\"$routine\", type=~\"(?i)full\", })))",
+          "hide": false,
+          "legendFormat": "p999",
+          "range": true,
+          "refId": "p999"
         }
       ],
-      "title": "Duration (ms)",
+      "title": "Full - Backup duration (percentiles)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "Full and incremental backup duration buckets.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 12,
+        "x": 12,
+        "y": 5
+      },
+      "id": 57,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.0.1+security-01",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "avg (histogram_quantile(0.5, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", routine=~\"$routine\", type=~\"(?i)incremental\", })))",
+          "hide": false,
+          "legendFormat": "p50",
+          "range": true,
+          "refId": "p50"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "avg (histogram_quantile(0.95, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", routine=~\"$routine\", type=~\"(?i)incremental\", })))",
+          "legendFormat": "p95",
+          "range": true,
+          "refId": "p95"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "avg (histogram_quantile(0.99, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", routine=~\"$routine\", type=~\"(?i)incremental\", })))",
+          "hide": false,
+          "legendFormat": "p99",
+          "range": true,
+          "refId": "p99"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "avg (histogram_quantile(0.999, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", routine=~\"$routine\", type=~\"(?i)incremental\", })))",
+          "hide": false,
+          "legendFormat": "p999",
+          "range": true,
+          "refId": "p999"
+        }
+      ],
+      "title": "Incremental - Backup duration (percentiles)",
       "type": "stat"
     },
     {
@@ -432,7 +596,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 11
+        "y": 10
       },
       "id": 4,
       "panels": [
@@ -441,7 +605,7 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "description": "Total backup runs, \nTotal  incremental  backup runs.",
+          "description": "Total backup success count, \nTotal incremental backup success count.",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -460,10 +624,10 @@
             "overrides": []
           },
           "gridPos": {
-            "h": 5,
+            "h": 4,
             "w": 6,
             "x": 0,
-            "y": 12
+            "y": 11
           },
           "id": 28,
           "options": {
@@ -471,6 +635,7 @@
             "graphMode": "area",
             "justifyMode": "center",
             "orientation": "auto",
+            "percentChangeColorMode": "standard",
             "reduceOptions": {
               "calcs": [
                 "lastNotNull"
@@ -478,9 +643,11 @@
               "fields": "",
               "values": false
             },
-            "textMode": "auto"
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
           },
-          "pluginVersion": "9.5.8",
+          "pluginVersion": "12.0.1+security-01",
           "targets": [
             {
               "datasource": {
@@ -488,25 +655,13 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": " sum(aerospike_backup_service_runs_total{job=~\"$job_name\", instance=~\"$instance\"})",
-              "legendFormat": "Full",
+              "expr": "count by (type) (aerospike_backup_service_backup_events_total{job=~\"$job_name\", instance=~\"$instance\", type=~\"$type\",outcome=\"success\",routine=~\"$routine\"})",
+              "legendFormat": "{{type}}",
               "range": true,
               "refId": "Full Runs"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": " sum(aerospike_backup_service_incremental_runs_total{job=~\"$job_name\", instance=~\"$instance\"})",
-              "hide": false,
-              "legendFormat": "Incremental",
-              "range": true,
-              "refId": "Incremental Runs"
             }
           ],
-          "title": "Runs Count (Total)",
+          "title": "Success (count)",
           "type": "stat"
         },
         {
@@ -526,6 +681,10 @@
                 "steps": [
                   {
                     "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 1
                   }
                 ]
               }
@@ -533,10 +692,10 @@
             "overrides": []
           },
           "gridPos": {
-            "h": 5,
+            "h": 4,
             "w": 6,
             "x": 6,
-            "y": 12
+            "y": 11
           },
           "id": 29,
           "options": {
@@ -544,6 +703,7 @@
             "graphMode": "area",
             "justifyMode": "center",
             "orientation": "auto",
+            "percentChangeColorMode": "standard",
             "reduceOptions": {
               "calcs": [
                 "lastNotNull"
@@ -551,9 +711,11 @@
               "fields": "",
               "values": false
             },
-            "textMode": "auto"
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
           },
-          "pluginVersion": "9.5.8",
+          "pluginVersion": "12.0.1+security-01",
           "targets": [
             {
               "datasource": {
@@ -561,25 +723,13 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": " sum(rate(aerospike_backup_service_failure_total{job=~\"$job_name\", instance=~\"$instance\"}[$__rate_interval]))",
-              "legendFormat": "Full",
+              "expr": "count by (type)(aerospike_backup_service_backup_events_total{job=~\"$job_name\", instance=~\"$instance\", type=~\"$type\",outcome=~\"failure\", routine=~\"$routine\"})",
+              "legendFormat": "{{type}}",
               "range": true,
-              "refId": "Full"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": " sum(rate(aerospike_backup_service_incremental_failure_total{job=~\"$job_name\", instance=~\"$instance\"}[$__rate_interval]))",
-              "hide": false,
-              "legendFormat": "Incremental",
-              "range": true,
-              "refId": "Incremental"
+              "refId": "Failure"
             }
           ],
-          "title": "Failures Count (Total)",
+          "title": "Failures (count)",
           "type": "stat"
         },
         {
@@ -606,10 +756,10 @@
             "overrides": []
           },
           "gridPos": {
-            "h": 5,
+            "h": 4,
             "w": 6,
             "x": 12,
-            "y": 12
+            "y": 11
           },
           "id": 30,
           "options": {
@@ -617,6 +767,7 @@
             "graphMode": "area",
             "justifyMode": "center",
             "orientation": "auto",
+            "percentChangeColorMode": "standard",
             "reduceOptions": {
               "calcs": [
                 "lastNotNull"
@@ -624,9 +775,11 @@
               "fields": "",
               "values": false
             },
-            "textMode": "auto"
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
           },
-          "pluginVersion": "9.5.8",
+          "pluginVersion": "12.0.1+security-01",
           "targets": [
             {
               "datasource": {
@@ -634,25 +787,13 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": " sum(rate(aerospike_backup_service_skip_total{job=~\"$job_name\", instance=~\"$instance\"}[$__rate_interval]))",
-              "legendFormat": "Full",
+              "expr": "count by (type) (aerospike_backup_service_backup_events_total{job=~\"$job_name\", instance=~\"$instance\", type=~\"$type\",outcome=~\"skip\", routine=~\"$routine\"})",
+              "legendFormat": "{{type}}",
               "range": true,
-              "refId": "Full"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": " sum(rate(aerospike_backup_service_incremental_skip_total{job=~\"$job_name\", instance=~\"$instance\"}[$__rate_interval]))",
-              "hide": false,
-              "legendFormat": "Incremental",
-              "range": true,
-              "refId": "Incremental"
+              "refId": "Skip"
             }
           ],
-          "title": "Skip Count (Total)",
+          "title": "Skip (count)",
           "type": "stat"
         },
         {
@@ -660,7 +801,7 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "description": "Full backup duration in milliseconds,\nIncremental backup duration in milliseconds.",
+          "description": "Total backup retries, \nTotal incremental backup retries.",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -674,23 +815,23 @@
                     "color": "green"
                   }
                 ]
-              },
-              "unit": "ms"
+              }
             },
             "overrides": []
           },
           "gridPos": {
-            "h": 5,
+            "h": 4,
             "w": 6,
             "x": 18,
-            "y": 12
+            "y": 11
           },
-          "id": 31,
+          "id": 40,
           "options": {
             "colorMode": "background",
             "graphMode": "area",
             "justifyMode": "center",
             "orientation": "auto",
+            "percentChangeColorMode": "standard",
             "reduceOptions": {
               "calcs": [
                 "lastNotNull"
@@ -698,9 +839,11 @@
               "fields": "",
               "values": false
             },
-            "textMode": "auto"
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
           },
-          "pluginVersion": "9.5.8",
+          "pluginVersion": "12.0.1+security-01",
           "targets": [
             {
               "datasource": {
@@ -708,25 +851,13 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "sum(aerospike_backup_service_duration_millis{job=~\"$job_name\", instance=~\"$instance\"})",
-              "legendFormat": "Full",
+              "expr": "count by (type)(aerospike_backup_service_backup_events_total{job=~\"$job_name\", instance=~\"$instance\", type=~\"$type\",outcome=~\"retry\", routine=~\"$routine\"})",
+              "legendFormat": "{{type}}",
               "range": true,
-              "refId": "full"
-            },
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "sum(aerospike_backup_service_incremental_duration_millis{job=~\"$job_name\", instance=~\"$instance\"})",
-              "hide": false,
-              "legendFormat": "Incremental",
-              "range": true,
-              "refId": "incremental"
+              "refId": "Retry"
             }
           ],
-          "title": "Duration (ms)",
+          "title": "Retry (count)",
           "type": "stat"
         },
         {
@@ -734,18 +865,220 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "description": "Total backup runs.",
+          "description": "Full and incremental backup duration buckets.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 12,
+            "x": 0,
+            "y": 15
+          },
+          "id": 54,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.0.1+security-01",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "avg (histogram_quantile(0.5, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", instance=~\"$instance\", routine=~\"$routine\", type=~\"(?i)full\", })))",
+              "hide": false,
+              "legendFormat": "p50",
+              "range": true,
+              "refId": "p50"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "avg (histogram_quantile(0.95, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", instance=~\"$instance\", routine=~\"$routine\", type=~\"(?i)full\", })))",
+              "legendFormat": "p95",
+              "range": true,
+              "refId": "p95"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "avg (histogram_quantile(0.99, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", instance=~\"$instance\", routine=~\"$routine\", type=~\"(?i)full\", })))",
+              "hide": false,
+              "legendFormat": "p99",
+              "range": true,
+              "refId": "p99"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "avg (histogram_quantile(0.999, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", instance=~\"$instance\", routine=~\"$routine\", type=~\"(?i)full\", })))",
+              "hide": false,
+              "legendFormat": "p999",
+              "range": true,
+              "refId": "p999"
+            }
+          ],
+          "title": "Full - Backup duration (percentiles)",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Full and incremental backup duration buckets.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 4,
+            "w": 12,
+            "x": 12,
+            "y": 15
+          },
+          "id": 58,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.0.1+security-01",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "avg (histogram_quantile(0.5, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", instance=~\"$instance\", routine=~\"$routine\", type=~\"(?i)incremental\", })))",
+              "hide": false,
+              "legendFormat": "p50",
+              "range": true,
+              "refId": "p50"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "avg (histogram_quantile(0.95, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", instance=~\"$instance\", routine=~\"$routine\", type=~\"(?i)incremental\", })))",
+              "legendFormat": "p95",
+              "range": true,
+              "refId": "p95"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "avg (histogram_quantile(0.99, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", instance=~\"$instance\", routine=~\"$routine\", type=~\"(?i)incremental\", })))",
+              "hide": false,
+              "legendFormat": "p99",
+              "range": true,
+              "refId": "p99"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "avg (histogram_quantile(0.999, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", instance=~\"$instance\", routine=~\"$routine\", type=~\"(?i)incremental\", })))",
+              "hide": false,
+              "legendFormat": "p999",
+              "range": true,
+              "refId": "p999"
+            }
+          ],
+          "title": "Incremental - Backup duration (percentiles)",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Progress of full and incremental backup processes in percentage",
           "fieldConfig": {
             "defaults": {
               "color": {
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 0,
                 "gradientMode": "none",
@@ -754,6 +1087,7 @@
                   "tooltip": false,
                   "viz": false
                 },
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -783,17 +1117,17 @@
                   }
                 ]
               },
-              "unit": "none"
+              "unit": "percent"
             },
             "overrides": []
           },
           "gridPos": {
-            "h": 8,
+            "h": 4,
             "w": 12,
             "x": 0,
-            "y": 17
+            "y": 19
           },
-          "id": 8,
+          "id": 32,
           "options": {
             "legend": {
               "calcs": [
@@ -807,10 +1141,12 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "single",
               "sort": "none"
             }
           },
+          "pluginVersion": "12.0.1+security-01",
           "targets": [
             {
               "datasource": {
@@ -818,13 +1154,13 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "rate(aerospike_backup_service_runs_total{job=~\"$job_name\", instance=~\"$instance\"}[$__rate_interval])",
-              "legendFormat": " ",
+              "expr": "aerospike_backup_service_backup_progress_pct{job=~\"$job_name\", instance=~\"$instance\", routine=~\"$routine\",type=~\"(?i)$type\"}",
+              "legendFormat": " {{type}} : {{routine}}",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "Full Runs (rate)",
+          "title": "%  Backup Progress",
           "type": "timeseries"
         },
         {
@@ -832,18 +1168,20 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "description": "Total Incremental backup runs.",
+          "description": "Incremental backup duration in milliseconds",
           "fieldConfig": {
             "defaults": {
               "color": {
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 0,
                 "gradientMode": "none",
@@ -852,6 +1190,7 @@
                   "tooltip": false,
                   "viz": false
                 },
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -874,20 +1213,24 @@
                 "steps": [
                   {
                     "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
                   }
                 ]
               },
-              "unit": "none"
+              "unit": "ms"
             },
             "overrides": []
           },
           "gridPos": {
-            "h": 8,
+            "h": 5,
             "w": 12,
             "x": 12,
-            "y": 17
+            "y": 19
           },
-          "id": 1,
+          "id": 45,
           "options": {
             "legend": {
               "calcs": [
@@ -901,10 +1244,12 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "single",
               "sort": "none"
             }
           },
+          "pluginVersion": "12.0.1+security-01",
           "targets": [
             {
               "datasource": {
@@ -912,13 +1257,13 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "rate(aerospike_backup_service_incremental_runs_total{job=~\"$job_name\", instance=~\"$instance\"}[$__rate_interval])",
-              "legendFormat": " ",
+              "expr": "(rate(aerospike_backup_service_backup_duration_seconds_sum{job=~\"$job_name\", instance=~\"$instance\",routine=~\"$routine\", type=~\"incremental\"}[$__rate_interval]))",
+              "legendFormat": "{{routine}}",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "Incremental Runs (rate)",
+          "title": "Backup duration - incremental (rate) (ms)",
           "type": "timeseries"
         },
         {
@@ -933,11 +1278,13 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 0,
                 "gradientMode": "none",
@@ -946,6 +1293,7 @@
                   "tooltip": false,
                   "viz": false
                 },
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -980,10 +1328,10 @@
             "overrides": []
           },
           "gridPos": {
-            "h": 8,
+            "h": 5,
             "w": 12,
             "x": 0,
-            "y": 25
+            "y": 23
           },
           "id": 9,
           "options": {
@@ -999,10 +1347,12 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "single",
               "sort": "none"
             }
           },
+          "pluginVersion": "12.0.1+security-01",
           "targets": [
             {
               "datasource": {
@@ -1010,13 +1360,13 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "(aerospike_backup_service_duration_millis{job=~\"$job_name\", instance=~\"$instance\"})",
-              "legendFormat": " ",
+              "expr": "(rate(aerospike_backup_service_backup_duration_seconds_sum{job=~\"$job_name\", instance=~\"$instance\",routine=~\"$routine\", type=~\"(?i)full\"}[$__rate_interval]))",
+              "legendFormat": "{{routine}}",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "Full Duration (ms)",
+          "title": "Backup duration - full (rate) (ms)",
           "type": "timeseries"
         },
         {
@@ -1024,18 +1374,20 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "description": "Total Incremental backup duration in milliseconds",
+          "description": "Total incremental backup success.",
           "fieldConfig": {
             "defaults": {
               "color": {
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 0,
                 "gradientMode": "none",
@@ -1044,104 +1396,7 @@
                   "tooltip": false,
                   "viz": false
                 },
-                "lineInterpolation": "linear",
-                "lineWidth": 1,
-                "pointSize": 5,
-                "scaleDistribution": {
-                  "type": "linear"
-                },
-                "showPoints": "auto",
-                "spanNulls": false,
-                "stacking": {
-                  "group": "A",
-                  "mode": "none"
-                },
-                "thresholdsStyle": {
-                  "mode": "off"
-                }
-              },
-              "mappings": [],
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {
-                    "color": "green"
-                  },
-                  {
-                    "color": "red",
-                    "value": 80
-                  }
-                ]
-              },
-              "unit": "ms"
-            },
-            "overrides": []
-          },
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 25
-          },
-          "id": 10,
-          "options": {
-            "legend": {
-              "calcs": [
-                "last",
-                "min",
-                "max",
-                "mean"
-              ],
-              "displayMode": "table",
-              "placement": "right",
-              "showLegend": true
-            },
-            "tooltip": {
-              "mode": "single",
-              "sort": "none"
-            }
-          },
-          "targets": [
-            {
-              "datasource": {
-                "type": "prometheus",
-                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-              },
-              "editorMode": "code",
-              "expr": "(aerospike_backup_service_incremental_duration_millis{job=~\"$job_name\", instance=~\"$instance\"})",
-              "legendFormat": " ",
-              "range": true,
-              "refId": "A"
-            }
-          ],
-          "title": " Incremental Duration (ms)",
-          "type": "timeseries"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "description": "Total Backup failures.",
-          "fieldConfig": {
-            "defaults": {
-              "color": {
-                "mode": "palette-classic"
-              },
-              "custom": {
-                "axisCenteredZero": false,
-                "axisColorMode": "text",
-                "axisLabel": "",
-                "axisPlacement": "auto",
-                "barAlignment": 0,
-                "drawStyle": "line",
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "hideFrom": {
-                  "legend": false,
-                  "tooltip": false,
-                  "viz": false
-                },
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -1176,7 +1431,320 @@
             "overrides": []
           },
           "gridPos": {
-            "h": 8,
+            "h": 5,
+            "w": 12,
+            "x": 12,
+            "y": 24
+          },
+          "id": 8,
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Last",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.0.1+security-01",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_backup_service_backup_events_total{job=~\"$job_name\", instance=~\"$instance\", routine=~\"$routine\",outcome=\"success\", type=~\"incremental\"}[$__rate_interval])",
+              "legendFormat": " {{type}} : {{routine}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Success - incremental (rate)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Total full backup success.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 12,
+            "x": 0,
+            "y": 28
+          },
+          "id": 46,
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true,
+              "sortBy": "Last",
+              "sortDesc": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.0.1+security-01",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_backup_service_backup_events_total{job=~\"$job_name\", instance=~\"$instance\", routine=~\"$routine\",outcome=\"success\", type=~\"(?i)full\"}[$__rate_interval])",
+              "legendFormat": "{{routine}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Success - full (rate)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Total incremental backup failures.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 12,
+            "x": 12,
+            "y": 29
+          },
+          "id": 47,
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.0.1+security-01",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_backup_service_backup_events_total{job=~\"$job_name\", instance=~\"$instance\", outcome=\"failure\", routine=~\"$routine\", type=~\"incremental\"}[$__rate_interval])",
+              "legendFormat": " {{type}} : {{routine}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Failure - incremental (rate)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Total full backup failures.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
             "w": 12,
             "x": 0,
             "y": 33
@@ -1195,10 +1763,12 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "single",
               "sort": "none"
             }
           },
+          "pluginVersion": "12.0.1+security-01",
           "targets": [
             {
               "datasource": {
@@ -1206,13 +1776,13 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "rate(aerospike_backup_service_failure_total{job=~\"$job_name\", instance=~\"$instance\"}[$__rate_interval])",
-              "legendFormat": " ",
+              "expr": "rate(aerospike_backup_service_backup_events_total{job=~\"$job_name\", instance=~\"$instance\", outcome=\"failure\", routine=~\"$routine\", type=~\"(?i)full\"}[$__rate_interval])",
+              "legendFormat": " {{type}} : {{routine}}",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "Full Failures (rate)",
+          "title": "Failure - full (rate)",
           "type": "timeseries"
         },
         {
@@ -1220,18 +1790,20 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "description": "Total Incremental backup failures.",
+          "description": "Total incremental backup retries.",
           "fieldConfig": {
             "defaults": {
               "color": {
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 0,
                 "gradientMode": "none",
@@ -1240,6 +1812,7 @@
                   "tooltip": false,
                   "viz": false
                 },
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -1274,12 +1847,12 @@
             "overrides": []
           },
           "gridPos": {
-            "h": 8,
+            "h": 5,
             "w": 12,
             "x": 12,
-            "y": 33
+            "y": 34
           },
-          "id": 12,
+          "id": 48,
           "options": {
             "legend": {
               "calcs": [
@@ -1293,10 +1866,12 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "single",
               "sort": "none"
             }
           },
+          "pluginVersion": "12.0.1+security-01",
           "targets": [
             {
               "datasource": {
@@ -1304,13 +1879,13 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "rate(aerospike_backup_service_incremental_failure_total{job=~\"$job_name\", instance=~\"$instance\"}[$__rate_interval])",
-              "legendFormat": " ",
+              "expr": "rate(aerospike_backup_service_backup_events_total{job=~\"$job_name\", instance=~\"$instance\",routine=~\"$routine\",  outcome=~\"retry\",  type=~\"(?i)incremental\"}[$__rate_interval])",
+              "legendFormat": "{{type}} : {{routine}}",
               "range": true,
-              "refId": "A"
+              "refId": "Full"
             }
           ],
-          "title": "Incremental Failures (rate)",
+          "title": "Retry - incremental (rate)",
           "type": "timeseries"
         },
         {
@@ -1318,18 +1893,20 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "description": "Total backup skipped.",
+          "description": "Total full backup retries.",
           "fieldConfig": {
             "defaults": {
               "color": {
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 0,
                 "gradientMode": "none",
@@ -1338,6 +1915,7 @@
                   "tooltip": false,
                   "viz": false
                 },
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -1372,10 +1950,216 @@
             "overrides": []
           },
           "gridPos": {
-            "h": 8,
+            "h": 5,
             "w": 12,
             "x": 0,
-            "y": 41
+            "y": 38
+          },
+          "id": 38,
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.0.1+security-01",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_backup_service_backup_events_total{job=~\"$job_name\", instance=~\"$instance\",routine=~\"$routine\",  outcome=~\"retry\",  type=~\"(?i)full\"}[$__rate_interval])",
+              "legendFormat": "{{type}} : {{routine}}",
+              "range": true,
+              "refId": "Full"
+            }
+          ],
+          "title": "Retry - full (rate)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Total incremental backup skipped.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 12,
+            "x": 12,
+            "y": 39
+          },
+          "id": 49,
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.0.1+security-01",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "rate(aerospike_backup_service_backup_events_total{job=~\"$job_name\", instance=~\"$instance\", outcome=\"skip\", routine=~\"$routine\", type=~\"(?i)incremental\"}[$__rate_interval])",
+              "legendFormat": "{{type}} : {{routine}}",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Skip - incremental (rate)",
+          "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Total full backup skipped.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 0,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 12,
+            "x": 0,
+            "y": 43
           },
           "id": 13,
           "options": {
@@ -1391,10 +2175,12 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "single",
               "sort": "none"
             }
           },
+          "pluginVersion": "12.0.1+security-01",
           "targets": [
             {
               "datasource": {
@@ -1402,13 +2188,13 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "rate(aerospike_backup_service_skip_total{job=~\"$job_name\", instance=~\"$instance\"}[$__rate_interval])",
-              "legendFormat": " ",
+              "expr": "rate(aerospike_backup_service_backup_events_total{job=~\"$job_name\", instance=~\"$instance\", outcome=\"skip\", routine=~\"$routine\", type=~\"(?i)full\"}[$__rate_interval])",
+              "legendFormat": "{{type}} : {{routine}}",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "Full Skip (rate)",
+          "title": "Skip - full (rate)",
           "type": "timeseries"
         },
         {
@@ -1416,18 +2202,20 @@
             "type": "prometheus",
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
-          "description": "Total Incremental backup skipped.",
+          "description": "Number of restore processes are running",
           "fieldConfig": {
             "defaults": {
               "color": {
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 0,
                 "gradientMode": "none",
@@ -1436,6 +2224,7 @@
                   "tooltip": false,
                   "viz": false
                 },
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -1470,12 +2259,12 @@
             "overrides": []
           },
           "gridPos": {
-            "h": 8,
+            "h": 5,
             "w": 12,
-            "x": 12,
-            "y": 41
+            "x": 0,
+            "y": 48
           },
-          "id": 14,
+          "id": 44,
           "options": {
             "legend": {
               "calcs": [
@@ -1489,10 +2278,12 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "single",
               "sort": "none"
             }
           },
+          "pluginVersion": "12.0.1+security-01",
           "targets": [
             {
               "datasource": {
@@ -1500,25 +2291,256 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "rate(aerospike_backup_service_incremental_skip_total{job=~\"$job_name\", instance=~\"$instance\"}[$__rate_interval])",
-              "legendFormat": " ",
+              "expr": "aerospike_backup_service_restore_in_progress{job=~\"$job_name\", instance=~\"$instance\"}",
+              "legendFormat": "{{instance}}",
               "range": true,
               "refId": "A"
             }
           ],
-          "title": "Incremental Skip  (rate)",
+          "title": "Restore in Progress (rate)",
           "type": "timeseries"
         }
       ],
       "repeat": "instance",
-      "repeatDirection": "h",
       "title": "$instance",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 11
+      },
+      "id": 51,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Full and incremental backup duration buckets.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 24,
+            "x": 0,
+            "y": 94
+          },
+          "id": 52,
+          "maxPerRow": 4,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.0.1+security-01",
+          "repeat": "routine",
+          "repeatDirection": "h",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.95, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", instance=~\"$instance\", routine=~\"$routine\", type=~\"(?i)full\", }))",
+              "hide": false,
+              "legendFormat": "p50",
+              "range": true,
+              "refId": "p50"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.95, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", instance=~\"$instance\", routine=~\"$routine\", type=~\"(?i)full\", }))",
+              "legendFormat": "p95",
+              "range": true,
+              "refId": "p95"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.99, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", instance=~\"$instance\", routine=~\"$routine\", type=~\"(?i)full\", }))",
+              "hide": false,
+              "legendFormat": "p99",
+              "range": true,
+              "refId": "p99"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.999, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", instance=~\"$instance\", routine=~\"$routine\", type=~\"(?i)full\", }))",
+              "hide": false,
+              "legendFormat": "p999",
+              "range": true,
+              "refId": "p999"
+            }
+          ],
+          "title": "$routine",
+          "type": "stat"
+        }
+      ],
+      "title": "Full - Backup duration by Routine (percentiles)",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "id": 55,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Full and incremental backup duration buckets.",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green"
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 10,
+            "w": 24,
+            "x": 0,
+            "y": 254
+          },
+          "id": 56,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.0.1+security-01",
+          "repeat": "routine",
+          "repeatDirection": "h",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.50, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", instance=~\"$instance\", routine=~\"$routine\", type=~\"(?i)incremental\", }>0))",
+              "hide": false,
+              "legendFormat": "p50",
+              "range": true,
+              "refId": "p50"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.95, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", instance=~\"$instance\", routine=~\"$routine\", type=~\"(?i)incremental\", }>0))",
+              "legendFormat": "p95",
+              "range": true,
+              "refId": "p95"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.99, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", instance=~\"$instance\", routine=~\"$routine\", type=~\"(?i)incremental\", }))",
+              "hide": false,
+              "legendFormat": "p99",
+              "range": true,
+              "refId": "p99"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "histogram_quantile(0.999, (aerospike_backup_service_backup_duration_seconds_bucket{job=~\"$job_name\", instance=~\"$instance\", routine=~\"$routine\", type=~\"(?i)incremental\", }))",
+              "hide": false,
+              "legendFormat": "p999",
+              "range": true,
+              "refId": "p999"
+            }
+          ],
+          "title": "$routine",
+          "type": "stat"
+        }
+      ],
+      "title": "Incremental - Backup duration by Routine (percentiles)",
       "type": "row"
     }
   ],
   "refresh": "1m",
-  "schemaVersion": 37,
-  "style": "dark",
+  "schemaVersion": 41,
   "tags": [
     "aerospike",
     "monitoring",
@@ -1527,22 +2549,14 @@
   "templating": {
     "list": [
       {
-        "current": {
-          "selected": false,
-          "text": "Aerospike Prometheus",
-          "value": "Aerospike Prometheus"
-        },
-        "hide": 0,
+        "current": {},
         "includeAll": false,
         "label": "Datasource",
-        "multi": false,
         "name": "DS_AEROSPIKE_PROMETHEUS",
         "options": [],
         "query": "prometheus",
-        "queryValue": "",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
         "type": "datasource"
       },
       {
@@ -1551,21 +2565,17 @@
           "type": "prometheus",
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
-        "definition": "label_values(aerospike_backup_service_runs_total,job)",
-        "hide": 0,
+        "definition": "label_values(aerospike_backup_service_backup_events_total,job)",
         "includeAll": false,
         "label": "job_name",
-        "multi": false,
         "name": "job_name",
         "options": [],
         "query": {
-          "query": "label_values(aerospike_backup_service_runs_total,job)",
+          "query": "label_values(aerospike_backup_service_backup_events_total,job)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       },
       {
@@ -1574,33 +2584,72 @@
           "type": "prometheus",
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
-        "definition": "label_values(aerospike_backup_service_runs_total{job=~\"$job_name\"},instance)",
-        "hide": 0,
+        "definition": "label_values(aerospike_backup_service_backup_events_total{job=~\"$job_name\"},instance)",
         "includeAll": true,
         "label": "Instance",
         "multi": true,
         "name": "instance",
         "options": [],
         "query": {
-          "query": "label_values(aerospike_backup_service_runs_total{job=~\"$job_name\"},instance)",
+          "query": "label_values(aerospike_backup_service_backup_events_total{job=~\"$job_name\"},instance)",
           "refId": "PrometheusVariableQueryEditor-VariableQuery"
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
+        "definition": "label_values(aerospike_backup_service_backup_events_total{job=~\"$job_name\", instance=~\"$instance\"},type)",
+        "includeAll": true,
+        "label": "Type",
+        "multi": true,
+        "name": "type",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(aerospike_backup_service_backup_events_total{job=~\"$job_name\", instance=~\"$instance\"},type)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        },
+        "definition": "label_values(aerospike_backup_service_backup_events_total{job=~\"$job_name\", instance=~\"$instance\", type=~\"$type\"},routine)",
+        "includeAll": true,
+        "label": "Routine",
+        "multi": true,
+        "name": "routine",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(aerospike_backup_service_backup_events_total{job=~\"$job_name\", instance=~\"$instance\", type=~\"$type\"},routine)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
         "type": "query"
       }
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Aerospike Backup Service",
   "uid": "d2929f55",
-  "version": 1,
+  "version": 42,
   "weekStart": ""
 }
