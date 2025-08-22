@@ -10,7 +10,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "9.5.8"
+      "version": "12.0.1+security-01"
     },
     {
       "type": "datasource",
@@ -59,7 +59,6 @@
   "graphTooltip": 1,
   "id": null,
   "links": [],
-  "liveNow": false,
   "panels": [
     {
       "datasource": {
@@ -91,8 +90,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "dark-red",
@@ -111,12 +109,19 @@
         "y": 0
       },
       "id": 82,
-      "links": [],
       "maxDataPoints": 100,
       "options": {
         "displayMode": "basic",
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "maxVizHeight": 300,
         "minVizHeight": 10,
         "minVizWidth": 0,
+        "namePlacement": "auto",
         "orientation": "vertical",
         "reduceOptions": {
           "calcs": [
@@ -126,9 +131,10 @@
           "values": false
         },
         "showUnfilled": true,
+        "sizing": "auto",
         "valueMode": "color"
       },
-      "pluginVersion": "9.5.8",
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -136,40 +142,13 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "min  (\n    (aerospike_namespace_master_objects {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"} / 4096) \n    / \n    (aerospike_namespace_partition_tree_sprigs{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"}!=0)\n)",
+          "expr": "sum(aerospike_namespace_master_objects {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"}) / 4096\n/ \nmin(aerospike_namespace_partition_tree_sprigs{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"}!=0)\n",
           "format": "time_series",
           "hide": false,
           "instant": true,
           "intervalFactor": 1,
           "legendFormat": "Min",
-          "refId": "object_per_sprig_min"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "avg  (\n    (aerospike_namespace_master_objects {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"} / 4096) \n    / \n    (aerospike_namespace_partition_tree_sprigs{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"}!=0)\n)",
-          "format": "time_series",
-          "instant": true,
-          "intervalFactor": 1,
-          "legendFormat": "Avg",
-          "refId": "object_per_sprig_avg"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
-          },
-          "editorMode": "code",
-          "expr": "max  (\n    (aerospike_namespace_master_objects {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"} / 4096) \n    / \n    (aerospike_namespace_partition_tree_sprigs{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"}!=0)\n)",
-          "format": "time_series",
-          "hide": false,
-          "instant": true,
-          "intervalFactor": 1,
-          "legendFormat": "Max",
-          "refId": "object_per_sprig_max"
+          "refId": "object_per_sprig"
         }
       ],
       "title": "Objects per Sprig (Primary Index)",
@@ -199,8 +178,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "#299c46",
-                "value": null
+                "color": "#299c46"
               },
               {
                 "color": "#EAB839",
@@ -228,6 +206,7 @@
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -235,9 +214,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.5.8",
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -287,8 +268,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "#299c46",
-                "value": null
+                "color": "#299c46"
               },
               {
                 "color": "red",
@@ -312,6 +292,7 @@
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -319,9 +300,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.5.8",
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -354,8 +337,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "#299c46",
-                "value": null
+                "color": "#299c46"
               },
               {
                 "color": "red",
@@ -378,6 +360,7 @@
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -385,9 +368,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.5.8",
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -421,8 +406,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "#299c46",
-                "value": null
+                "color": "#299c46"
               }
             ]
           }
@@ -440,8 +424,7 @@
                   "mode": "absolute",
                   "steps": [
                     {
-                      "color": "green",
-                      "value": null
+                      "color": "green"
                     },
                     {
                       "color": "red",
@@ -466,6 +449,7 @@
         "graphMode": "none",
         "justifyMode": "center",
         "orientation": "auto",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "lastNotNull"
@@ -473,9 +457,11 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto"
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.5.8",
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -565,8 +551,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -664,8 +649,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -762,8 +746,7 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green",
-                    "value": null
+                    "color": "green"
                   },
                   {
                     "color": "red",
@@ -779,7 +762,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 14
+            "y": 34
           },
           "id": 40,
           "options": {
@@ -840,11 +823,13 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 0,
                 "gradientMode": "none",
@@ -853,6 +838,7 @@
                   "tooltip": false,
                   "viz": false
                 },
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -901,10 +887,12 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "single",
               "sort": "none"
             }
           },
+          "pluginVersion": "12.0.1+security-01",
           "targets": [
             {
               "datasource": {
@@ -912,7 +900,7 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": " (\n    (aerospike_namespace_master_objects {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"} / 4096) \n    / \n    (aerospike_namespace_partition_tree_sprigs{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"}!=0)\n)",
+              "expr": "sum(aerospike_namespace_master_objects {job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"}) / 4096 \n/\nmin(aerospike_namespace_partition_tree_sprigs{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\",ns=~\"$namespace|$^\"}!=0)",
               "legendFormat": "{{service}}/{{ns}}",
               "range": true,
               "refId": "A"
@@ -933,11 +921,13 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 7,
                 "gradientMode": "none",
@@ -946,6 +936,7 @@
                   "tooltip": false,
                   "viz": false
                 },
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineStyle": {
                   "fill": "solid"
@@ -1000,10 +991,12 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "single",
               "sort": "none"
             }
           },
+          "pluginVersion": "12.0.1+security-01",
           "targets": [
             {
               "datasource": {
@@ -1047,11 +1040,13 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 7,
                 "gradientMode": "none",
@@ -1060,6 +1055,7 @@
                   "tooltip": false,
                   "viz": false
                 },
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineStyle": {
                   "fill": "solid"
@@ -1096,7 +1092,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 15
+            "y": 25
           },
           "id": 62,
           "options": {
@@ -1112,10 +1108,12 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "single",
               "sort": "none"
             }
           },
+          "pluginVersion": "12.0.1+security-01",
           "targets": [
             {
               "datasource": {
@@ -1172,11 +1170,13 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 7,
                 "gradientMode": "none",
@@ -1185,6 +1185,7 @@
                   "tooltip": false,
                   "viz": false
                 },
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineStyle": {
                   "fill": "solid"
@@ -1221,7 +1222,7 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 15
+            "y": 25
           },
           "id": 64,
           "options": {
@@ -1237,10 +1238,12 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "single",
               "sort": "none"
             }
           },
+          "pluginVersion": "12.0.1+security-01",
           "targets": [
             {
               "datasource": {
@@ -1311,11 +1314,13 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 7,
                 "gradientMode": "none",
@@ -1324,6 +1329,7 @@
                   "tooltip": false,
                   "viz": false
                 },
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineStyle": {
                   "fill": "solid"
@@ -1378,10 +1384,12 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "single",
               "sort": "none"
             }
           },
+          "pluginVersion": "12.0.1+security-01",
           "targets": [
             {
               "datasource": {
@@ -1425,11 +1433,13 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 7,
                 "gradientMode": "none",
@@ -1438,6 +1448,7 @@
                   "tooltip": false,
                   "viz": false
                 },
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineStyle": {
                   "fill": "solid"
@@ -1490,10 +1501,12 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "single",
               "sort": "none"
             }
           },
+          "pluginVersion": "12.0.1+security-01",
           "targets": [
             {
               "datasource": {
@@ -1537,11 +1550,13 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 7,
                 "gradientMode": "none",
@@ -1550,6 +1565,7 @@
                   "tooltip": false,
                   "viz": false
                 },
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineStyle": {
                   "fill": "solid"
@@ -1602,10 +1618,12 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "single",
               "sort": "none"
             }
           },
+          "pluginVersion": "12.0.1+security-01",
           "targets": [
             {
               "datasource": {
@@ -1712,7 +1730,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 12
+            "y": 32
           },
           "id": 72,
           "options": {
@@ -1870,7 +1888,7 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 12
+            "y": 32
           },
           "id": 74,
           "options": {
@@ -1971,7 +1989,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 17
+            "y": 37
           },
           "id": 76,
           "options": {
@@ -2105,7 +2123,7 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 17
+            "y": 37
           },
           "id": 78,
           "options": {
@@ -2204,7 +2222,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 22
+            "y": 42
           },
           "id": 80,
           "options": {
@@ -2316,7 +2334,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 13
+            "y": 33
           },
           "id": 36,
           "options": {
@@ -2414,7 +2432,7 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 13
+            "y": 33
           },
           "id": 56,
           "options": {
@@ -2524,7 +2542,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 18
+            "y": 38
           },
           "id": 34,
           "options": {
@@ -2624,7 +2642,7 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 18
+            "y": 38
           },
           "id": 38,
           "options": {
@@ -2668,8 +2686,7 @@
     }
   ],
   "refresh": "",
-  "schemaVersion": 38,
-  "style": "dark",
+  "schemaVersion": 41,
   "tags": [
     "all_flash",
     "usecase"
@@ -2677,20 +2694,13 @@
   "templating": {
     "list": [
       {
-        "current": {
-          "selected": false,
-          "text": "Aerospike Prometheus",
-          "value": "Aerospike Prometheus"
-        },
-        "hide": 0,
+        "current": {},
         "includeAll": false,
-        "multi": false,
         "name": "DS_AEROSPIKE_PROMETHEUS",
         "options": [],
         "query": "prometheus",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
         "type": "datasource"
       },
       {
@@ -2700,9 +2710,7 @@
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
         "definition": "label_values(aerospike_node_stats_uptime,job)",
-        "hide": 0,
         "includeAll": false,
-        "multi": false,
         "name": "job_name",
         "options": [],
         "query": {
@@ -2711,8 +2719,6 @@
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       },
       {
@@ -2722,10 +2728,8 @@
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
         "definition": "label_values(aerospike_node_stats_uptime{job=\"$job_name\"},cluster_name)",
-        "hide": 0,
         "includeAll": false,
         "label": "Cluster",
-        "multi": false,
         "name": "cluster",
         "options": [],
         "query": {
@@ -2734,8 +2738,6 @@
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       },
       {
@@ -2745,7 +2747,6 @@
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
         "definition": "label_values(aerospike_node_stats_uptime{job=\"$job_name\", cluster_name=~\"$cluster|$^\"},service)",
-        "hide": 0,
         "includeAll": true,
         "label": "node",
         "multi": true,
@@ -2757,8 +2758,6 @@
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       },
       {
@@ -2768,7 +2767,6 @@
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
         "definition": "label_values({__name__=~ \"aerospike_namespace_index_type_mount_age|aerospike_namespace_sindex_type_mount_age\", job=\"$job_name\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\"}, ns)\n",
-        "hide": 0,
         "includeAll": true,
         "multi": true,
         "name": "namespace",
@@ -2779,20 +2777,15 @@
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       },
       {
         "current": {
-          "selected": true,
           "text": "4",
           "value": "4"
         },
-        "hide": 0,
         "includeAll": false,
         "label": "Latencies >",
-        "multi": false,
         "name": "latency_time_bucket",
         "options": [
           {
@@ -2877,17 +2870,13 @@
           }
         ],
         "query": "1,2,4,8,16,32,64,128,256,512,1024,2048,4096,16284,32768,65536",
-        "queryValue": "",
-        "skipUrlSync": false,
         "type": "custom"
       },
       {
         "current": {
-          "selected": false,
           "text": "15",
           "value": "15"
         },
-        "hide": 0,
         "label": "Top-K",
         "name": "topk_limit",
         "options": [
@@ -2898,7 +2887,6 @@
           }
         ],
         "query": "15",
-        "skipUrlSync": false,
         "type": "textbox"
       },
       {
@@ -2919,8 +2907,6 @@
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
-        "sort": 0,
         "type": "query"
       }
     ]
