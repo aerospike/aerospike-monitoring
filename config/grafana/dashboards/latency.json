@@ -4,7 +4,7 @@
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "9.3.2"
+      "version": "12.0.1+security-01"
     },
     {
       "type": "panel",
@@ -53,14 +53,9 @@
   "graphTooltip": 1,
   "id": null,
   "links": [],
-  "liveNow": false,
   "panels": [
     {
       "collapsed": false,
-      "datasource": {
-        "type": "prometheus",
-        "uid": "yBPESELVz"
-      },
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -70,15 +65,6 @@
       "id": 2,
       "panels": [],
       "repeat": "operation",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "yBPESELVz"
-          },
-          "refId": "A"
-        }
-      ],
       "title": "$operation",
       "type": "row"
     },
@@ -92,12 +78,12 @@
         "defaults": {
           "decimals": 0,
           "mappings": [],
+          "noValue": "No Data",
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "#EAB839",
@@ -128,6 +114,7 @@
         "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "horizontal",
+        "percentChangeColorMode": "standard",
         "reduceOptions": {
           "calcs": [
             "mean"
@@ -135,10 +122,12 @@
           "fields": "",
           "values": false
         },
+        "showPercentChange": false,
         "text": {},
-        "textMode": "auto"
+        "textMode": "auto",
+        "wideLayout": true
       },
-      "pluginVersion": "9.3.2",
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -185,15 +174,6 @@
       "type": "stat"
     },
     {
-      "cards": {},
-      "color": {
-        "cardColor": "#5794F2",
-        "colorScale": "sqrt",
-        "colorScheme": "interpolateSpectral",
-        "exponent": 0.3,
-        "mode": "spectrum"
-      },
-      "dataFormat": "tsbuckets",
       "datasource": {
         "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
@@ -219,13 +199,7 @@
         "x": 4,
         "y": 1
       },
-      "heatmap": {},
-      "hideZeroBuckets": true,
-      "highlightCards": true,
       "id": 14,
-      "legend": {
-        "show": true
-      },
       "options": {
         "calculate": false,
         "calculation": {},
@@ -256,7 +230,8 @@
         },
         "showValue": "never",
         "tooltip": {
-          "show": true,
+          "mode": "single",
+          "showColorScale": false,
           "yHistogram": true
         },
         "yAxis": {
@@ -265,9 +240,7 @@
           "unit": "short"
         }
       },
-      "pluginVersion": "9.3.2",
-      "repeatDirection": "v",
-      "reverseYBuckets": false,
+      "pluginVersion": "12.0.1+security-01",
       "targets": [
         {
           "datasource": {
@@ -287,26 +260,11 @@
         }
       ],
       "title": "Latency $operation",
-      "tooltip": {
-        "show": true,
-        "showHistogram": true
-      },
-      "tooltipDecimals": 3,
-      "type": "heatmap",
-      "xAxis": {
-        "show": true
-      },
-      "yAxis": {
-        "format": "short",
-        "logBase": 1,
-        "show": true
-      },
-      "yBucketBound": "auto"
+      "type": "heatmap"
     }
   ],
   "refresh": "1m",
-  "schemaVersion": 37,
-  "style": "dark",
+  "schemaVersion": 41,
   "tags": [
     "monitoring",
     "latency"
@@ -314,22 +272,14 @@
   "templating": {
     "list": [
       {
-        "current": {
-          "selected": false,
-          "text": "Aerospike Prometheus",
-          "value": "Aerospike Prometheus"
-        },
-        "hide": 0,
+        "current": {},
         "includeAll": false,
         "label": "Datasource",
-        "multi": false,
         "name": "DS_AEROSPIKE_PROMETHEUS",
         "options": [],
         "query": "prometheus",
-        "queryValue": "",
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
         "type": "datasource"
       },
       {
@@ -339,10 +289,8 @@
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
         "definition": "label_values(aerospike_node_stats_uptime,job)",
-        "hide": 0,
         "includeAll": false,
         "label": "job_name",
-        "multi": false,
         "name": "job_name",
         "options": [],
         "query": {
@@ -351,12 +299,8 @@
         },
         "refresh": 1,
         "regex": "",
-        "skipUrlSync": false,
         "sort": 1,
-        "tagValuesQuery": "",
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
+        "type": "query"
       },
       {
         "current": {},
@@ -365,10 +309,8 @@
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
         "definition": "label_values(aerospike_node_stats_uptime{job=\"$job_name\"},cluster_name)",
-        "hide": 0,
         "includeAll": false,
         "label": "Cluster",
-        "multi": false,
         "name": "cluster",
         "options": [],
         "query": {
@@ -377,12 +319,8 @@
         },
         "refresh": 2,
         "regex": "",
-        "skipUrlSync": false,
         "sort": 1,
-        "tagValuesQuery": "",
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
+        "type": "query"
       },
       {
         "current": {},
@@ -391,7 +329,6 @@
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
         "definition": "label_values(aerospike_node_stats_uptime{job=\"$job_name\", cluster_name=~\"$cluster|$^\"},service)",
-        "hide": 0,
         "includeAll": true,
         "label": "Node",
         "multi": true,
@@ -403,12 +340,8 @@
         },
         "refresh": 2,
         "regex": "",
-        "skipUrlSync": false,
         "sort": 1,
-        "tagValuesQuery": "",
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
+        "type": "query"
       },
       {
         "current": {},
@@ -417,7 +350,6 @@
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
         "definition": "label_values(aerospike_namespace_objects{job=\"$job_name\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\" },ns)",
-        "hide": 0,
         "includeAll": true,
         "label": "Namespace",
         "multi": true,
@@ -429,12 +361,8 @@
         },
         "refresh": 2,
         "regex": "",
-        "skipUrlSync": false,
         "sort": 1,
-        "tagValuesQuery": "",
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
+        "type": "query"
       },
       {
         "current": {},
@@ -443,7 +371,6 @@
           "uid": "${DS_AEROSPIKE_PROMETHEUS}"
         },
         "definition": "query_result({job=\"$job_name\", __name__=~\"aerospike_laten.*\", cluster_name=~\"$cluster|$^\",  })",
-        "hide": 0,
         "includeAll": true,
         "label": "Operation",
         "multi": true,
@@ -455,39 +382,29 @@
         },
         "refresh": 2,
         "regex": "/.*aerospike_latencies_((((s|p)i_[a-z].*)|([a-z].*))[_a-z].*)_[a-z].*_count/",
-        "skipUrlSync": false,
-        "sort": 0,
-        "tagValuesQuery": "",
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
+        "type": "query"
       },
       {
-        "current": {},
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+        "current": {
+          "text": "ms",
+          "value": "ms"
         },
-        "definition": "metrics(aerospike_latencies_)",
-        "description": "query_result({job=\"$job_name\", __name__=~\"aerospike_laten.*\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\" })",
-        "hide": 0,
-        "includeAll": false,
         "label": "Latency Time Unit",
-        "multi": false,
         "name": "latencytimeunit",
-        "options": [],
-        "query": {
-          "query": "metrics(aerospike_latencies_)",
-          "refId": "StandardVariableQuery"
-        },
-        "refresh": 2,
-        "regex": "/.*aerospike_latencies_[a-z].*_([a-z].*)_count/",
-        "skipUrlSync": false,
-        "sort": 0,
-        "tagValuesQuery": "",
-        "tagsQuery": "",
-        "type": "query",
-        "useTags": false
+        "options": [
+          {
+            "selected": true,
+            "text": "ms",
+            "value": "ms"
+          },
+          {
+            "selected": false,
+            "text": "us",
+            "value": "us"
+          }
+        ],
+        "query": "ms,us",
+        "type": "custom"
       }
     ]
   },
@@ -495,34 +412,10 @@
     "from": "now-6h",
     "to": "now"
   },
-  "timepicker": {
-    "refresh_intervals": [
-      "5s",
-      "10s",
-      "30s",
-      "1m",
-      "5m",
-      "15m",
-      "30m",
-      "1h",
-      "2h",
-      "1d"
-    ],
-    "time_options": [
-      "5m",
-      "15m",
-      "1h",
-      "6h",
-      "12h",
-      "24h",
-      "2d",
-      "7d",
-      "30d"
-    ]
-  },
+  "timepicker": {},
   "timezone": "",
   "title": "Latency View",
   "uid": "ZoeGW1DBk",
-  "version": 11,
+  "version": 3,
   "weekStart": ""
 }
