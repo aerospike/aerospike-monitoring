@@ -228,10 +228,5 @@ kubectl delete namespace operators
 - [Aerospike Prometheus Exporter](https://github.com/aerospike/aerospike-prometheus-exporter)
 - [Operator Lifecycle Manager](https://github.com/operator-framework/operator-lifecycle-manager)
 - [Cert-Manager](https://cert-manager.io)
-- [Prometheus](https://prometheus.io)
-- [Grafana](https://grafana.com)
 
 ---
-
-**Author:** *Phaniram Mokrala*  
-**Date:** 2025-11-01
