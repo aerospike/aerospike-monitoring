@@ -54,6 +54,7 @@ kubectl get pods -n olm
 ## 🧰 Step 3 — Install Aerospike Kubernetes Operator (AKO)
 
 The Aerospike Operator automates Aerospike cluster management in Kubernetes.
+For reference, see [Aerospike AKO Installation Docs](https://aerospike.com/docs/kubernetes/install/olm/).
 
 ```bash
 kubectl create -f https://operatorhub.io/install/aerospike-kubernetes-operator.yaml
