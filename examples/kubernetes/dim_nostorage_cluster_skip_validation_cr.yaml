@@ -1,0 +1,96 @@
+# This is a simple example for demonstration only, that launches an in-memory,
+# non-secure Aerospike cluster, with no dependencies other than an Aerospike
+# license secret. This is not recommended for production use.
+# Visit https://docs.aerospike.com/cloud/kubernetes/operator for details.
+#
+# Before creating this cluster,
+# - Prepare the aerospike namespace by following instruction here
+#
+# https://docs.aerospike.com/cloud/kubernetes/operator/create-cluster-kubectl#prepare-the-namespace
+#
+# - Create the Kubernetes secret containing the Aerospike features.conf file as follows:
+#
+# kubectl create secret generic aerospike-secret --from-file=<path-of-features.conf> -n aerospike
+
+apiVersion: asdb.aerospike.com/v1
+kind: AerospikeCluster
+metadata:
+  name: aerocluster
+  namespace: aerospike
+
+spec:
+  size: 2
+  image: aerospike/aerospike-server-enterprise:8.1.0.0
+  podSpec:
+    multiPodPerHost: true
+    sidecars:
+     - name: aerospike-prometheus-exporter
+#       image: aerospike/aerospike-prometheus-exporter:1.22.0
+       image: mphaniram/mpremote:latest
+       ports:
+         - containerPort: 9145
+           name: exporter
+           
+  validationPolicy:
+    skipWorkDirValidate: true
+    skipXdrDlogFileValidate: true
+
+  storage:
+    volumes:
+      - name: aerospike-config-secret
+        source:
+          secret:
+            secretName: aerospike-secret
+        aerospike:
+          path: /etc/aerospike/secret
+
+  aerospikeConfig:
+    service:
+      feature-key-file: /etc/aerospike/secret/features.conf
+    network:
+      service:
+        port: 3000
+      fabric:
+        port: 3001
+      heartbeat:
+        port: 3002
+    namespaces:
+      - name: test
+        replication-factor: 2
+        storage-engine:
+          type: memory
+          data-size: 1073741824
+          
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aerospike-exporter-config
+  namespace: aerospike
+  labels:
+    app: aerospike
+    component: exporter
+data:
+  config.yaml: |
+    aerospike:
+      - address: 127.0.0.1
+        port: 3000
+---          
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: aerocluster-metrics
+  namespace: aerospike
+spec:
+  selector:
+    app: aerocluster
+    app: aerospike-cluster
+  ports:
+    - name: metrics
+      port: 9145
+      targetPort: 9145
+      protocol: TCP
+  type: ClusterIP
+
+---

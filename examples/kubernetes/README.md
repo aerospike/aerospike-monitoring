@@ -160,9 +160,20 @@ Open [http://localhost:8090](http://localhost:8090)
 ### 6.3 Deploy Grafana
 
 ```bash
+# Grafana deployment
 kubectl apply -f grafana-deploy.yaml
+
+# Default Prometheus Datasource 'Aerospike Prometheus'
 kubectl apply -f grafana-datasource.yaml
+
+# Load all existing Aerospike Grafana Dashboards
 kubectl apply -f grafana-dashboard-provider.yaml
+```
+
+Verify that Prometheus and Grafana pods are running:
+
+```bash
+kubectl get pods -n monitoring
 ```
 
 Port-forward Grafana:
