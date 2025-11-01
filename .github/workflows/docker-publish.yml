@@ -29,5 +29,19 @@ jobs:
         echo "DOCKER_TAG=$(echo $GITHUB_REF_NAME | cut -c 2-)" >> $GITHUB_ENV
 
     - name: Build and push
+      env:
+        DOCKER_MULTI_ARCH_PLATFORMS: linux/amd64,linux/arm64
       run: |
         echo "Creating Docker Images with given Docker Tag  with GITHUB_REF_NAME - ".${{ env.DOCKER_TAG }}
+        echo
+        
+        if [  "${{ github.event.inputs.docker_tag }}" == "" ]; then
+            echo "Creating Docker Images with given Docker Tag  with GITHUB_REF_NAME - ".${{ env.DOCKER_TAG }}
+            VERSION=${{ env.DOCKER_TAG }}
+        else
+            echo "Creating Docker Images with Input Docker Tag value ".${{ github.event.inputs.docker_tag }}
+            VERSION=${{ github.event.inputs.docker_tag }}
+        fi     
+        
+        echo "Docker image version - $VERSION"
+        docker buildx build --build-arg VERSION=$VERSION --platform $DOCKER_MULTI_ARCH_PLATFORMS --push . -f build/dd.aerocheck.Dockerfile -t aerospike/aerospike-prometheus-exporter:latest -t aerospike/aerospike-prometheus-exporter:$VERSION
