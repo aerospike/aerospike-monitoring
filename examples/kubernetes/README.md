@@ -1,4 +1,4 @@
-# Aerospike on Kubernetes with Prometheus & Grafana Monitoring
+# Aerospike Monitoring Stack on Kubernetes 
 
 This guide explains how to deploy **Aerospike Server**, **Aerospike Prometheus Exporter**, and set up **Prometheus + Grafana** monitoring on a Kubernetes cluster using the Aerospike Kubernetes Operator (AKO).
 
