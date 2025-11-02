@@ -166,6 +166,8 @@ Open [http://localhost:8090](http://localhost:8090)
 In grafana-deploy.yaml, modify PROVIDE_REAL_PATH_TO_DASHBOARDS to the path where your grafana dashboards are synced
 Grafana dashboards are available in github repo [https://github.com/aerospike/aerospike-monitoring.git](https://github.com/aerospike/aerospike-monitoring.git)
 
+**File:** `grafana-deploy.yaml`
+
 ```bash
 # Grafana deployment
 kubectl apply -f grafana-deploy.yaml
