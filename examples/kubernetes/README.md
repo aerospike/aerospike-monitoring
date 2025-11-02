@@ -10,6 +10,7 @@ This guide explains how to deploy **Aerospike Server**, **Aerospike Prometheus E
 - `kubectl` installed and configured
 - Internet access to pull container images and apply manifests
 - Sufficient permissions to create namespaces, CRDs, and cluster-wide roles
+- Aerospike server configuration and feature files
 
 ---
 
@@ -85,9 +86,12 @@ kubectl -n aerospike create rolebinding aerospike-cluster   --clusterrole=aerosp
 
 kubectl create clusterrolebinding aerospike-cluster   --clusterrole=aerospike-cluster   --serviceaccount=aerospike:aerospike-operator-controller-manager
 
+# NOTE: Copy your features.conf file 'secrets' folder
+
 # Create secrets
 kubectl -n aerospike create secret generic aerospike-secret --from-file=secrets
 kubectl -n aerospike create secret generic auth-secret --from-literal=password='admin123'
+
 ```
 
 ---
@@ -111,7 +115,7 @@ Verify deployment:
 
 ```bash
 kubectl -n aerospike get pods
-kubectl -n aerospike logs <aerospike-pod-name>
+kubectl -n aerospike logs aerocluster-0-0
 ```
 
 Look for the message:
@@ -143,7 +147,7 @@ kubectl apply -f prometheus-deploy.yaml
 kubectl apply -f prometheus-rules.yaml
 ```
 
-Verify:
+Verify: if Prometheus monitoring pod are UP
 
 ```bash
 kubectl -n monitoring get pods
@@ -158,6 +162,9 @@ Open [http://localhost:8090](http://localhost:8090)
 ---
 
 ### 6.3 Deploy Grafana
+
+In grafana-deploy.yaml, modify PROVIDE_REAL_PATH_TO_DASHBOARDS to the path where your grafana dashboards are synced
+Grafana dashboards are available in github repo [https://github.com/aerospike/aerospike-monitoring.git](https://github.com/aerospike/aerospike-monitoring.git)
 
 ```bash
 # Grafana deployment
