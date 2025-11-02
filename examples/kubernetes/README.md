@@ -163,10 +163,7 @@ Open [http://localhost:8090](http://localhost:8090)
 
 ### 6.3 Deploy Grafana
 
-In grafana-deploy.yaml, modify PROVIDE_REAL_PATH_TO_DASHBOARDS to the path where your grafana dashboards are synced
-Grafana dashboards are available in github repo [https://github.com/aerospike/aerospike-monitoring.git](https://github.com/aerospike/aerospike-monitoring.git)
-
-**File:** `grafana-deploy.yaml`
+In **File:** `grafana-deploy.yaml`, modify <b>PROVIDE_REAL_PATH_TO_DASHBOARDS</b> to the path where your grafana dashboards are synced
 
 ```bash
 # Grafana deployment
