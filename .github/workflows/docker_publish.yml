@@ -16,6 +16,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v5
 
+    - name: Get latest release tag
+      uses: actions-ecosystem/action-get-latest-tag@v1
+      id: get-latest-tag
+
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
 
@@ -28,26 +32,14 @@ jobs:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Set env
-      run: |
-        echo "DOCKER_TAG=$(echo $GITHUB_REF_NAME | cut -c 2-)" >> $GITHUB_ENV
-
     - name: Build and push
       env:
         DOCKER_MULTI_ARCH_PLATFORMS: linux/amd64,linux/arm64
+        VERSION: ${{ github.event.inputs.docker_tag != '' && github.event.inputs.docker_tag || steps.get-latest-tag.outputs.tag }}
       run: |
-        echo "Creating Docker Images with given Docker Tag  with GITHUB_REF_NAME - ".${{ env.DOCKER_TAG }}
+        echo "Creating Docker Images with Docker Tag - $VERSION"
         echo
         
-        if [  "${{ github.event.inputs.docker_tag }}" == "" ]; then
-            echo "Creating Docker Images with given Docker Tag  with GITHUB_REF_NAME - ".${{ env.DOCKER_TAG }}
-            VERSION=${{ env.DOCKER_TAG }}
-        else
-            echo "Creating Docker Images with Input Docker Tag value ".${{ github.event.inputs.docker_tag }}
-            VERSION=${{ github.event.inputs.docker_tag }}
-        fi     
-        
-        echo "Docker image version - $VERSION"
         docker buildx build --build-arg VERSION=$VERSION --platform $DOCKER_MULTI_ARCH_PLATFORMS \
                --push . -f build/datadog.Dockerfile \
                -t aerospike/datadog-aerospike-integration:latest \
