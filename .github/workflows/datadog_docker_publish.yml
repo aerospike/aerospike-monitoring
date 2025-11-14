@@ -1,9 +1,6 @@
-name: Docker Aerospike Datadog Agent check 
+name: Docker Datadog Aerospike Enterprise Agent Integration 
 
 on:
-  push:
-    tags:
-      - v*
   workflow_dispatch:
     inputs:
       docker_tag: 
@@ -35,12 +32,15 @@ jobs:
     - name: Build and push
       env:
         DOCKER_MULTI_ARCH_PLATFORMS: linux/amd64,linux/arm64
-        VERSION: ${{ github.event.inputs.docker_tag != '' && github.event.inputs.docker_tag || steps.get-latest-tag.outputs.tag }}
       run: |
-        echo "Creating Docker Images with Docker Tag - $VERSION"
-        echo
-        
-        docker buildx build --build-arg VERSION=$VERSION --platform $DOCKER_MULTI_ARCH_PLATFORMS \
-               --push . -f build/datadog.Dockerfile \
-               -t aerospike/datadog-aerospike-integration:latest \
-               -t aerospike/datadog-aerospike-integration:$VERSION
+        VERSION_TAG=$(echo "${{ github.event.inputs.docker_tag }}" | xargs)
+
+        if [ -n "$VERSION_TAG" ]; then
+
+            echo "Using tag version $VERSION_TAG"
+            docker buildx build --build-arg VERSION=$VERSION_TAG \
+                  --platform $DOCKER_MULTI_ARCH_PLATFORMS \
+                  --push . -f build/datadog.Dockerfile \
+                  -t aerospike/datadog-aerospike-integration:latest \
+                  -t aerospike/datadog-aerospike-integration:$VERSION_TAG
+        fi 
