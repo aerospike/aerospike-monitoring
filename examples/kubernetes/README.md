@@ -14,34 +14,12 @@ This guide explains how to deploy **Aerospike Server**, **Aerospike Prometheus E
 
 ---
 
-## ⚙️ Step 1 — Install Cert-Manager
-
-Cert-manager provides automatic certificate management for Kubernetes components.
-
-```bash
-# Create the namespace (harmless if it already exists)
-kubectl create namespace cert-manager --dry-run=client -o yaml | kubectl apply -f -
-
-# Install the latest stable cert-manager (includes CRDs)
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.19.1/cert-manager.yaml
-```
-
-Verify installation:
-
-```bash
-kubectl get pods -n cert-manager
-```
-
----
-
-## 🧠 Step 2 — Install Operator Lifecycle Manager (OLM)
+## 🧠 Step 1 — Install Operator Lifecycle Manager (OLM)
 
 OLM manages the installation and upgrades of Kubernetes operators.
 
 ```bash
-curl -L https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v0.36.0/install.sh -o olm36_install.sh
-chmod +x olm36_install.sh
-./olm36_install.sh v0.36.0
+curl -sL https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v0.38.0/install.sh | bash -s v0.38.0
 ```
 
 Verify that OLM pods are running:
@@ -52,7 +30,7 @@ kubectl get pods -n olm
 
 ---
 
-## 🧰 Step 3 — Install Aerospike Kubernetes Operator (AKO)
+## 🧰 Step 2 — Install Aerospike Kubernetes Operator (AKO)
 
 The Aerospike Operator automates Aerospike cluster management in Kubernetes.
 For reference, see [Aerospike AKO Installation Docs](https://aerospike.com/docs/kubernetes/install/olm/).
@@ -69,7 +47,7 @@ kubectl get csv -n operators aerospike-kubernetes-operator.v4.1.1 -w
 
 ---
 
-## 🏗️ Step 4 — Configure Aerospike Namespace, ServiceAccount & Secrets
+## 🏗️ Step 3 — Configure Aerospike Namespace, ServiceAccount & Secrets
 
 Create required namespaces, service accounts, role bindings, and secrets.  
 For reference, see [Aerospike AKO Installation Docs](https://aerospike.com/docs/kubernetes/install/olm/).
@@ -80,9 +58,6 @@ kubectl create namespace aerospike
 
 # Service account for operator controller
 kubectl -n aerospike create serviceaccount aerospike-operator-controller-manager
-
-# Bind service account to roles
-kubectl -n aerospike create rolebinding aerospike-cluster   --clusterrole=aerospike-cluster   --serviceaccount=aerospike:aerospike-operator-controller-manager
 
 kubectl create clusterrolebinding aerospike-cluster   --clusterrole=aerospike-cluster   --serviceaccount=aerospike:aerospike-operator-controller-manager
 
@@ -96,7 +71,7 @@ kubectl -n aerospike create secret generic auth-secret --from-literal=password='
 
 ---
 
-## 🚀 Step 5 — Deploy Aerospike Server & Exporter
+## 🚀 Step 4 — Deploy Aerospike Server & Exporter
 
 Apply the **Aerospike cluster custom resource** manifest.
 
@@ -116,6 +91,8 @@ Verify deployment:
 ```bash
 kubectl -n aerospike get pods
 kubectl -n aerospike logs aerocluster-0-0
+kubectl -n aerospike get aerospikecluster
+kubectl describe pod aerocluster-0-0 -n aerospike
 ```
 
 Look for the message:
@@ -125,16 +102,16 @@ service ready: soon there will be cake
 
 ---
 
-## 📊 Step 6 — Set Up Monitoring (Prometheus & Grafana)
+## 📊 Step 5 — Set Up Monitoring (Prometheus & Grafana)
 
-### 6.1 Create Monitoring Namespace
+### 5.1 Create Monitoring Namespace
 ```bash
 kubectl create namespace monitoring
 ```
 
 ---
 
-### 6.2 Deploy Prometheus
+### 5.2 Deploy Prometheus
 
 ```bash
 # Prometheus configuration
@@ -161,7 +138,7 @@ Open [http://localhost:8090](http://localhost:8090)
 
 ---
 
-### 6.3 Deploy Grafana
+### 5.3 Deploy Grafana
 
 In **File:** `grafana-deploy.yaml`, modify <b>PROVIDE_REAL_PATH_TO_DASHBOARDS</b> to the path where your grafana dashboards are synced
 
@@ -231,9 +208,8 @@ curl http://localhost:9145/metrics | head
 To remove all components:
 
 ```bash
-kubectl delete namespace aerospike
 kubectl delete namespace monitoring
-kubectl delete namespace cert-manager
+kubectl delete namespace aerospike
 kubectl delete namespace operators
 ```
 
@@ -244,6 +220,5 @@ kubectl delete namespace operators
 - [Aerospike Kubernetes Operator Documentation](https://aerospike.com/docs/kubernetes)
 - [Aerospike Prometheus Exporter](https://github.com/aerospike/aerospike-prometheus-exporter)
 - [Operator Lifecycle Manager](https://github.com/operator-framework/operator-lifecycle-manager)
-- [Cert-Manager](https://cert-manager.io)
 
 ---
