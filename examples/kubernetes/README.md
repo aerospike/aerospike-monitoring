@@ -66,7 +66,6 @@ kubectl create clusterrolebinding aerospike-cluster   --clusterrole=aerospike-cl
 # Create secrets
 kubectl -n aerospike create secret generic aerospike-secret --from-file=secrets
 kubectl -n aerospike create secret generic auth-secret --from-literal=password='admin123'
-
 ```
 
 ---

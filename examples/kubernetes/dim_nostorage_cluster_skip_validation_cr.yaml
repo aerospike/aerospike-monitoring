@@ -25,7 +25,7 @@ spec:
     multiPodPerHost: true
     sidecars:
      - name: aerospike-prometheus-exporter
-       image: aerospike/aerospike-prometheus-exporter:1.25.0
+       image: aerospike/aerospike-prometheus-exporter:1.27.0
        ports:
          - containerPort: 9145
            name: exporter
@@ -58,22 +58,7 @@ spec:
         replication-factor: 2
         storage-engine:
           type: memory
-          data-size: 1073741824
-          
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: aerospike-exporter-config
-  namespace: aerospike
-  labels:
-    app: aerospike
-    component: exporter
-data:
-  config.yaml: |
-    aerospike:
-      - address: 127.0.0.1
-        port: 3000
+          data-size: 1073741824          
 ---          
 
 apiVersion: v1
@@ -83,7 +68,7 @@ metadata:
   namespace: aerospike
 spec:
   selector:
-    aerospike.com/cr: aerocluster    # name of the CR
+    aerospike.com/cr: aerocluster    
     app: aerospike-cluster
   ports:
     - name: metrics
