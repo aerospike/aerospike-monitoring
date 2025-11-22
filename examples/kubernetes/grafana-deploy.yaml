@@ -11,6 +11,36 @@ spec:
   selector:
     app: grafana
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: grafana
+  namespace: monitoring
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: grafana-configmap-reader
+  namespace: monitoring
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: grafana-configmap-reader-binding
+  namespace: monitoring
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: grafana-configmap-reader
+subjects:
+  - kind: ServiceAccount
+    name: grafana
+    namespace: monitoring
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -26,7 +56,11 @@ spec:
       labels:
         app: grafana
     spec:
+      serviceAccountName: grafana        # 👈 use the SA we created
       containers:
+        # ───────────────────────────────
+        # MAIN GRAFANA CONTAINER
+        # ───────────────────────────────
         - name: grafana
           image: grafana/grafana:10.4.0
           ports:
@@ -38,31 +72,41 @@ spec:
               value: admin
             - name: GF_INSTALL_PLUGINS
               value: camptocamp-prometheus-alertmanager-datasource,grafana-polystat-panel,jdbranham-diagram-panel
-            # you had this already
             - name: GF_PATHS_PROVISIONING
               value: /etc/grafana/provisioning
           volumeMounts:
-            # 1) datasource CM -> so "Aerospike Prometheus" shows up
             - name: grafana-datasource
               mountPath: /etc/grafana/provisioning/datasources
-            # 2) dashboard provider CM -> so Grafana knows to read from /var/lib/grafana/dashboards
             - name: grafana-dashboard-providers
               mountPath: /etc/grafana/provisioning/dashboards
-            # 3) your actual dashboards folder from Mac
             - name: grafana-dashboards
               mountPath: /var/lib/grafana/dashboards
+
+        # ───────────────────────────────
+        # SIDECAR CONTAINER
+        # ───────────────────────────────
+        - name: grafana-sc-dashboard
+          image: quay.io/kiwigrid/k8s-sidecar:1.28.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: LABEL
+              value: "grafana_dashboard"              # must match CM label
+            - name: FOLDER
+              value: "/var/lib/grafana/dashboards"
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          volumeMounts:
+            - name: grafana-dashboards
+              mountPath: /var/lib/grafana/dashboards
+
       volumes:
-        # from grafana-datasource.yaml
         - name: grafana-datasource
           configMap:
             name: grafana-datasource
-        # from grafana-dashboard-provider.yaml
         - name: grafana-dashboard-providers
           configMap:
             name: grafana-dashboard-providers
-        # your local dashboards dir
         - name: grafana-dashboards
-          hostPath:
-            #path: /Users/demos/aerospike-monitoring/config/grafana/dashboards/
-            path: <PROVIDE_REAL_PATH_TO_DASHBOARDS>
-            type: Directory
+          emptyDir: {}

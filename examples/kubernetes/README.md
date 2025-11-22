@@ -139,17 +139,30 @@ Open [http://localhost:8090](http://localhost:8090)
 
 ### 5.3 Deploy Grafana
 
-In **File:** `grafana-deploy.yaml`, modify <b>PROVIDE_REAL_PATH_TO_DASHBOARDS</b> to the path where your grafana dashboards are synced
-
 ```bash
-# Grafana deployment
-kubectl apply -f grafana-deploy.yaml
-
 # Default Prometheus Datasource 'Aerospike Prometheus'
 kubectl apply -f grafana-datasource.yaml
 
 # Load all existing Aerospike Grafana Dashboards
 kubectl apply -f grafana-dashboard-provider.yaml
+
+# Setup ConfigMap for required Dashboards
+kubectl -n monitoring create -f dashboard_configmaps/cluster-dashboard.yaml
+kubectl -n monitoring create -f dashboard_configmaps/namespace-dashboard.yaml
+kubectl -n monitoring create -f dashboard_configmaps/node-dashboard.yaml
+kubectl -n monitoring create -f dashboard_configmaps/set-dashboard.yaml
+
+# Run the blow commands to see additional dashboards 
+#
+#kubectl -n monitoring create -f dashboard_configmaps/users-dashboard.yaml
+#kubectl -n monitoring create -f dashboard_configmaps/alertsview-dashboard.yaml
+#kubectl -n monitoring create -f dashboard_configmaps/geoview-dashboard.yaml
+#kubectl -n monitoring create -f dashboard_configmaps/uniquedata-dashboard.yaml
+#kubectl -n monitoring create -f dashboard_configmaps/sindex-dashboard.yaml
+#kubectl -n monitoring create -f dashboard_configmaps/xdr-dashboard.yaml
+
+# Grafana deployment
+kubectl apply -f grafana-deploy.yaml
 ```
 
 Verify that Prometheus and Grafana pods are running:
