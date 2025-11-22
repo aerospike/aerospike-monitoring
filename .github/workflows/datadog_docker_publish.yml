@@ -1,0 +1,46 @@
+name: Docker Datadog Aerospike Enterprise Agent Integration 
+
+on:
+  workflow_dispatch:
+    inputs:
+      docker_tag: 
+         description: Docker Tag
+         required: false
+jobs:
+  build-container:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v5
+
+    - name: Get latest release tag
+      uses: actions-ecosystem/action-get-latest-tag@v1
+      id: get-latest-tag
+
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Docker login
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build and push
+      env:
+        DOCKER_MULTI_ARCH_PLATFORMS: linux/amd64,linux/arm64
+      run: |
+        VERSION_TAG=$(echo "${{ github.event.inputs.docker_tag }}" | xargs)
+
+        if [ -n "$VERSION_TAG" ]; then
+
+            echo "Using tag version $VERSION_TAG"
+            docker buildx build --build-arg VERSION=$VERSION_TAG \
+                  --platform $DOCKER_MULTI_ARCH_PLATFORMS \
+                  --push . -f build/datadog.Dockerfile \
+                  -t aerospike/datadog-aerospike-integration:latest \
+                  -t aerospike/datadog-aerospike-integration:$VERSION_TAG
+        fi 
