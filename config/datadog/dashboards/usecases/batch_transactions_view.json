@@ -1,13 +1,14 @@
 {
-  "title": "Aerospike Batch Transactions View",
-  "description": "",
+  "title": "Aerospike Enterprise - Batch Transactions Overview",
+  "description": "Visualizes multiple statistics on batch transaction processing, including reads, writes, deletes, proxies, transaction services (tsvc), and more.",
   "widgets": [
     {
-      "id": 940328080810550,
+      "id": 7267516605162922,
       "definition": {
         "type": "image",
         "url": "/static/images/logos/aerospike_small.svg",
         "sizing": "cover",
+        "margin": "md",
         "has_background": true,
         "has_border": true,
         "vertical_align": "center",
@@ -16,15 +17,15 @@
       "layout": {
         "x": 0,
         "y": 0,
-        "width": 2,
-        "height": 1
+        "width": 4,
+        "height": 2
       }
     },
     {
       "id": 7507819836956926,
       "definition": {
         "title": "Overview",
-        "background_color": "vivid_purple",
+        "background_color": "vivid_blue",
         "show_title": true,
         "type": "group",
         "layout_type": "ordered",
@@ -47,31 +48,31 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_delete_success{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "query": "sum:aerospike.server.namespace.batch_sub_delete_success{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
                       "aggregator": "last"
                     },
                     {
                       "name": "query2",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_lang_delete_success{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "query": "sum:aerospike.server.namespace.batch_sub_lang_delete_success{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
                       "aggregator": "last"
                     },
                     {
                       "name": "query3",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_lang_read_success{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "query": "sum:aerospike.server.namespace.batch_sub_lang_read_success{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
                       "aggregator": "last"
                     },
                     {
                       "name": "query4",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_lang_write_success{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "query": "sum:aerospike.server.namespace.batch_sub_lang_write_success{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
                       "aggregator": "last"
                     },
                     {
                       "name": "query5",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_write_success{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "query": "sum:aerospike.server.namespace.batch_sub_write_success{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
                       "aggregator": "last"
                     }
                   ],
@@ -99,94 +100,8 @@
             "layout": {
               "x": 0,
               "y": 0,
-              "width": 2,
-              "height": 2
-            }
-          },
-          {
-            "id": 1839533406016798,
-            "definition": {
-              "title": "Errors (total) (rate)",
-              "title_size": "16",
-              "title_align": "left",
-              "type": "query_value",
-              "requests": [
-                {
-                  "formulas": [
-                    {
-                      "formula": "rate(query1) + rate(query2) + rate(query3) + rate(query4) + rate(query5) + rate(query6) + rate(query7)"
-                    }
-                  ],
-                  "queries": [
-                    {
-                      "name": "query1",
-                      "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_delete_error{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
-                      "aggregator": "last"
-                    },
-                    {
-                      "name": "query2",
-                      "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_lang_error{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
-                      "aggregator": "last"
-                    },
-                    {
-                      "name": "query3",
-                      "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_proxy_error{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
-                      "aggregator": "last"
-                    },
-                    {
-                      "name": "query4",
-                      "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_read_error{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
-                      "aggregator": "last"
-                    },
-                    {
-                      "name": "query5",
-                      "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_tsvc_error{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
-                      "aggregator": "last"
-                    },
-                    {
-                      "name": "query6",
-                      "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_udf_error{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
-                      "aggregator": "last"
-                    },
-                    {
-                      "name": "query7",
-                      "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_write_error{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
-                      "aggregator": "last"
-                    }
-                  ],
-                  "response_format": "scalar",
-                  "conditional_formats": [
-                    {
-                      "comparator": ">=",
-                      "value": 0,
-                      "palette": "white_on_green"
-                    }
-                  ]
-                }
-              ],
-              "autoscale": true,
-              "text_align": "center",
-              "custom_links": [],
-              "precision": 2,
-              "timeseries_background": {
-                "yaxis": {
-                  "include_zero": true
-                },
-                "type": "area"
-              }
-            },
-            "layout": {
-              "x": 2,
-              "y": 0,
-              "width": 2,
-              "height": 2
+              "width": 3,
+              "height": 1
             }
           },
           {
@@ -207,13 +122,13 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_delete_not_found{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "query": "sum:aerospike.server.namespace.batch_sub_delete_not_found{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
                       "aggregator": "last"
                     },
                     {
                       "name": "query2",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_read_not_found{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "query": "sum:aerospike.server.namespace.batch_sub_read_not_found{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
                       "aggregator": "last"
                     }
                   ],
@@ -239,10 +154,10 @@
               }
             },
             "layout": {
-              "x": 4,
+              "x": 3,
               "y": 0,
               "width": 2,
-              "height": 2
+              "height": 1
             }
           },
           {
@@ -263,25 +178,25 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_delete_filtered_out{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "query": "sum:aerospike.server.namespace.batch_sub_delete_filtered_out{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
                       "aggregator": "last"
                     },
                     {
                       "name": "query2",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_read_filtered_out{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "query": "sum:aerospike.server.namespace.batch_sub_read_filtered_out{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
                       "aggregator": "last"
                     },
                     {
                       "name": "query3",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_udf_filtered_out{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "query": "sum:aerospike.server.namespace.batch_sub_udf_filtered_out{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
                       "aggregator": "last"
                     },
                     {
                       "name": "query4",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_write_filtered_out{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "query": "sum:aerospike.server.namespace.batch_sub_write_filtered_out{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
                       "aggregator": "last"
                     }
                   ],
@@ -307,10 +222,96 @@
               }
             },
             "layout": {
-              "x": 6,
+              "x": 5,
               "y": 0,
               "width": 2,
-              "height": 2
+              "height": 1
+            }
+          },
+          {
+            "id": 1839533406016798,
+            "definition": {
+              "title": "Errors (total) (rate)",
+              "title_size": "16",
+              "title_align": "left",
+              "type": "query_value",
+              "requests": [
+                {
+                  "formulas": [
+                    {
+                      "formula": "rate(query1) + rate(query2) + rate(query3) + rate(query4) + rate(query5) + rate(query6) + rate(query7)"
+                    }
+                  ],
+                  "queries": [
+                    {
+                      "name": "query1",
+                      "data_source": "metrics",
+                      "query": "sum:aerospike.server.namespace.batch_sub_delete_error{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "aggregator": "last"
+                    },
+                    {
+                      "name": "query2",
+                      "data_source": "metrics",
+                      "query": "sum:aerospike.server.namespace.batch_sub_lang_error{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "aggregator": "last"
+                    },
+                    {
+                      "name": "query3",
+                      "data_source": "metrics",
+                      "query": "sum:aerospike.server.namespace.batch_sub_proxy_error{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "aggregator": "last"
+                    },
+                    {
+                      "name": "query4",
+                      "data_source": "metrics",
+                      "query": "sum:aerospike.server.namespace.batch_sub_read_error{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "aggregator": "last"
+                    },
+                    {
+                      "name": "query5",
+                      "data_source": "metrics",
+                      "query": "sum:aerospike.server.namespace.batch_sub_tsvc_error{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "aggregator": "last"
+                    },
+                    {
+                      "name": "query6",
+                      "data_source": "metrics",
+                      "query": "sum:aerospike.server.namespace.batch_sub_udf_error{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "aggregator": "last"
+                    },
+                    {
+                      "name": "query7",
+                      "data_source": "metrics",
+                      "query": "sum:aerospike.server.namespace.batch_sub_write_error{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "response_format": "scalar",
+                  "conditional_formats": [
+                    {
+                      "comparator": ">=",
+                      "value": 0,
+                      "palette": "white_on_green"
+                    }
+                  ]
+                }
+              ],
+              "autoscale": true,
+              "text_align": "center",
+              "custom_links": [],
+              "precision": 2,
+              "timeseries_background": {
+                "yaxis": {
+                  "include_zero": true
+                },
+                "type": "area"
+              }
+            },
+            "layout": {
+              "x": 0,
+              "y": 1,
+              "width": 3,
+              "height": 1
             }
           },
           {
@@ -331,37 +332,37 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_delete_timeout{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "query": "sum:aerospike.server.namespace.batch_sub_delete_timeout{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
                       "aggregator": "last"
                     },
                     {
                       "name": "query2",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_proxy_timeout{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "query": "sum:aerospike.server.namespace.batch_sub_proxy_timeout{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
                       "aggregator": "last"
                     },
                     {
                       "name": "query3",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_read_timeout{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "query": "sum:aerospike.server.namespace.batch_sub_read_timeout{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
                       "aggregator": "last"
                     },
                     {
                       "name": "query4",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_tsvc_timeout{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "query": "sum:aerospike.server.namespace.batch_sub_tsvc_timeout{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
                       "aggregator": "last"
                     },
                     {
                       "name": "query5",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_udf_timeout{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "query": "sum:aerospike.server.namespace.batch_sub_udf_timeout{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
                       "aggregator": "last"
                     },
                     {
                       "name": "query6",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_write_timeout{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
+                      "query": "sum:aerospike.server.namespace.batch_sub_write_timeout{$aerospike_cluster, $aerospike_service, $ns}.rollup(max, 30)",
                       "aggregator": "last"
                     }
                   ],
@@ -387,18 +388,18 @@
               }
             },
             "layout": {
-              "x": 8,
-              "y": 0,
-              "width": 2,
-              "height": 2
+              "x": 3,
+              "y": 1,
+              "width": 4,
+              "height": 1
             }
           }
         ]
       },
       "layout": {
-        "x": 2,
+        "x": 4,
         "y": 0,
-        "width": 10,
+        "width": 8,
         "height": 3
       }
     },
@@ -406,26 +407,27 @@
       "id": 1315841412711648,
       "definition": {
         "type": "note",
-        "content": "**Aerospike Batch Transactions View** Dashboard helps visualise multiple stats at batch transaction processing including read, write, delete, proxy, tsvc etc.,",
+        "content": "The **Aerospike Batch Transactions Overview** dashboard visualizes multiple statistics on batch transaction processing, including reads, writes, deletes, proxies, transaction services (tsvc), and more.",
         "background_color": "white",
-        "font_size": "16",
+        "font_size": "14",
         "text_align": "left",
         "show_tick": false,
         "tick_pos": "50%",
-        "tick_edge": "left"
+        "tick_edge": "left",
+        "has_padding": false
       },
       "layout": {
         "x": 0,
-        "y": 1,
-        "width": 2,
-        "height": 2
+        "y": 2,
+        "width": 4,
+        "height": 1
       }
     },
     {
       "id": 5880169587244650,
       "definition": {
         "title": "Read (rate)",
-        "background_color": "vivid_purple",
+        "background_color": "blue",
         "show_title": true,
         "type": "group",
         "layout_type": "ordered",
@@ -456,7 +458,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_read_success{$aerospike_cluster, $aerospike_service, $ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_read_success{$aerospike_cluster, $aerospike_service, $ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -506,7 +508,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_read_filtered_out{$aerospike_cluster, $aerospike_service, $ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_read_filtered_out{$aerospike_cluster, $aerospike_service, $ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -556,7 +558,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_read_error{$aerospike_cluster, $aerospike_service, $ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_read_error{$aerospike_cluster, $aerospike_service, $ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -606,7 +608,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_read_not_found{$aerospike_cluster, $aerospike_service, $ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_read_not_found{$aerospike_cluster, $aerospike_service, $ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -656,7 +658,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_read_timeout{$aerospike_cluster, $aerospike_service, $ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_read_timeout{$aerospike_cluster, $aerospike_service, $ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -693,7 +695,7 @@
       "id": 6015624877784164,
       "definition": {
         "title": "Read - From Proxy (rate)",
-        "background_color": "vivid_purple",
+        "background_color": "purple",
         "show_title": true,
         "type": "group",
         "layout_type": "ordered",
@@ -724,7 +726,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_read_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_read_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -751,7 +753,7 @@
           {
             "id": 3619649353292642,
             "definition": {
-              "title": "Filtered out",
+              "title": "Filtered Out",
               "title_size": "16",
               "title_align": "left",
               "show_legend": true,
@@ -774,7 +776,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_read_filtered_out{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_read_filtered_out{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -824,7 +826,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_read_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_read_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -874,7 +876,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_read_not_found{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_read_not_found{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -924,7 +926,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_read_timeout{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_read_timeout{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -958,7 +960,7 @@
       "id": 7339548873906642,
       "definition": {
         "title": "Write (rate)",
-        "background_color": "vivid_purple",
+        "background_color": "pink",
         "show_title": true,
         "type": "group",
         "layout_type": "ordered",
@@ -989,7 +991,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_write_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_write_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1016,7 +1018,7 @@
           {
             "id": 2881091829769826,
             "definition": {
-              "title": "Filtered out",
+              "title": "Filtered Out",
               "title_size": "16",
               "title_align": "left",
               "show_legend": true,
@@ -1039,7 +1041,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_write_filtered_out{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_write_filtered_out{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1089,7 +1091,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_write_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_write_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1139,7 +1141,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_write_timeout{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_write_timeout{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1176,7 +1178,7 @@
       "id": 6618634357450846,
       "definition": {
         "title": "Write - From Proxy (rate)",
-        "background_color": "vivid_purple",
+        "background_color": "orange",
         "show_title": true,
         "type": "group",
         "layout_type": "ordered",
@@ -1207,7 +1209,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_write_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_write_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1234,7 +1236,7 @@
           {
             "id": 6536328006230022,
             "definition": {
-              "title": "Filtered out",
+              "title": "Filtered Out",
               "title_size": "16",
               "title_align": "left",
               "show_legend": true,
@@ -1257,7 +1259,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_write_filtered_out{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_write_filtered_out{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1307,7 +1309,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_write_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_write_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1357,7 +1359,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_write_timeout{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_write_timeout{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1394,7 +1396,7 @@
       "id": 7714715134961398,
       "definition": {
         "title": "Delete (rate)",
-        "background_color": "vivid_purple",
+        "background_color": "yellow",
         "show_title": true,
         "type": "group",
         "layout_type": "ordered",
@@ -1425,7 +1427,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_delete_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_delete_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1452,7 +1454,7 @@
           {
             "id": 5937160046038230,
             "definition": {
-              "title": "Filtered out",
+              "title": "Filtered Out",
               "title_size": "16",
               "title_align": "left",
               "show_legend": true,
@@ -1475,7 +1477,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_delete_filtered_out{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_delete_filtered_out{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1525,7 +1527,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_delete_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_delete_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1575,7 +1577,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_delete_not_found{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_delete_not_found{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1625,7 +1627,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_delete_timeout{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_delete_timeout{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1662,7 +1664,7 @@
       "id": 3371877594707772,
       "definition": {
         "title": "Delete - From Proxy (rate)",
-        "background_color": "vivid_purple",
+        "background_color": "green",
         "show_title": true,
         "type": "group",
         "layout_type": "ordered",
@@ -1693,7 +1695,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_delete_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_delete_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1720,7 +1722,7 @@
           {
             "id": 5743741148669018,
             "definition": {
-              "title": "Filtered out",
+              "title": "Filtered Out",
               "title_size": "16",
               "title_align": "left",
               "show_legend": true,
@@ -1743,7 +1745,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_delete_filtered_out{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_delete_filtered_out{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1793,7 +1795,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_delete_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_delete_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1843,7 +1845,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_delete_not_found{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_delete_not_found{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1893,7 +1895,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_delete_timeout{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_delete_timeout{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1921,16 +1923,17 @@
       },
       "layout": {
         "x": 0,
-        "y": 8,
+        "y": 0,
         "width": 12,
-        "height": 1
+        "height": 1,
+        "is_column_break": true
       }
     },
     {
       "id": 4648186408545990,
       "definition": {
         "title": "UDF (rate)",
-        "background_color": "vivid_purple",
+        "background_color": "gray",
         "show_title": true,
         "type": "group",
         "layout_type": "ordered",
@@ -1961,7 +1964,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_udf_complete{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_udf_complete{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -2011,7 +2014,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_udf_filtered_out{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_udf_filtered_out{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -2061,7 +2064,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_udf_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_udf_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -2111,7 +2114,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_udf_timeout{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_udf_timeout{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -2139,7 +2142,7 @@
       },
       "layout": {
         "x": 0,
-        "y": 9,
+        "y": 1,
         "width": 12,
         "height": 1
       }
@@ -2166,7 +2169,6 @@
                 "min",
                 "max"
               ],
-              "time": {},
               "type": "timeseries",
               "requests": [
                 {
@@ -2180,7 +2182,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_udf_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_udf_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -2207,7 +2209,7 @@
           {
             "id": 7263646853463646,
             "definition": {
-              "title": "Filtered out",
+              "title": "Filtered Out",
               "title_size": "16",
               "title_align": "left",
               "show_legend": true,
@@ -2217,7 +2219,6 @@
                 "min",
                 "max"
               ],
-              "time": {},
               "type": "timeseries",
               "requests": [
                 {
@@ -2231,7 +2232,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_udf_filtered_out{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_udf_filtered_out{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -2268,7 +2269,6 @@
                 "min",
                 "max"
               ],
-              "time": {},
               "type": "timeseries",
               "requests": [
                 {
@@ -2282,7 +2282,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_udf_complete{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_udf_complete{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -2319,7 +2319,6 @@
                 "min",
                 "max"
               ],
-              "time": {},
               "type": "timeseries",
               "requests": [
                 {
@@ -2333,7 +2332,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_udf_timeout{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_udf_timeout{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -2361,7 +2360,7 @@
       },
       "layout": {
         "x": 0,
-        "y": 10,
+        "y": 2,
         "width": 12,
         "height": 1
       }
@@ -2370,7 +2369,7 @@
       "id": 4741912842204092,
       "definition": {
         "title": "Lang (rate)",
-        "background_color": "vivid_purple",
+        "background_color": "vivid_pink",
         "show_title": true,
         "type": "group",
         "layout_type": "ordered",
@@ -2388,7 +2387,6 @@
                 "min",
                 "max"
               ],
-              "time": {},
               "type": "timeseries",
               "requests": [
                 {
@@ -2402,7 +2400,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_lang_delete_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_lang_delete_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -2439,7 +2437,6 @@
                 "min",
                 "max"
               ],
-              "time": {},
               "type": "timeseries",
               "requests": [
                 {
@@ -2453,7 +2450,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_lang_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_lang_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -2490,7 +2487,6 @@
                 "min",
                 "max"
               ],
-              "time": {},
               "type": "timeseries",
               "requests": [
                 {
@@ -2504,7 +2500,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_lang_read_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_lang_read_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -2541,7 +2537,6 @@
                 "min",
                 "max"
               ],
-              "time": {},
               "type": "timeseries",
               "requests": [
                 {
@@ -2555,7 +2550,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_lang_write_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_lang_write_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -2583,7 +2578,7 @@
       },
       "layout": {
         "x": 0,
-        "y": 11,
+        "y": 3,
         "width": 12,
         "height": 1
       }
@@ -2592,7 +2587,7 @@
       "id": 4982998897309748,
       "definition": {
         "title": "Lang - From Proxy (rate)",
-        "background_color": "vivid_purple",
+        "background_color": "vivid_orange",
         "show_title": true,
         "type": "group",
         "layout_type": "ordered",
@@ -2610,7 +2605,6 @@
                 "min",
                 "max"
               ],
-              "time": {},
               "type": "timeseries",
               "requests": [
                 {
@@ -2624,7 +2618,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_lang_read_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_lang_read_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -2661,7 +2655,6 @@
                 "min",
                 "max"
               ],
-              "time": {},
               "type": "timeseries",
               "requests": [
                 {
@@ -2675,7 +2668,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_lang_write_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_lang_write_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -2712,7 +2705,6 @@
                 "min",
                 "max"
               ],
-              "time": {},
               "type": "timeseries",
               "requests": [
                 {
@@ -2726,7 +2718,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_lang_delete_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_lang_delete_success{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -2763,7 +2755,6 @@
                 "min",
                 "max"
               ],
-              "time": {},
               "type": "timeseries",
               "requests": [
                 {
@@ -2777,7 +2768,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_lang_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_lang_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -2805,7 +2796,7 @@
       },
       "layout": {
         "x": 0,
-        "y": 12,
+        "y": 4,
         "width": 12,
         "height": 1
       }
@@ -2814,7 +2805,7 @@
       "id": 4961393763285972,
       "definition": {
         "title": "TSVC (rate)",
-        "background_color": "vivid_purple",
+        "background_color": "vivid_yellow",
         "show_title": true,
         "type": "group",
         "layout_type": "ordered",
@@ -2832,7 +2823,6 @@
                 "min",
                 "max"
               ],
-              "time": {},
               "type": "timeseries",
               "requests": [
                 {
@@ -2846,7 +2836,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_tsvc_error{$aerospike_cluster, $aerospike_service, $ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_tsvc_error{$aerospike_cluster, $aerospike_service, $ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -2883,7 +2873,6 @@
                 "min",
                 "max"
               ],
-              "time": {},
               "type": "timeseries",
               "requests": [
                 {
@@ -2897,7 +2886,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_tsvc_timeout{$aerospike_cluster, $aerospike_service, $ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_tsvc_timeout{$aerospike_cluster, $aerospike_service, $ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -2925,7 +2914,7 @@
       },
       "layout": {
         "x": 0,
-        "y": 13,
+        "y": 5,
         "width": 12,
         "height": 1
       }
@@ -2934,7 +2923,7 @@
       "id": 6910467173968078,
       "definition": {
         "title": "TSVC - From Proxy (rate)",
-        "background_color": "vivid_purple",
+        "background_color": "vivid_green",
         "show_title": true,
         "type": "group",
         "layout_type": "ordered",
@@ -2952,7 +2941,6 @@
                 "min",
                 "max"
               ],
-              "time": {},
               "type": "timeseries",
               "requests": [
                 {
@@ -2966,7 +2954,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_tsvc_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_tsvc_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -3003,7 +2991,6 @@
                 "min",
                 "max"
               ],
-              "time": {},
               "type": "timeseries",
               "requests": [
                 {
@@ -3017,7 +3004,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.from_proxy_batch_sub_tsvc_timeout{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.from_proxy_batch_sub_tsvc_timeout{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -3045,7 +3032,7 @@
       },
       "layout": {
         "x": 0,
-        "y": 14,
+        "y": 6,
         "width": 12,
         "height": 1
       }
@@ -3054,7 +3041,7 @@
       "id": 1716606563455496,
       "definition": {
         "title": "Proxy (rate)",
-        "background_color": "vivid_purple",
+        "background_color": "blue",
         "show_title": true,
         "type": "group",
         "layout_type": "ordered",
@@ -3072,7 +3059,6 @@
                 "min",
                 "max"
               ],
-              "time": {},
               "type": "timeseries",
               "requests": [
                 {
@@ -3086,7 +3072,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_proxy_complete{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_proxy_complete{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -3123,7 +3109,6 @@
                 "min",
                 "max"
               ],
-              "time": {},
               "type": "timeseries",
               "requests": [
                 {
@@ -3137,7 +3122,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_proxy_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_proxy_error{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -3174,7 +3159,6 @@
                 "min",
                 "max"
               ],
-              "time": {},
               "type": "timeseries",
               "requests": [
                 {
@@ -3188,7 +3172,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike.namespace.batch_sub_proxy_timeout{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.batch_sub_proxy_timeout{$aerospike_cluster,$aerospike_service,$ns} by {aerospike_cluster,aerospike_service,ns}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -3216,7 +3200,7 @@
       },
       "layout": {
         "x": 0,
-        "y": 15,
+        "y": 7,
         "width": 12,
         "height": 1
       }
@@ -3244,5 +3228,6 @@
   ],
   "layout_type": "ordered",
   "notify_list": [],
-  "reflow_type": "fixed"
+  "reflow_type": "fixed",
+  "pause_auto_refresh": false
 }
