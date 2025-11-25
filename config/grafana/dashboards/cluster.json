@@ -66,7 +66,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": null,
   "links": [],
   "panels": [
     {
@@ -865,6 +864,175 @@
         "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
+      "description": "unique User Agent values of client-libraries and client application-id",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#299c46",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 12,
+        "x": 0,
+        "y": 11
+      },
+      "id": 207,
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {},
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.2.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "count by (client_app_id) (aerospike_user_agents_details{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", client_app_id!~\"\"} )",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "{{size}}",
+          "refId": "A"
+        }
+      ],
+      "title": "User Agent - Client Application Id (count)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "unique User Agent values of client-libraries and client application-id",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "match": "null",
+                "result": {
+                  "text": "N/A"
+                }
+              },
+              "type": "special"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#299c46",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "unknown"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "continuous-YlRd"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 12,
+        "x": 12,
+        "y": 11
+      },
+      "id": 208,
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {},
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.2.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "count by (client_library_version) (aerospike_user_agents_details{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", client_app_id!~\"\"} )",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "{{client_library_version}}",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "User Agent - Client Library Version (count) ",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Shows per-second average rate of increase in\n\n1. Total reads = client_read_success + client_read_error + client_read_timeout + client_read_not_found + batch_sub_read_success + batch_sub_read_error + batch_sub_read_timeout + batch_sub_read_not_found\n2. Successful reads = client_read_success + batch_sub_read_success\n3. Errored reads = client_read_error + batch_sub_read_error\n4. Timedout reads = client_read_timeout + batch_sub_read_timeout\n5. Not found = client_read_not_found + batch_sub_not_found",
       "fieldConfig": {
         "defaults": {
@@ -930,7 +1098,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 11
+        "y": 14
       },
       "id": 177,
       "options": {
@@ -1096,7 +1264,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 11
+        "y": 14
       },
       "id": 187,
       "options": {
@@ -1182,7 +1350,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 20
       },
       "id": 38,
       "panels": [
@@ -1198,11 +1366,13 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 50,
                 "gradientMode": "opacity",
@@ -1211,6 +1381,7 @@
                   "tooltip": false,
                   "viz": false
                 },
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -1218,6 +1389,7 @@
                   "type": "linear"
                 },
                 "showPoints": "never",
+                "showValues": false,
                 "spanNulls": false,
                 "stacking": {
                   "group": "A",
@@ -1235,7 +1407,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": 0
                   },
                   {
                     "color": "red",
@@ -1251,7 +1424,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 65
+            "y": 18
           },
           "id": 33,
           "options": {
@@ -1267,11 +1440,12 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "multi",
               "sort": "asc"
             }
           },
-          "pluginVersion": "9.3.2",
+          "pluginVersion": "12.2.1",
           "targets": [
             {
               "datasource": {
@@ -1303,11 +1477,13 @@
                 "mode": "palette-classic"
               },
               "custom": {
+                "axisBorderShow": false,
                 "axisCenteredZero": false,
                 "axisColorMode": "text",
                 "axisLabel": "",
                 "axisPlacement": "auto",
                 "barAlignment": 0,
+                "barWidthFactor": 0.6,
                 "drawStyle": "line",
                 "fillOpacity": 50,
                 "gradientMode": "opacity",
@@ -1316,6 +1492,7 @@
                   "tooltip": false,
                   "viz": false
                 },
+                "insertNulls": false,
                 "lineInterpolation": "linear",
                 "lineWidth": 1,
                 "pointSize": 5,
@@ -1323,6 +1500,7 @@
                   "type": "linear"
                 },
                 "showPoints": "never",
+                "showValues": false,
                 "spanNulls": false,
                 "stacking": {
                   "group": "A",
@@ -1340,7 +1518,8 @@
                 "mode": "absolute",
                 "steps": [
                   {
-                    "color": "green"
+                    "color": "green",
+                    "value": 0
                   },
                   {
                     "color": "red",
@@ -1356,7 +1535,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 65
+            "y": 18
           },
           "id": 41,
           "options": {
@@ -1372,11 +1551,12 @@
               "showLegend": true
             },
             "tooltip": {
+              "hideZeros": false,
               "mode": "multi",
               "sort": "asc"
             }
           },
-          "pluginVersion": "9.3.2",
+          "pluginVersion": "12.2.1",
           "targets": [
             {
               "datasource": {
@@ -1395,6 +1575,117 @@
           ],
           "title": "Cluster Size",
           "type": "timeseries"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "User Agent details",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 50,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "decimals": 0,
+              "links": [],
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 12,
+            "x": 0,
+            "y": 24
+          },
+          "id": 206,
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "pluginVersion": "12.2.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "aerospike_user_agents_details{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", client_app_id!~\"\"} ",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{service}}:{{client_app_id}}:{{client_library_version}}",
+              "refId": "B"
+            }
+          ],
+          "title": "User Agents",
+          "type": "timeseries"
         }
       ],
       "title": "Node Statstics",
@@ -1406,7 +1697,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 21
       },
       "id": 62,
       "panels": [
@@ -1895,7 +2186,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 23
+            "y": 40
           },
           "id": 70,
           "options": {
@@ -2000,7 +2291,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 23
+            "y": 40
           },
           "id": 192,
           "options": {
@@ -2105,7 +2396,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 29
+            "y": 46
           },
           "id": 193,
           "options": {
@@ -2155,7 +2446,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 22
       },
       "id": 69,
       "panels": [
@@ -2434,7 +2725,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 18
+            "y": 35
           },
           "id": 74,
           "options": {
@@ -2539,7 +2830,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 18
+            "y": 35
           },
           "id": 72,
           "options": {
@@ -2589,7 +2880,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 23
       },
       "id": 195,
       "panels": [
@@ -2649,7 +2940,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 28
+            "y": 45
           },
           "id": 197,
           "options": {
@@ -2760,7 +3051,7 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 28
+            "y": 45
           },
           "id": 201,
           "options": {
@@ -2895,7 +3186,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 33
+            "y": 50
           },
           "id": 199,
           "options": {
@@ -3029,7 +3320,7 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 33
+            "y": 50
           },
           "id": 203,
           "options": {
@@ -3080,7 +3371,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 24
       },
       "id": 28,
       "panels": [
@@ -3094,7 +3385,7 @@
             "h": 2,
             "w": 24,
             "x": 0,
-            "y": 76
+            "y": 93
           },
           "id": 64,
           "links": [
@@ -3231,6 +3522,7 @@
   "timezone": "",
   "title": "Cluster Overview",
   "uid": "dR0dDRHWz",
-  "version": 1,
-  "weekStart": ""
+  "version": 6,
+  "weekStart": "",
+  "id": null
 }
