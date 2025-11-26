@@ -1,6 +1,6 @@
 # Datadog Aerospike Enterprise Integration on Kubernetes 
 
-This guide explains how to deploy **Aerospike Server**, **Aerospike Prometheus Exporter**, and set up **Datadoga Aerospike Enterprise Integration** monitoring on a Kubernetes cluster using the Aerospike Kubernetes Operator (AKO).
+This guide explains how to deploy **Aerospike Server**, **Aerospike Prometheus Exporter**, and set up **Datadog Aerospike Enterprise Integration** monitoring on a Kubernetes cluster using the Aerospike Kubernetes Operator (AKO).
 
 ---
 
@@ -85,6 +85,7 @@ This YAML typically contains:
 - Aerospike cluster configuration (namespace, service, storage)
 - Prometheus exporter configuration for metrics
 - Authentication reference to secrets created above
+- Datadog Aerospike Enterprise integration to push metrics to cloud
 
 > 📘 Example file: `dim_nostorage_cluster_skip_validation_cr.yaml`
 
