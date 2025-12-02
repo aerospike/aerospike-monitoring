@@ -1,0 +1,433 @@
+apiVersion: v1
+data:
+  latency.json: |-
+    {
+      "__requires": [
+        {
+          "type": "grafana",
+          "id": "grafana",
+          "name": "Grafana",
+          "version": "12.2.1"
+        },
+        {
+          "type": "panel",
+          "id": "heatmap",
+          "name": "Heatmap",
+          "version": ""
+        },
+        {
+          "type": "datasource",
+          "id": "prometheus",
+          "name": "Prometheus",
+          "version": "1.0.0"
+        },
+        {
+          "type": "panel",
+          "id": "stat",
+          "name": "Stat",
+          "version": ""
+        }
+      ],
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "datasource",
+              "uid": "grafana"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "target": {
+              "limit": 100,
+              "matchAny": false,
+              "tags": [],
+              "type": "dashboard"
+            },
+            "type": "dashboard"
+          }
+        ]
+      },
+      "description": "Latency View dashboard helps visualise latencies as number of queries in each bucket as heatmap in various operations like read, write, batch-index, - support microsecond, millisecond and micro-benchmarks",
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 1,
+      "id": null,
+      "links": [],
+      "panels": [
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "id": 2,
+          "panels": [],
+          "repeat": "operation",
+          "title": "$operation",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Average across all nodes counted into buckets from 0 to 2^16",
+          "fieldConfig": {
+            "defaults": {
+              "decimals": 0,
+              "mappings": [],
+              "noValue": "No Data",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 2
+                  },
+                  {
+                    "color": "#EF843C",
+                    "value": 4
+                  },
+                  {
+                    "color": "red",
+                    "value": 16
+                  }
+                ]
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 4,
+            "x": 0,
+            "y": 1
+          },
+          "id": 20,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "horizontal",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "mean"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "text": {},
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.2.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "avg by (ns) (histogram_quantile(0.95, (aerospike_latencies_${operation}_${latencytimeunit}_bucket{job=\"$job_name\",cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", service=~\"$node\"})))",
+              "instant": false,
+              "interval": "",
+              "legendFormat": "p95 ${latencytimeunit}",
+              "refId": "A"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "avg by (ns) (histogram_quantile(0.99, (aerospike_latencies_${operation}_${latencytimeunit}_bucket{job=\"$job_name\",cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", service=~\"$node\"})))",
+              "interval": "",
+              "legendFormat": "p99 ${latencytimeunit}",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "avg by (ns) (histogram_quantile(0.999, (aerospike_latencies_${operation}_${latencytimeunit}_bucket{job=\"$job_name\",cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", service=~\"$node\"})))",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "legendFormat": "p99.9 ${latencytimeunit}",
+              "refId": "C"
+            }
+          ],
+          "title": "Percentiles $operation",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "scaleDistribution": {
+                  "type": "linear"
+                }
+              }
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 9,
+            "w": 20,
+            "x": 4,
+            "y": 1
+          },
+          "id": 14,
+          "options": {
+            "calculate": false,
+            "calculation": {},
+            "cellGap": 2,
+            "cellValues": {
+              "decimals": 3
+            },
+            "color": {
+              "exponent": 0.5,
+              "fill": "#5794F2",
+              "mode": "scheme",
+              "reverse": false,
+              "scale": "exponential",
+              "scheme": "Spectral",
+              "steps": 128
+            },
+            "exemplars": {
+              "color": "rgba(255,0,255,0.7)"
+            },
+            "filterValues": {
+              "le": 1e-9
+            },
+            "legend": {
+              "show": true
+            },
+            "rowsFrame": {
+              "layout": "auto"
+            },
+            "showValue": "never",
+            "tooltip": {
+              "mode": "single",
+              "showColorScale": false,
+              "yHistogram": true
+            },
+            "yAxis": {
+              "axisPlacement": "left",
+              "reverse": false,
+              "unit": "short"
+            }
+          },
+          "pluginVersion": "12.2.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": true,
+              "expr": "sum by (le) (aerospike_latencies_${operation}_${latencytimeunit}_bucket{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"})",
+              "format": "heatmap",
+              "hide": false,
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "{{ le }}${latencytimeunit}",
+              "refId": "C"
+            }
+          ],
+          "title": "Latency $operation",
+          "type": "heatmap"
+        }
+      ],
+      "refresh": "1m",
+      "schemaVersion": 42,
+      "tags": [
+        "monitoring",
+        "latency"
+      ],
+      "templating": {
+        "list": [
+          {
+            "current": {},
+            "includeAll": false,
+            "label": "Datasource",
+            "name": "DS_AEROSPIKE_PROMETHEUS",
+            "options": [],
+            "query": "prometheus",
+            "refresh": 1,
+            "regex": "",
+            "type": "datasource"
+          },
+          {
+            "current": {},
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+            },
+            "definition": "label_values(aerospike_node_stats_uptime,job)",
+            "includeAll": false,
+            "label": "job_name",
+            "name": "job_name",
+            "options": [],
+            "query": {
+              "query": "label_values(aerospike_node_stats_uptime,job)",
+              "refId": "Aerospike Prometheus-job-Variable-Query"
+            },
+            "refresh": 1,
+            "regex": "",
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "current": {},
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+            },
+            "definition": "label_values(aerospike_node_stats_uptime{job=\"$job_name\"},cluster_name)",
+            "includeAll": false,
+            "label": "Cluster",
+            "name": "cluster",
+            "options": [],
+            "query": {
+              "query": "label_values(aerospike_node_stats_uptime{job=\"$job_name\"},cluster_name)",
+              "refId": "Aerospike Prometheus-cluster-Variable-Query"
+            },
+            "refresh": 2,
+            "regex": "",
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "current": {},
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+            },
+            "definition": "label_values(aerospike_node_stats_uptime{job=\"$job_name\", cluster_name=~\"$cluster|$^\"},service)",
+            "includeAll": true,
+            "label": "Node",
+            "multi": true,
+            "name": "node",
+            "options": [],
+            "query": {
+              "query": "label_values(aerospike_node_stats_uptime{job=\"$job_name\", cluster_name=~\"$cluster|$^\"},service)",
+              "refId": "Aerospike Prometheus-node-Variable-Query"
+            },
+            "refresh": 2,
+            "regex": "",
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "current": {},
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+            },
+            "definition": "label_values(aerospike_namespace_objects{job=\"$job_name\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\" },ns)",
+            "includeAll": true,
+            "label": "Namespace",
+            "multi": true,
+            "name": "namespace",
+            "options": [],
+            "query": {
+              "query": "label_values(aerospike_namespace_objects{job=\"$job_name\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\" },ns)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "",
+            "sort": 1,
+            "type": "query"
+          },
+          {
+            "current": {},
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+            },
+            "definition": "query_result({job=\"$job_name\", __name__=~\"aerospike_laten.*\", cluster_name=~\"$cluster|$^\",  })",
+            "description": "Use this variable to change and see various operations like (read, write, batch-sub etc.,) and their latencies on the database",
+            "includeAll": true,
+            "label": "Operation",
+            "multi": true,
+            "name": "operation",
+            "options": [],
+            "query": {
+              "query": "query_result({job=\"$job_name\", __name__=~\"aerospike_laten.*\", cluster_name=~\"$cluster|$^\",  })",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "/.*aerospike_latencies_((((s|p)i_[a-z].*)|([a-z].*))[_a-z].*)_[a-z].*_count/",
+            "type": "query"
+          },
+          {
+            "current": {
+              "text": "ms",
+              "value": "ms"
+            },
+            "description": "Use this variable to filter latency data between \"ms\" milli-second or \"us\" micro-second",
+            "label": "Latency Time Unit",
+            "name": "latencytimeunit",
+            "options": [
+              {
+                "selected": true,
+                "text": "ms",
+                "value": "ms"
+              },
+              {
+                "selected": false,
+                "text": "us",
+                "value": "us"
+              }
+            ],
+            "query": "ms,us",
+            "type": "custom"
+          }
+        ]
+      },
+      "time": {
+        "from": "now-6h",
+        "to": "now"
+      },
+      "timepicker": {},
+      "timezone": "",
+      "title": "Latency View",
+      "uid": "ZoeGW1DBk",
+      "version": 1,
+      "weekStart": ""
+    }
+kind: ConfigMap
+metadata:
+  labels:
+    grafana_dashboard: "1"
+  name: latency-dashboard
+  namespace: monitoring

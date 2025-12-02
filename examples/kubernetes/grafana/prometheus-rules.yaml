@@ -1,0 +1,1374 @@
+apiVersion: v1
+data:
+  aerospike_backup_service_alerts.yml: "groups:\n- name: aerospike_backup_alerts\n
+    \ rules:\n  - alert: AerospikeBackupServiceDown\n    expr: up{job=\"aerospike_backup_service\"}
+    == 0\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Aerospike Backup Service job {{ $labels.instance }} down\"\n      description:
+    \"{{ $labels.instance }} has been down for more than 1m.\"\n    \n  - alert: AerospikeBackupTooOld\n
+    \   expr: (time() - aerospike_backup_service_last_successful_backup_timestamp)
+    > 86400\n    for: 180s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"No recent backup for routine {{ $labels.routine }}\"\n      description:
+    \"The last successful backup for routine {{ $labels.routine }} was more than 24
+    hours ago.\"\n\n  - alert: AerospikeBackupJobFailure\n    expr: increase(aerospike_backup_service_backup_events_total{outcome=\"failure\"}[15m])
+    > 0\n    for: 180s\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Backup job failure detected in routine {{ $labels.routine }}\"\n      description:
+    \"At least one backup job for the routine {{ $labels.routine }} in {{ $labels.instance
+    }} has been failed in the last 15 minutes.\"  \n\n  - alert: AerospikeBackupJobSkip\n
+    \   expr: increase(aerospike_backup_service_backup_events_total{outcome=\"skip\"}[15m])
+    > 0\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Backup job skip detected in routine {{ $labels.routine }}\"\n      description:
+    \"At least one backup job for the routine {{ $labels.routine }} in {{ $labels.instance
+    }} has been 'skipped' in the past 15 minutes.\"\n    \n  - alert: AerospikeBackupJobRetry\n
+    \   expr: increase(aerospike_backup_service_backup_events_total{outcome=\"retry\"}[15m])
+    > 0\n    for: 180s\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Backup job retry detected in routine {{ $labels.routine }}\"\n      description:
+    \"At least one backup job for the routine {{ $labels.routine }} in {{ $labels.instance
+    }} has been 'retried' in the past 15 minutes.\"\n\n  - alert: AerospikeFullBackupJobLatencyWarn\n
+    \   expr: increase(aerospike_backup_service_backup_duration_seconds_bucket{le=\"1537.734375\",
+    type=\"full\"}[30m]) > 0\n    for: 180s\n    labels:\n      severity: warn\n    annotations:\n
+    \     summary: \"Backup job latency in routine {{ $labels.routine }} and type
+    {{ $labels.type }}\"\n      description: \"At least one backup job for the routine
+    {{ $labels.routine }} in {{ $labels.instance }} has been running for nearly 30
+    minutes with the type 'full'\"\n\n  - alert: AerospikeFullBackupJobLatencyCritical\n
+    \   expr: increase(aerospike_backup_service_backup_duration_seconds_bucket{le=\"3459.90234375\",
+    type=\"full\"}[60m]) > 0\n    for: 180s\n    labels:\n      severity: critical\n
+    \   annotations:\n      summary: \"Backup job latency in routine {{ $labels.routine
+    }} and type {{ $labels.type }}\"\n      description: \"At least one backup job
+    for the routine {{ $labels.routine }} in {{ $labels.instance }} has been running
+    for nearly 1 hour with the type 'full'\"\n\n  - alert: AerospikeIncrementalBackupJobLatencyWarn\n
+    \   expr: increase(aerospike_backup_service_backup_duration_seconds_bucket{le=\"1025.15625\",
+    type=\"incremental\"}[15m]) > 0\n    for: 180s\n    labels:\n      severity: warn\n
+    \   annotations:\n      summary: \"Backup job latency in routine {{ $labels.routine
+    }} and type {{ $labels.type }}\"\n      description: \"At least one backup job
+    for the routine {{ $labels.routine }} in {{ $labels.instance }} has been running
+    for nearly 15 minutes with the type 'incremental'\"\n\n  - alert: AerospikeIncrementalBackupJobLatencyCritical\n
+    \   expr: increase(aerospike_backup_service_backup_duration_seconds_bucket{le=\"1537.734375\",
+    type=\"incremental\"}[30m]) > 0\n    for: 180s\n    labels:\n      severity: critical\n
+    \   annotations:\n      summary: \"Backup job latency in routine {{ $labels.routine
+    }} and type {{ $labels.type }}\"\n      description: \"At least one backup job
+    for the routine {{ $labels.routine }} in {{ $labels.instance }} has been running
+    for nearly 30 minutes with the type 'incremental'\"\n"
+  aerospike_connector_rules.yml: "groups:\n- name: connector.rules\n  rules:\n  -
+    alert: AerospikeConnectorsDown\n    expr: up{job=\"aerospike_connect\"} == 0\n
+    \   for: 30s\n    labels:\n      severity: critical\n    annotations:\n      summary:
+    \"Aerospike Connector instance {{ $labels.instance }} in cluster {{$labels.cluster_name}}
+    has been down for more than 30s.\"\n      description: \"Aerospike Connector instance
+    {{ $labels.instance }} in cluster {{$labels.cluster_name}} has been down for more
+    than 30s.\"\n\n- name: connector.rules > XDR_PROXY\n  rules:\n  - alert: AerospikeConnectorLag\n
+    \   expr: aerospike_xdr_proxy_requests_lag{job=\"aerospike_connect\" } > 5000\n
+    \   for: 30s\n    labels:\n      severity: critical\n    annotations:\n      summary:
+    \"Process Request lag increased and is above configured threshold in xdr_proxy
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"Process Request lag increased and is above configured threshold
+    in xdr_proxy connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n\n
+    \ - alert: AerospikeConnectorErrors\n    expr: ((aerospike_xdr_proxy_requests{job=\"aerospike_connect\",status=\"error\"}
+    *100) / on ( cluster_name, instance, job, ) sum by ( cluster_name, instance, job,
+    )(aerospike_xdr_proxy_requests{job=\"aerospike_connect\",})) > 1\n    for: 30s\n
+    \   labels:\n      severity: critical\n    annotations:\n      summary: \"Request
+    Errors crossed 1% of the total requests processed in xdr_proxy connector instance
+    {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n      description:
+    \"Request Errors crossed 1% of the total requests processed in xdr_proxy connector
+    instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n      \n
+    \ - alert: AerospikeConnectorJvmProcessCPU\n    expr: aerospike_xdr_proxy_jvm_os_processCpuLoad{job=\"aerospike_connect\"
+    } > 80\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Process CPU load crossed configured threshold of 80% in xdr_proxy
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"Process CPU load crossed configured threshold of 80% in xdr_proxy
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n\n
+    \ - alert: AerospikeConnectorJvmSystemCPU\n    expr: aerospike_xdr_proxy_jvm_os_systemCpuLoad{job=\"aerospike_connect\"
+    } > 80\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"System CPU load crossed configured threshold of 80% in xdr_proxy
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"System CPU load crossed configured threshold of 80% in xdr_proxy
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n\n
+    \ - alert: AerospikeConnectorJvmSystemCPU\n    expr: aerospike_xdr_proxy_jvm_os_systemCpuLoad{job=\"aerospike_connect\"
+    } > 80\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"System CPU load crossed configured threshold of 80% in xdr_proxy
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"System CPU load crossed configured threshold of 80% in xdr_proxy
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n\n
+    \ - alert: AerospikeConnectorJvmHeapUsed\n    expr: (aerospike_xdr_proxy_jvm_memory_heap_used{job=\"aerospike_connect\"
+    }*100)/aerospike_xdr_proxy_jvm_memory_heap_max{job=\"aerospike_connect\" } > 80\n
+    \   for: 30s\n    labels:\n      severity: critical\n    annotations:\n      summary:
+    \"JVM Heap usage crossed 80% of max heap allocated in xdr_proxy connector instance
+    {{ $labels.instance }}\"\n      description: \"JVM Heap usage crossed 80% of max
+    heap allocated in xdr_proxy connector instance {{ $labels.instance }}\"\n  - alert:
+    AerospikeConnectorJvmGC\n    expr: rate(aerospike_xdr_proxy_jvm_gc_time{job=\"aerospike_connect\"}[1m])/
+    rate(aerospike_xdr_proxy_jvm_gc_count{job=\"aerospike_connect\"}[1m]) > 500\n
+    \   for: 30s\n    labels:\n      severity: critical\n    annotations:\n      summary:
+    \"Average JVM Garbage collection cycle time crossed 500 milliseconds in connector
+    instance {{ $labels.instance }} of {{$labels.cluster_name}}\"\n      description:
+    \"Average JVM Garbage collection cycle time crossed 500 milliseconds in connector
+    instance {{ $labels.instance }} of {{$labels.cluster_name}}\"\n\n      \n- name:
+    connector.rules > ELASTIC_SEARCH_OUTBOUND\n  rules:\n  - alert: AerospikeConnectorLag\n
+    \   expr: aerospike_elasticsearch_outbound_requests_lag{job=\"aerospike_connect\"
+    } > 5000\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Process Request lag increased and is above configured threshold
+    in elasticsearch_outbound connector instance {{ $labels.instance }} of cluster
+    {{$labels.cluster_name}}\"\n      description: \"Process Request lag increased
+    and is above configured threshold in elasticsearch_outbound instance {{ $labels.instance
+    }} of cluster {{$labels.cluster_name}}\"\n  - alert: AerospikeConnectorErrors\n
+    \   expr: ((aerospike_elasticsearch_outbound_requests{job=\"aerospike_connect\",status=\"error\"}
+    *100) / on ( cluster_name, instance, job, ) sum by ( cluster_name, instance, job,
+    )(aerospike_elasticsearch_outbound_requests{job=\"aerospike_connect\",})) > 1\n
+    \   for: 30s\n    labels:\n      severity: critical\n    annotations:\n      summary:
+    \"Request Errors crossed 1% of the total requests processed in elasticsearch_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"Request Errors crossed 1% of the total requests processed
+    in elasticsearch_outbound connector instance {{ $labels.instance }} of cluster
+    {{$labels.cluster_name}}\"\n  - alert: AerospikeConnectorJvmProcessCPU\n    expr:
+    aerospike_elasticsearch_outbound_jvm_os_processCpuLoad{job=\"aerospike_connect\"
+    } > 80\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Process CPU load crossed configured threshold of 80% in elasticsearch_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"Process CPU load crossed configured threshold of 80% in elasticsearch_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n\n
+    \ - alert: AerospikeConnectorJvmSystemCPU\n    expr: aerospike_elasticsearch_outbound_jvm_os_systemCpuLoad{job=\"aerospike_connect\"
+    } > 80\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"System CPU load crossed configured threshold of 80% in elasticsearch_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"System CPU load crossed configured threshold of 80% in elasticsearch_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n\n
+    \ - alert: AerospikeConnectorJvmHeapUsed\n    expr: (aerospike_elasticsearch_outbound_jvm_memory_heap_used{job=\"aerospike_connect\"
+    }*100)/aerospike_elasticsearch_outbound_jvm_memory_heap_max{job=\"aerospike_connect\"
+    } > 10\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"JVM Heap usage crossed 80% of max heap allocated in elasticsearch_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"JVM Heap usage crossed 80% of max heap allocated in elasticsearch_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \ - alert: AerospikeConnectorJvmGC\n    expr: rate(aerospike_elasticsearch_outbound_jvm_gc_time{job=\"aerospike_connect\"}[1m])/
+    rate(aerospike_elasticsearch_outbound_jvm_gc_count{job=\"aerospike_connect\"}[1m])
+    > 10\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Average JVM Garbage collection cycle time crossed 500 milliseconds
+    in elasticsearch_outbound connector instance {{ $labels.instance }} of cluster
+    {{$labels.cluster_name}}\"\n      description: \"Average JVM Garbage collection
+    cycle time crossed 500 milliseconds elasticsearch_outbound in connector instance
+    {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n      \n- name:
+    connector.rules > JMS_OUTBOUND\n  rules:\n  - alert: AerospikeConnectorLag\n    expr:
+    aerospike_jms_outbound_requests_lag{job=\"aerospike_connect\" } > 5000\n    for:
+    30s\n    labels:\n      severity: critical\n    annotations:\n      summary: \"Process
+    Request lag increased and is above configured threshold in jms_outbound connector
+    instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n      description:
+    \"Process Request lag increased and is above configured threshold in jms_outbound
+    instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n  - alert:
+    AerospikeConnectorErrors\n    expr: ((aerospike_jms_outbound_requests{job=\"aerospike_connect\",status=\"error\"}
+    *100) / on ( cluster_name, instance, job, ) sum by ( cluster_name, instance, job,
+    )(aerospike_jms_outbound_requests{job=\"aerospike_connect\",})) > 1\n    for:
+    30s\n    labels:\n      severity: critical\n    annotations:\n      summary: \"Request
+    Errors crossed 1% of the total requests processed in jms_outbound connector instance
+    {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n      description:
+    \"Request Errors crossed 1% of the total requests processed in jms_outbound connector
+    instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n  - alert:
+    AerospikeConnectorJvmProcessCPU\n    expr: aerospike_jms_outbound_jvm_os_processCpuLoad{job=\"aerospike_connect\"
+    } > 80\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Process CPU load crossed configured threshold of 80% in jms_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"Process CPU load crossed configured threshold of 80% in jms_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \ - alert: AerospikeConnectorJvmSystemCPU\n    expr: aerospike_jms_outbound_jvm_os_systemCpuLoad{job=\"aerospike_connect\"
+    } > 80\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"System CPU load crossed configured threshold of 80% in jms_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"System CPU load crossed configured threshold of 80% in jms_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n\n
+    \ - alert: AerospikeConnectorJvmHeapUsed\n    expr: (aerospike_jms_outbound_jvm_memory_heap_used{job=\"aerospike_connect\"
+    }*100)/aerospike_jms_outbound_jvm_memory_heap_max{job=\"aerospike_connect\" }
+    > 80\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"JVM Heap usage crossed 80% of max heap allocated in jms_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"JVM Heap usage crossed 80% of max heap allocated in jms_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \ - alert: AerospikeConnectorJvmGC\n    expr: rate(aerospike_jms_outbound_jvm_gc_time{job=\"aerospike_connect\"}[1m])/
+    rate(aerospike_jms_outbound_jvm_gc_count{job=\"aerospike_connect\"}[1m]) > 500\n
+    \   for: 30s\n    labels:\n      severity: critical\n    annotations:\n      summary:
+    \"Average JVM Garbage collection cycle time crossed 500 milliseconds in jms_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"Average JVM Garbage collection cycle time crossed 500 milliseconds
+    in jms_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     \n- name: connector.rules > KAFKA_OUTBOUND\n  rules:\n  - alert: AerospikeConnectorLag\n
+    \   expr: aerospike_kafka_outbound_requests_lag{job=\"aerospike_connect\" } >
+    5000\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Process Request lag increased and is above configured threshold
+    in kafka_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"Process Request lag increased and is above configured threshold
+    in kafka_outbound instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \ - alert: AerospikeConnectorErrors\n    expr: ((aerospike_kafka_outbound_requests{job=\"aerospike_connect\",status=\"error\"}
+    *100) / on ( cluster_name, instance, job, ) sum by ( cluster_name, instance, job,
+    )(aerospike_kafka_outbound_requests{job=\"aerospike_connect\",})) > 1\n    for:
+    30s\n    labels:\n      severity: critical\n    annotations:\n      summary: \"Request
+    Errors crossed 1% of the total requests processed in kafka_outbound connector
+    instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n      description:
+    \"Request Errors crossed 1% of the total requests processed in kafka_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \ - alert: AerospikeConnectorJvmProcessCPU\n    expr: aerospike_kafka_outbound_jvm_os_processCpuLoad{job=\"aerospike_connect\"
+    } > 80\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Process CPU load crossed configured threshold of 80% in kafka_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"Process CPU load crossed configured threshold of 80% in kafka_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \ - alert: AerospikeConnectorJvmSystemCPU\n    expr: aerospike_kafka_outbound_jvm_os_systemCpuLoad{job=\"aerospike_connect\"
+    } > 80\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"System CPU load crossed configured threshold of 80% in kafka_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"System CPU load crossed configured threshold of 80% in kafka_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n\n
+    \ - alert: AerospikeConnectorJvmHeapUsed\n    expr: (aerospike_kafka_outbound_jvm_memory_heap_used{job=\"aerospike_connect\"
+    }*100)/aerospike_kafka_outbound_jvm_memory_heap_max{job=\"aerospike_connect\"
+    } > 80\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"JVM Heap usage crossed 80% of max heap allocated in kafka_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"JVM Heap usage crossed 80% of max heap allocated in kafka_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \ - alert: AerospikeConnectorJvmGC\n    expr: rate(aerospike_kafka_outbound_jvm_gc_time{job=\"aerospike_connect\"}[1m])/
+    rate(aerospike_kafka_outbound_jvm_gc_count{job=\"aerospike_connect\"}[1m]) > 500\n
+    \   for: 30s\n    labels:\n      severity: critical\n    annotations:\n      summary:
+    \"Average JVM Garbage collection cycle time crossed 500 milliseconds in kafka_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"Average JVM Garbage collection cycle time crossed 500 milliseconds
+    kafka_outbound in connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     \n\n- name: connector.rules > PULSAR_OUTBOUND\n  rules:\n  - alert: AerospikeConnectorLag\n
+    \   expr: aerospike_pulsar_outbound_requests_lag{job=\"aerospike_connect\" } >
+    5000\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Process Request lag increased and is above configured threshold
+    in pulsar_outbound connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"Process Request lag increased and is above configured threshold
+    in pulsar_outbound instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \ - alert: AerospikeConnectorErrors\n    expr: ((aerospike_pulsar_outbound_requests{job=\"aerospike_connect\",status=\"error\"}
+    *100) / on ( cluster_name, instance, job, ) sum by ( cluster_name, instance, job,
+    )(aerospike_pulsar_outbound_requests{job=\"aerospike_connect\",})) > 1\n    for:
+    30s\n    labels:\n      severity: critical\n    annotations:\n      summary: \"Request
+    Errors crossed 1% of the total requests processed in pulsar_outbound connector
+    instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n      description:
+    \"Request Errors crossed 1% of the total requests processed in pulsar_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \ - alert: AerospikeConnectorJvmProcessCPU\n    expr: aerospike_pulsar_outbound_jvm_os_processCpuLoad{job=\"aerospike_connect\"
+    } > 80\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Process CPU load crossed configured threshold of 80% in pulsar_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"Process CPU load crossed configured threshold of 80% in pulsar_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \ - alert: AerospikeConnectorJvmSystemCPU\n    expr: aerospike_pulsar_outbound_jvm_os_systemCpuLoad{job=\"aerospike_connect\"
+    } > 80\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"System CPU load crossed configured threshold of 80% in pulsar_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"System CPU load crossed configured threshold of 80% in pulsar_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n\n
+    \ - alert: AerospikeConnectorJvmHeapUsed\n    expr: (aerospike_pulsar_outbound_jvm_memory_heap_used{job=\"aerospike_connect\"
+    }*100)/aerospike_pulsar_outbound_jvm_memory_heap_max{job=\"aerospike_connect\"
+    } > 80\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"JVM Heap usage crossed 80% of max heap allocated in pulsar_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"JVM Heap usage crossed 80% of max heap allocated in pulsar_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \ - alert: AerospikeConnectorJvmGC\n    expr: rate(aerospike_pulsar_outbound_jvm_gc_time{job=\"aerospike_connect\"}[1m])/
+    rate(aerospike_pulsar_outbound_jvm_gc_count{job=\"aerospike_connect\"}[1m]) >
+    500\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n      summary:
+    \"Average JVM Garbage collection cycle time crossed 500 milliseconds in pulsar_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"Average JVM Garbage collection cycle time crossed 500 milliseconds
+    pulsar_outbound in connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     \n\n- name: connector.rules > ESP_OUTBOUND\n  rules:\n  - alert: AerospikeConnectorLag\n
+    \   expr: aerospike_esp_outbound_requests_lag{job=\"aerospike_connect\" } > 5000\n
+    \   for: 30s\n    labels:\n      severity: critical\n    annotations:\n      summary:
+    \"Process Request lag increased and is above configured threshold in esp_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"Process Request lag increased and is above configured threshold
+    in esp_outbound instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \ - alert: AerospikeConnectorErrors\n    expr: ((aerospike_esp_outbound_requests{job=\"aerospike_connect\",status=\"error\"}
+    *100) / on ( cluster_name, instance, job, ) sum by ( cluster_name, instance, job,
+    )(aerospike_esp_outbound_requests{job=\"aerospike_connect\",})) > 1\n    for:
+    30s\n    labels:\n      severity: critical\n    annotations:\n      summary: \"Request
+    Errors crossed 1% of the total requests processed in esp_outbound connector instance
+    {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n      description:
+    \"Request Errors crossed 1% of the total requests processed in esp_outbound connector
+    instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n  - alert:
+    AerospikeConnectorJvmProcessCPU\n    expr: aerospike_esp_outbound_jvm_os_processCpuLoad{job=\"aerospike_connect\"
+    } > 80\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Process CPU load crossed configured threshold of 80% in esp_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"Process CPU load crossed configured threshold of 80% in esp_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \ - alert: AerospikeConnectorJvmSystemCPU\n    expr: aerospike_esp_outbound_jvm_os_systemCpuLoad{job=\"aerospike_connect\"
+    } > 80\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"System CPU load crossed configured threshold of 80% in esp_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"System CPU load crossed configured threshold of 80% in esp_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n\n
+    \ - alert: AerospikeConnectorJvmHeapUsed\n    expr: (aerospike_esp_outbound_jvm_memory_heap_used{job=\"aerospike_connect\"
+    }*100)/aerospike_esp_outbound_jvm_memory_heap_max{job=\"aerospike_connect\" }
+    > 80\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"JVM Heap usage crossed 80% of max heap allocated in esp_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"JVM Heap usage crossed 80% of max heap allocated in esp_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n\n
+    \ - alert: AerospikeConnectorJvmGC\n    expr: rate(aerospike_esp_outbound_jvm_gc_time{job=\"aerospike_connect\"}[1m])/
+    rate(aerospike_esp_outbound_jvm_gc_count{job=\"aerospike_connect\"}[1m]) > 500\n
+    \   for: 30s\n    labels:\n      severity: critical\n    annotations:\n      summary:
+    \"Average JVM Garbage collection cycle time crossed 500 milliseconds in esp_outbound
+    connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     description: \"Average JVM Garbage collection cycle time crossed 500 milliseconds
+    esp_outbound in connector instance {{ $labels.instance }} of cluster {{$labels.cluster_name}}\"\n
+    \     \n"
+  aerospike_rules.yml: "groups:\n- name: aerospike.rules\n  rules:\n  - alert: AerospikeExporterAgentDown\n
+    \   expr: up{job=\"aerospike\"} == 0\n    for: 30s\n    labels:\n      severity:
+    warn\n    annotations:\n      summary: \"Aerospike Prometheus exporter job {{
+    $labels.instance }} down\"\n      description: \"{{ $labels.instance }} has been
+    down for more than 30s.\"\n\n  - alert: AerospikeNodeDown\n    expr: aerospike_node_up{job=\"aerospike\"}
+    == 0\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Node {{ $labels.instance }} down\"\n      description: \"{{ $labels.instance
+    }} node is down.\"\n\n- name: aerospike_aerospike.rules > NAMESPACE\n  rules:\n
+    \ - alert: NamespaceStopWrites\n    expr: aerospike_namespace_stop_writes{job=\"aerospike\"
+    } == 1\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Stop writes for {{ $labels.instance }}/{{ $labels.ns }}\"\n      description:
+    \"Used disk space for namespace {{ $labels.ns }} in node {{ $labels.instance }}
+    is above stop writes limit. . <a href='localhost:7100' target='_blank'>namespace
+    view </a>\"\n\n  - alert: AerospikeAllFlashAverageObjectsPerSprig\n    expr:  (
+    ((aerospike_namespace_master_objects { job=\"aerospike\"  }/4096)/aerospike_namespace_partition_tree_sprigs{
+    job=\"aerospike\"  } ) and ignoring (index, sindex) ((aerospike_namespace_index_type_mounts_size_limit
+    { job=\"aerospike\"  }) or (aerospike_namespace_sindex_type_mounts_size_limit
+    { job=\"aerospike\"  }) ))> 50\n    for: 30s\n    labels:\n      severity: warn\n
+    \   annotations:\n      summary: \"Average Objects per sprig in {{ $labels.instance
+    \ }}/{{ $labels.ns }}\"\n      description: \"Average objects per sprig has been
+    breached for namespace {{ $labels.ns }} in node {{ $labels.instance }}. \"\n\n
+    \ - alert: AerospikeAverageObjectsPerSprig\n    expr:  ( ((aerospike_namespace_master_objects
+    { job=\"aerospike\"  }/4096)/aerospike_namespace_partition_tree_sprigs{ job=\"aerospike\"
+    \ } ) unless ignoring (index, sindex) ((aerospike_namespace_index_type_mounts_size_limit
+    { job=\"aerospike\"  }) or (aerospike_namespace_sindex_type_mounts_size_limit
+    { job=\"aerospike\"  }) ))> 5000\n    for: 30s\n    labels:\n      severity: warn\n
+    \   annotations:\n      summary: \"Average Objects per sprig in {{ $labels.instance
+    \ }}/{{ $labels.ns }}\"\n      description: \"Average objects per sprig has been
+    breached for namespace {{ $labels.ns }} in node {{ $labels.instance }}. \"\n\n
+    \ - alert: AerospikeIndexStageSizeWarn\n    # Check here: https://docs.aerospike.com/reference/configuration#index-stage-size\n
+    \   #  <128mb or >4gb -- send warn alert\n    expr:  (aerospike_namespace_index_stage_size{job=\"aerospike\"
+    }>4000000000)  \n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n
+    \     summary: \"Index stage size configuration is not configured according to
+    documentation in {{ $labels.instance  }}/{{ $labels.ns }}\"\n      description:
+    \"Index stage size configuration is not configured according to documentation
+    in {{ $labels.ns }} in node {{ $labels.instance }}. \"\n\n  - alert: AerospikeSIndexStageSizeWarn\n
+    \   # Check here: https://docs.aerospike.com/reference/configuration#sindex-stage-size\n
+    \   #  <128mb or >4gb -- send warn alert\n    expr:  (aerospike_namespace_sindex_stage_size{job=\"aerospike\"
+    }>4000000000)  \n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n
+    \     summary: \"SIndex stage size configuration is not configured according to
+    documentation in {{ $labels.instance }}/{{ $labels.ns }}\"\n      description:
+    \"SIndex stage size configuration is not configured according to documentation
+    in {{ $labels.ns }} in node {{ $labels.instance }}. \"\n\n  - alert: AerospikeIndexPressureDirtyMemoryWarn\n
+    \   # Check here: https://docs.aerospike.com/reference/info#index-pressure\n    expr:
+    (((aerospike_namespace_index_pressure_dirty_memory{ job=\"aerospike\"  })/(aerospike_namespace_index_pressure_total_memory{
+    job=\"aerospike\"  })*100)>10000000) \n    for: 1m\n    labels:\n      severity:
+    warn\n    annotations:\n      summary: \"Dirty memory ratio against the total
+    memory is above configured limit in node {{ $labels.instance }}\"\n      description:
+    \"Dirty memory ration against the total memory is above configured limit in node
+    {{ $labels.instance }}\"\n      \n  - alert: NamespaceDiskCloseToStopWrites\n
+    \   expr: (aerospike_namespace_device_available_pct{job=\"aerospike\" } - aerospike_namespace_storage_engine_min_avail_pct{job=\"aerospike\"
+    }) <= 10\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n
+    \     summary: \"Close to stop writes for {{ $labels.instance }}/{{ $labels.ns
+    }} due to device_available_pct\"\n      description: \"device_available_pct for
+    namespace {{ $labels.ns }} in node {{ $labels.instance }} is close to min-avail-pct
+    (stop writes) limit.\"\n\n  - alert: NamespaceMemoryCloseToStopWrites\n    expr:
+    (aerospike_namespace_stop_writes_pct{job=\"aerospike\" } - (100 - aerospike_namespace_memory_free_pct{job=\"aerospike\"
+    })) <= 10\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n
+    \     summary: \"Close to stop writes for {{ $labels.instance }}/{{ $labels.ns
+    }} due to memory \"\n      description: \"Free memory for namespace {{ $labels.ns
+    }} in node {{ $labels.instance }} is close to stop writes limit.\"\n  \n  - alert:
+    NamespacePmemCloseToStopWrites\n    expr: (aerospike_namespace_pmem_available_pct{job=\"aerospike\"
+    } - aerospike_namespace_storage_engine_min_avail_pct{job=\"aerospike\" }) <= 10\n
+    \   for: 30s\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Close to stop writes for {{ $labels.instance }}/{{ $labels.ns }} due to pmem_available_pct\"\n
+    \     description: \"pmem_available_pct for namespace {{ $labels.ns }} in node
+    {{ $labels.instance }} is close to min-avail-pct (stop writes) limit.\"\n  \n
+    \ - alert: NamespaceFreeMemoryCloseToStopWrites\n    expr: (aerospike_namespace_stop_writes_sys_memory_pct{job=\"aerospike\"
+    } - scalar(100 - (aerospike_node_stats_system_free_mem_pct{job=\"aerospike\" })))
+    <= 10\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Close to stop writes for {{ $labels.instance }}/{{ $labels.ns
+    }} due to memory\"\n      description: \"Free memory for namespace {{ $labels.ns
+    }} in node {{ $labels.instance }} is close to stop writes limit.\"\n\n  - alert:
+    ActiveProxies\n    expr: (increase(aerospike_namespace_client_proxy_complete{job=\"aerospike\"
+    }[2m]) + increase(aerospike_namespace_client_proxy_timeout{job=\"aerospike\" }[2m])
+    + increase(aerospike_namespace_client_proxy_error{job=\"aerospike\" }[2m]) + increase(aerospike_namespace_batch_sub_proxy_complete{job=\"aerospike\"
+    }[2m]) + increase(aerospike_namespace_batch_sub_proxy_timeout{job=\"aerospike\"
+    }[2m]) + increase(aerospike_namespace_batch_sub_proxy_error{job=\"aerospike\"
+    }[2m])) > 0\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n
+    \     summary: \"Node is doing proxy. Proxies can happen during cluster change
+    / migrations or if there are any network issues.\"\n      description: \"Active
+    proxies detected for {{ $labels.ns }} on node {{ $labels.instance }}\"\n\n  -
+    alert: NamespaceSupervisorFallingBehind\n    expr: aerospike_namespace_objects{job=\"aerospike\"}>0
+    and aerospike_namespace_nsup_cycle_deleted_pct{job=\"aerospike\" } > 1 # (Aerospike
+    6.3 and later) \n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"NSUP is falling behind and/or display the length of time the
+    most recent NSUP cycle lasted\"\n      description: \"There seems some lag falling
+    behind and/or display the length of time the most recent NSUP cycle lasted {{
+    $labels.ns }} in node {{ $labels.instance }}\"\n\n  - alert: HwmBreached\n    expr:
+    aerospike_namespace_hwm_breached{job=\"aerospike\" } == 1\n    for: 30s\n    labels:\n
+    \     severity: warn\n    annotations:\n      summary: \"High water mark breached
+    for {{ $labels.instance }}/{{ $labels.ns }}\"\n      description: \"high-water-disk-pct
+    or high-water-memory-pct has been breached for namespace {{ $labels.ns }} in node
+    {{ $labels.instance }}. Eviction may start to recover disk space.\"\n\n  - alert:
+    LowDeviceAvailWarning\n    expr: aerospike_namespace_device_available_pct{job=\"aerospike\"
+    } < 55\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Device available warning for {{ $labels.instance }}/{{ $labels.ns }}\"\n      description:
+    \"Device available has dropped below 55% for namespace {{ $labels.ns }} in node
+    {{ $labels.instance }}. May indicate that defrag is unable to keep up with the
+    current load, and may result in stop writes if it continues to drop.\"\n\n  -
+    alert: LowDeviceAvailCritical\n    expr: aerospike_namespace_device_available_pct{job=\"aerospike\"
+    } < 25\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Device available critically low for {{ $labels.instance }}/{{
+    $labels.ns }}\"\n      description: \"Device available has dropped below 25% for
+    namespace {{ $labels.ns }} in node {{ $labels.instance }}. May indicate that defrag
+    is unable to keep up with the current load, and may result in stop writes if it
+    continues to drop.\"\n\n  - alert: ClientTimeouts\n    expr: rate(aerospike_namespace_client_read_timeout{job=\"aerospike\"
+    }[1m]) > 1 or rate(aerospike_namespace_client_write_timeout{job=\"aerospike\"
+    }[1m]) > 1 or rate(aerospike_namespace_client_tsvc_timeout{job=\"aerospike\" }[1m])
+    > 1\n    for: 1m\n    labels:\n      severity: critical\n    annotations:\n      summary:
+    \"Client transactions are timing out\"\n      description: \"Client connections
+    timing out at a rate greater than 1/s. Timeouts can occur during network issues
+    or resource contention on the client and/or server nodes.\"\n\n  - alert: LowMemoryNamespaceWarning\n
+    \   expr: aerospike_namespace_memory_free_pct{job=\"aerospike\" } < 20\n    for:
+    30s\n    labels:\n      severity: warn\n    annotations:\n      summary: \"Memory
+    available warning for {{ $labels.instance }}/{{ $labels.ns }}\"\n      description:
+    \"Memory free has dropped below 20% for namespace {{ $labels.ns }} in node {{
+    $labels.instance }}. May indicate a need to reduce the object count or increase
+    capacity.\"\n\n  - alert: LowMemoryNamespaceCritical\n    expr: aerospike_namespace_memory_free_pct{job=\"aerospike\"
+    } < 15\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Memory available critically low for {{ $labels.instance }}/{{
+    $labels.ns }}\"\n      description: \"Memory free has dropped below 15% for namespace
+    {{ $labels.ns }} in node {{ $labels.instance }}. May indicate a need to reduce
+    the object count or increase capacity.\"\n\n  - alert: DeviceWriteQWarning\n    expr:
+    aerospike_namespace_storage_engine_device_write_q{job=\"aerospike\" } > 1\n    for:
+    30s\n    labels:\n      severity: warn\n    annotations:\n      summary: \"Device
+    write queue high for {{ $labels.instance }}/{{ $labels.ns }}/{{ $labels.device_index
+    }}\"\n      description: \"Device write queue is greater than 1 for namespace
+    {{ $labels.ns }} on device {{ $labels.device_index }} in node {{ $labels.instance
+    }}. May indicate underperforming storage subsystem or hotkeys.\"\n\n  - alert:
+    ShadowDeviceWriteQWarning\n    expr: aerospike_namespace_storage_engine_device_shadow_write_q{job=\"aerospike\"
+    } > 1\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Shadow device write queue high for {{ $labels.instance }}/{{ $labels.ns }}/{{
+    $labels.device_index }}\"\n      description: \"Shadow device write queue is greater
+    than 1 for namespace {{ $labels.ns }} on device {{ $labels.device_index }} in
+    node {{ $labels.instance }}. May indicate underperforming storage subsystem or
+    hotkeys.\"\n\n  - alert: DeviceDefragQWarning\n    expr: aerospike_namespace_storage_engine_device_defrag_q{job=\"aerospike\"
+    }> 1000\n    for: 5m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Device defrag queue high for {{ $labels.instance }}/{{ $labels.ns }}/{{ $labels.device_index
+    }}\"\n      description: \"Device defrag queue has been above 1000 for more than
+    5m for namespace {{ $labels.ns }} on device {{ $labels.device_index }} in node
+    {{ $labels.instance }}. May indicate underperforming storage subsystem or hotkeys.\"\n\n
+    \ - alert: ClockSkewStopWrites\n    expr: aerospike_namespace_clock_skew_stop_writes{job=\"aerospike\"
+    } == 1\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Clock skew stop writes\"\n      description: \"Clock has skewed
+    for namespace {{ $labels.ns }} in node {{ $labels.instance }}\"\n\n  - alert:
+    UnavailablePartitions\n    expr: aerospike_namespace_unavailable_partitions{job=\"aerospike\"
+    } > 0\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Some partitions are inaccessible, and roster nodes are missing
+    from the cluster.\"\n      description: \"Some partitions are not available for
+    namespace {{ $labels.ns }} on node {{ $labels.instance }}. Check for network issues
+    and make sure the cluster forms properly.\"\n\n  - alert: DeadPartitions\n    expr:
+    aerospike_namespace_dead_partitions{job=\"aerospike\" } > 2\n    for: 30s\n    labels:\n
+    \     severity: critical\n    annotations:\n      summary: \"There are unavailable
+    partition, but all roster nodes are present in the cluster.\"\n      description:
+    \"Some partitions are dead for namespace {{ $labels.ns }} on node {{ $labels.instance
+    }}. Greater than replication-factor number nodes had an unclean shutdown, and
+    there may be data loss. Will require the use of the revive command to make the
+    partitions available again.\"\n  \n  - alert: NamespaceDataCloseToStopWrites\n
+    \   expr: (aerospike_namespace_data_avail_pct{job=\"aerospike\"  } - aerospike_namespace_storage_engine_stop_writes_avail_pct{job=\"aerospike\"
+    \ }) <= 10\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n
+    \     summary: \"Close to stop writes for {{ $labels.instance }}/{{ $labels.ns
+    }} due to data_avail_pct\"\n      description: \"data_avail_pct for namespace
+    {{ $labels.ns }} in node {{ $labels.instance }} is close to stop-writes-avail-pct
+    limit.\"\n  \n  - alert: LowDataAvailWarning\n    expr: aerospike_namespace_data_avail_pct{job=\"aerospike\"
+    \ } < 55\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n
+    \     summary: \"Device available warning for {{ $labels.instance }}/{{ $labels.ns
+    }}\"\n      description: \"Device available has dropped below 55% for namespace
+    {{ $labels.ns }} in node {{ $labels.instance }}. May indicate that defrag is unable
+    to keep up with the current load, and may result in stop writes if it continues
+    to drop.\"\n  \n  - alert: LowDataAvailCritical\n    expr: aerospike_namespace_data_avail_pct{job=\"aerospike\"
+    \ } < 25\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Device available critically low for {{ $labels.instance }}/{{
+    $labels.ns }}\"\n      description: \"Device available has dropped below 25% for
+    namespace {{ $labels.ns }} in node {{ $labels.instance }}. May indicate that defrag
+    is unable to keep up with the current load, and may result in stop writes if it
+    continues to drop.\"\n  \n  - alert: HighDataUseNamespaceWarning\n    expr: aerospike_namespace_data_used_pct{job=\"aerospike\"
+    , storage_engine=\"memory\" } > 80\n    for: 30s\n    labels:\n      severity:
+    warn\n    annotations:\n      summary: \"Data utilization warning for {{ $labels.instance
+    }}/{{ $labels.ns }}\"\n      description: \"Data used has crossed above 80% for
+    namespace {{ $labels.ns }} in node {{ $labels.instance }}. May indicate a need
+    to reduce the object count or increase capacity.\"\n  \n  - alert: HighDataUseNamespaceCritical\n
+    \   expr: aerospike_namespace_data_used_pct{job=\"aerospike\" , storage_engine=\"memory\"
+    } > 85\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Data utilization critically high for {{ $labels.instance }}/{{
+    $labels.ns }}\"\n      description: \"Data used has crossed above 85% for namespace
+    {{ $labels.ns }} in node {{ $labels.instance }}. May indicate a need to reduce
+    the object count or increase capacity.\"\n\n- name: aerospike_aerospike.rules
+    > NODE\n  rules:\n  - alert: PrometheusNodeExporterNotPresent\n    expr: absent(node_cpu_seconds_total)
+    == 1\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \" Prometheus Node Exporter is not configured \"\n      description: \" Prometheus
+    Node Exporter is not configured in {{ $labels.instance }} \"\n\n  - alert: BestPracticesFailure\n
+    \   expr: aerospike_node_stats_failed_best_practices{job=\"aerospike\" } > 0\n
+    \   for: 30s\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \" Best Practices check failed on {{ $labels.instance }} in cluster {{ $labels.cluster_name
+    }}\"\n      description: \" Best Practices check failed on {{ $labels.instance
+    }} in cluster {{ $labels.cluster_name }}\"\n\n  - alert: ClusterSize\n    expr:
+    aerospike_node_stats_cluster_size{job=\"aerospike\" } < 3\n    for: 30s\n    labels:\n
+    \     severity: critical\n    annotations:\n      summary: \"Cluster size lower
+    than expected\"\n      description: \"Cluster size mismatch for node {{ $labels.instance
+    }}\"\n\n  - alert: ClientConnectionsWarning\n    expr: aerospike_node_stats_client_connections{job=\"aerospike\"
+    } > 11\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Client connections warning\"\n      description: \"Client connections are greater
+    than 11. Connections will fail if they exceed proto-fd-max.\"\n  - alert: ClientConnectionsCritical\n
+    \   expr: aerospike_node_stats_client_connections{job=\"aerospike\" } > 10000\n
+    \   for: 30s\n    labels:\n      severity: critical\n    annotations:\n      summary:
+    \"Client connections critical\"\n      description: \"Client connections are greater
+    than expected peak of 10000.\"\n\n  - alert: ClientConnectionChurn\n    expr:
+    rate(aerospike_node_stats_client_connections_opened{job=\"aerospike\" }[1m]) >
+    100 or rate(aerospike_node_stats_client_connections_closed{job=\"aerospike\" }[1m])
+    > 100\n    for: 1m\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Clients are churning connections at a high rate\"\n      description:
+    \"Client connections are being opened or closed at a rate greater than 100/s.
+    Connection churn can increase latency and client timeouts which in turn cause
+    the client to open more connections.\"\n\n  - alert: ClockSkewWarning\n    expr:
+    aerospike_node_stats_cluster_clock_skew_ms{job=\"aerospike\" } > 2000\n    for:
+    30s\n    labels:\n      severity: warn\n    annotations:\n      summary: \"Cluster
+    clock skew warning{\"\n      description: \"Current maximum clock skew between
+    nodes - will trigger stop writes when it exceeds 2000 seconds if nsup-period is
+    non-zero.\"\n\n  - alert: ClockSkewCritical\n    expr: aerospike_node_stats_cluster_clock_skew_ms{job=\"aerospike\"
+    } > 20000\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Cluster clock skew critical alert\"\n      description: \"Current
+    maximum clock skew between nodes - will trigger stop writes when it exceeds 20000
+    if nsup-period is non-zero.\"\n\n  - alert: LowMemorySystemWarning\n    expr:
+    aerospike_node_stats_system_free_mem_pct{job=\"aerospike\" } < 20\n    for: 30s\n
+    \   labels:\n      severity: warn\n    annotations:\n      summary: \"Memory available
+    warning for {{ $labels.instance }}\"\n      description: \"Total memory free has
+    dropped below 20% for node {{ $labels.instance }}.\"\n\n  - alert: LowMemorySystemCritical\n
+    \   expr: aerospike_node_stats_system_free_mem_pct{job=\"aerospike\" } < 10\n
+    \   for: 30s\n    labels:\n      severity: critical\n    annotations:\n      summary:
+    \"Memory available critically low for {{ $labels.instance }}\"\n      description:
+    \"Total memory free has dropped below 10% for node {{ $labels.instance }}.\"\n\n
+    \ - alert: HeapEfficiencyWarning\n    #expr: aerospike_node_stats_heap_efficiency_pct{job=\"aerospike\"
+    } < 60\n    expr: (100 - aerospike_node_stats_system_free_mem_pct{job=\"aerospike\"
+    }) > 70 and aerospike_node_stats_heap_efficiency_pct{job=\"aerospike\" } < 60\n
+    \   for: 30s\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Heap efficiency warning for {{ $labels.instance }}\"\n      description: \"Heap
+    efficiency for node for {{ $labels.instance }} has dropped below 60%.\"\n\n  -
+    alert: RwInProgressWarning\n    expr: aerospike_node_stats_rw_in_progress{job=\"aerospike\"
+    }> 100\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Read/write queue too high for {{ $labels.instance }}/{{ $labels.ns }}/{{ $labels.device_index
+    }}\"\n      description: \"Read/write queue is greater than 100 for namespace
+    {{ $labels.ns }} on device {{ $labels.device_index }} in node {{ $labels.instance
+    }}. May indicate underperforming storage subsystem or hotkeys.\"\n\n  - alert:
+    DetailLogEnabled\n    expr: sum by (job, cluster_name, service) (aerospike_node_stats_pseudo_log_detail{job=\"aerospike\"})
+    > 0\n    labels:\n      severity: critical\n    annotations:\n      summary: \"DETAIL
+    Log level is ENABLED in node {{ $labels.service }} \"\n      description: \"DETAIL
+    Log level is ENABLED in node {{ $labels.service }} \"\n\n  - alert: DebugLogEnabled\n
+    \   expr: sum by (job, cluster_name, service) (aerospike_node_stats_pseudo_log_debug{job=\"aerospike\"})
+    > 0\n    labels:\n      severity: critical\n    annotations:\n      summary: \"DEBUG
+    Log level is ENABLED in node {{ $labels.service }} \"\n      description: \"DEBUG
+    Log level is ENABLED in node {{ $labels.service }} \"\n\n- name: aerospike_aerospike.rules
+    > SET\n  rules:\n  - alert: pre7x_NamespaceSetQuotaWarning\n    expr: (((aerospike_sets_device_data_bytes{job=\"aerospike\"
+    } + aerospike_sets_memory_data_bytes{job=\"aerospike\" }) / (aerospike_sets_stop_writes_size{job=\"aerospike\"
+    } != 0)) * 100) > 80\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n
+    \     description: \"Nearing memory quota for {{ $labels.set }} in namespace {{
+    $labels.ns }} in node {{ $labels.instance }}.\"\n      summary: \"One of your
+    nodes is at  % of the quota you have configured on the set.\"\n  \n  - alert:
+    pre7x_NamespaceSetQuotaAlertCritical\n    expr: (((aerospike_sets_device_data_bytes{job=\"aerospike\"
+    } + aerospike_sets_memory_data_bytes{job=\"aerospike\" }) / (aerospike_sets_stop_writes_size{job=\"aerospike\"
+    } != 0)) * 100) > 99\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     description: \"At or Above memory quota for {{ $labels.set }} in namespace
+    {{ $labels.ns }} in node {{ $labels.instance }}.\"\n      summary: \"One of your
+    nodes is at % of the quota you have configured on the set.\"\n  \n  - alert: NamespaceSetQuotaWarning\n
+    \   expr: (((aerospike_sets_data_used_bytes{job=\"aerospike\"  } ) / (aerospike_sets_stop_writes_size{job=\"aerospike\"
+    \ } != 0)) * 100) > 80\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n
+    \     description: \"Nearing memory quota for {{ $labels.set }} in namespace {{
+    $labels.ns }} in node {{ $labels.instance }}.\"\n      summary: \"One of your
+    nodes is at % of the quota you have configured on the set.\"\n    \n  - alert:
+    NamespaceSetQuotaAlertCritical\n    expr: (((aerospike_sets_data_used_bytes{job=\"aerospike\"
+    \ } ) / (aerospike_sets_stop_writes_size{job=\"aerospike\"  } != 0)) * 100) >
+    99\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n      description:
+    \"At or Above memory quota for {{ $labels.set }} in namespace {{ $labels.ns }}
+    in node {{ $labels.instance }}.\"\n      summary: \"One of your nodes is at %
+    of the quota you have configured on the set.\"\n            \n- name: aerospike_aerospike.rules
+    > LATENCIES\n  rules:\n  - alert: ReadLatencyP95Warning\n    expr: histogram_quantile(0.95,
+    (aerospike_latencies_read_ms_bucket{job=\"aerospike\" })) > 2\n    for: 2m\n    labels:\n
+    \     severity: warn\n    annotations:\n      summary: \"Read latency breached
+    for {{ $labels.ns }} on {{ $labels.instance }}\"\n      description: \"95th percentile
+    read latency breached 2ms for namespace {{ $labels.ns }} on host {{ $labels.instance
+    }}.\"\n\n  - alert: ReadLatencyP99Warning\n    expr: histogram_quantile(0.99,
+    (aerospike_latencies_read_ms_bucket{job=\"aerospike\" })) > 4\n    for: 2m\n    labels:\n
+    \     severity: warn\n    annotations:\n      summary: \"Read latency breached
+    for {{ $labels.ns }} on {{ $labels.instance}}\"\n      description: \"99th percentile
+    read latency breached 4ms for namespace {{ $labels.ns }} on host {{ $labels.instance
+    }}.\"\n\n  - alert: ReadLatencyP999Warning\n    expr: histogram_quantile(0.999,
+    (aerospike_latencies_read_ms_bucket{job=\"aerospike\" })) > 16\n    for: 2m\n
+    \   labels:\n      severity: warn\n    annotations:\n      summary: \"Read latency
+    breached for {{ $labels.ns }} on {{ $labels.instance }}\"\n      description:
+    \"99.9th percentile read latency breached 16ms for namespace {{ $labels.ns }}
+    on host {{ $labels.instance }}.\"\n\n  - alert: WriteLatencyP95Warning\n    expr:
+    histogram_quantile(0.95, (aerospike_latencies_write_ms_bucket{job=\"aerospike\"
+    })) > 4\n    for: 2m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Write latency breached for {{ $labels.ns }} on {{ $labels.instance }}\"\n      description:
+    \"95th percentile write latency breached 4ms for namespace {{ $labels.ns }} on
+    host {{ $labels.instance }}.\"\n\n  - alert: WriteLatencyP99Warning\n    expr:
+    histogram_quantile(0.99, (aerospike_latencies_write_ms_bucket{job=\"aerospike\"
+    })) > 16\n    for: 2m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Write latency breached for {{ $labels.ns }} on {{ $labels.instance }}\"\n      description:
+    \"99th percentile write latency breached 16ms for namespace {{ $labels.ns }} on
+    host {{ $labels.instance }}.\"\n\n  - alert: WriteLatencyP999Warning\n    expr:
+    histogram_quantile(0.999, (aerospike_latencies_write_ms_bucket{job=\"aerospike\"
+    })) > 64\n    for: 2m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Write latency breached for {{ $labels.ns }} on {{ $labels.instance }}\"\n      description:
+    \"99.9th percentile write latency breached 64ms for namespace {{ $labels.ns }}
+    on host {{ $labels.instance }}.\"\n\n\n- name: aerospike_aerospike.rules > XDR\n
+    \ rules:\n\n  - alert: XDRTimelag\n    expr: aerospike_xdr_lag{job=\"aerospike\"
+    } > 5\n    for: 2m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"XDR lag for namespace {{ $labels.ns }} exceeding 5 second(s) from node {{ $labels.instance
+    }} to DC {{ $labels.dc }}\"\n      description: \"XDR lag may be due to network
+    connectivity issues, inability for the source to keep up with incoming writes,
+    or write failures at the destination.\"\n  - alert: XDRAbandonedRecords\n    expr:
+    rate(aerospike_xdr_abandoned{job=\"aerospike\" }[1m]) > 0\n    for: 30s\n    labels:\n
+    \     severity: warn\n    annotations:\n      summary: \"Abandoned records detected
+    for XDR on node {{ $labels.instance }} to DC {{ $labels.dc }}\"\n      description:
+    \"Records abandoned at a destination cluster may indicate a configuration mismatch
+    for the namespace between source and destination.\"\n  - alert: XDRRetryNoNode\n
+    \   expr: rate(aerospike_xdr_retry_no_node{job=\"aerospike\" }[1m]) > 0\n    for:
+    30s\n    labels:\n      severity: warn\n    annotations:\n      summary: \"XDR
+    retries occuring on node {{ $labels.instance }} to DC {{ $labels.dc }} due to
+    unknown master node destination\"\n      description: \"XDR cannot determine which
+    destination node is the master.\"\n\n  - alert: XDRRetryConnReset\n    expr: rate(aerospike_xdr_retry_conn_reset{job=\"aerospike\"
+    }[1m]) > 2\n    for: 2m\n    labels:\n      severity: warn\n    annotations:\n
+    \     summary: \"Rate of XDR connection resets greater than 2/s from {{ $labels.instance
+    }} to DC {{ $labels.dc }} \"\n      description: \"XDR retries occuring due to
+    due to timeouts, network problems, or destination node restarts.\"\n\n  - alert:
+    XDRRetryDest\n    expr: rate(aerospike_xdr_retry_dest{job=\"aerospike\" }[1m])
+    > 5\n    for: 2m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Increase in XDR write retries is greater than 5/s from {{ $labels.instance }}
+    to DC {{ $labels.dc }}\"\n      description: \"XDR retries due to errors returned
+    by the destination node, u.e. key busy or device overload.\"\n\n  - alert: XDRLatencyWarning\n
+    \   expr: aerospike_xdr_latency_ms{job=\"aerospike\" } > 100\n    for: 30s\n    labels:\n
+    \     severity: warn\n    annotations:\n      summary: \"XDR latency above 100ms
+    from {{ $labels.instance }} to DC {{ $labels.dc }}\"\n      description: \"Network
+    latency between XDR source and destination over the last 30s is higher than expected.\"\n\n
+    \ - alert: XDRLap\n    expr: aerospike_xdr_lap_us{job=\"aerospike\" } > 75000\n
+    \   for: 30s\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"XDR lap time greater than 75000 microseconds from {{ $labels.instance }} to
+    DC {{ $labels.dc }}\"\n      description: \"The XDR processing cycle time (lap_us)
+    is approaching the configured period-ms value.\"\n\n  - alert: XDRRecoveries\n
+    \   expr: increase(aerospike_xdr_recoveries{job=\"aerospike\" }[1m]) > 0\n    for:
+    \ 2m\n    labels:\n      severity: critical\n    annotations:\n      summary:
+    \"XDR recoveries increasing on {{ $labels.instance }} to DC {{ $labels.dc }}\"\n
+    \     description: \"XDR recoveries happen during reind or may indicate that the
+    in-memory transaction queue is full (the transaction-queue-limit may be too small).\"\n"
+  aerospike_secret_agent_rules.yml: |+
+    groups:
+    - name: secret_agent.rules
+      rules:
+      - alert: AerospikeSecretAgentDown
+        expr: absent(aerospike_sa_connections_active{job="aerospike_secret_agent"}) == 1
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Aerospike Secret Agent instance {{ $labels.instance }} in cluster {{$labels.cluster_name}} has been down for more than 1m."
+          description: "Aerospike Secret Agent instance {{ $labels.instance }} in cluster {{$labels.cluster_name}} has been down for more than 1m."
+
+  deprecated_aerospike_rules.yml: "groups:\n  - name: aerospike.rules\n    rules:\n
+    \   - alert: ExporterAgentDown\n      expr: up{job=\"aerospike\"} == 0\n      for:
+    30s\n      labels:\n        severity: \"1\"\n      annotations:\n        description:
+    '{{ $labels.instance }} has been down for more than 30 seconds.'\n        summary:
+    Node {{ $labels.instance }} down\n    - alert: AerospikeNodeDown\n      expr:
+    aerospike_node_up{job=\"aerospike\"} == 0\n      for: 30s\n      labels:\n        severity:
+    \"1\"\n      annotations:\n        description: '{{ $labels.instance }} node is
+    down.'\n        summary: Node {{ $labels.instance }} down\n    - alert: NamespaceStopWrites\n
+    \     expr: aerospike_namespace_stop_writes{job=\"aerospike\"} == 1\n      for:
+    30s\n      labels:\n        severity: \"1\"\n      annotations:\n        description:
+    'Used diskspace for namespace {{ $labels.ns }} in node {{ $labels.instance }}
+    is above stop writes limit.'\n        summary: Stop Writes for {{ $labels.instance
+    }}/{{ $labels.ns }}\n    - alert: NamespaceMemoryCloseToStopWrites\n      expr:
+    (aerospike_namespace_stop_writes_pct{job=\"aerospike\"} - (100 - aerospike_namespace_memory_free_pct{job=\"aerospike\"}))
+    <= 10\n      for: 30s\n      labels:\n        severity: \"2\"\n      annotations:\n
+    \       description: 'Free memory for namespace {{ $labels.ns }} in node {{ $labels.instance
+    }} is close to stop writes limit.'\n        summary: Close to stop writes for
+    {{ $labels.instance }}/{{ $labels.ns }} due to memory\n    - alert: NamespaceDiskCloseToStopWrites\n
+    \     expr: (aerospike_namespace_device_available_pct{job=\"aerospike\"} - aerospike_namespace_storage_engine_min_avail_pct{job=\"aerospike\"})
+    <= 10\n      for: 30s\n      labels:\n        severity: \"2\"\n      annotations:\n
+    \       description: 'device_available_pct for namespace {{ $labels.ns }} in node
+    {{ $labels.instance }} is close to min-avail-pct (stop writes) limit.'\n        summary:
+    Close to stop writes for {{ $labels.instance }}/{{ $labels.ns }} due to device_available_pct\n
+    \   - alert: NamespacePmemCloseToStopWrites\n      expr: (aerospike_namespace_pmem_available_pct{job=\"aerospike\"}
+    - aerospike_namespace_storage_engine_min_avail_pct{job=\"aerospike\"}) <= 10\n
+    \     for: 30s\n      labels:\n        severity: \"2\"\n      annotations:\n        description:
+    'pmem_available_pct for namespace {{ $labels.ns }} in node {{ $labels.instance
+    }} is close to min-avail-pct (stop writes) limit.'\n        summary: Close to
+    stop writes for {{ $labels.instance }}/{{ $labels.ns }} due to pmem_available_pct\n
+    \   - alert: ClockSkewStopWrites\n      expr: aerospike_namespace_clock_skew_stop_writes{job=\"aerospike\"}
+    == 1\n      for: 30s\n      labels:\n        severity: \"1\"\n      annotations:\n
+    \       description: 'Clock has skewed for namespace {{ $labels.ns }} in node
+    {{ $labels.instance }}'\n        summary: Writes will be stopped by Aerospike\n
+    \   - alert: ClusterSize\n      expr: aerospike_node_stats_cluster_size{job=\"aerospike\"}
+    < 3 # user has to replace 3 here with their desired cluster size.\n      for:
+    30s\n      labels:\n        severity: \"1\"\n      annotations:\n        description:
+    'Cluster size mismatch for namespace {{ $labels.ns }} in node {{ $labels.instance
+    }}'\n        summary: Some of the node(s) has gone out of the cluster\n    - alert:
+    DeadPartitions\n      expr: aerospike_namespace_dead_partitions{job=\"aerospike\"}
+    > 0\n      for: 30s\n      labels:\n        severity: \"1\"\n      annotations:\n
+    \       description: 'Some of the partition(s) for namespace {{ $labels.ns }}
+    in node {{ $labels.instance }} are dead'\n        summary: Will require the use
+    of the revive command to make them available again\n    - alert: HwmBreached\n
+    \     expr: aerospike_namespace_hwm_breached{job=\"aerospike\"} == 1\n      for:
+    30s\n      labels:\n        severity: \"1\"\n      annotations:\n        description:
+    'High water mark has breached for namespace {{ $labels.ns }} in node {{ $labels.instance
+    }}'\n        summary: Eviction will start to make the space available\n    - alert:
+    UnavailablePartitions\n      expr: aerospike_namespace_unavailable_partitions{job=\"aerospike\"}
+    > 0\n      for: 30s\n      labels:\n        severity: \"1\"\n      annotations:\n
+    \       description: 'Some of the partition(s) is not available for namespace
+    {{ $labels.ns }} in node {{ $labels.instance }}'\n        summary: Server could
+    not find some partition(s). Check for the network issues and make sure cluster
+    forms properly\n    - alert: XDRTimelag\n      expr: aerospike_node_stats_xdr_timelag{job=\"aerospike\"}
+    > 10 # (Aerospike 4.9 and older) user can configure the seconds. Refer XDR throttling\n
+    \     for: 30s\n      labels:\n        severity: \"2\"\n      annotations:\n        description:
+    'There seems some lag in XDR for namespace {{ $labels.ns }} in node {{ $labels.instance
+    }}'\n        summary: Lag can be there in XDR due to network connectivity issues
+    or errors writing at a destination cluster\n    - alert: XDRTimelag\n      expr:
+    aerospike_xdr_lag{job=\"aerospike\"} > 10 # (Aerospike 5.0 and later) user can
+    configure the seconds. Refer XDR throttling\n      for: 30s\n      labels:\n        severity:
+    \"2\"\n      annotations:\n        description: 'There seems some lag in XDR for
+    namespace {{ $labels.ns }} in node {{ $labels.instance }}'\n        summary: Lag
+    can be there in XDR due to network connectivity issues or errors writing at a
+    destination cluster\n    - alert: ActiveProxies\n      expr: (increase(aerospike_namespace_client_proxy_complete{job=\"aerospike\"}[2m])
+    + increase(aerospike_namespace_client_proxy_timeout{job=\"aerospike\"}[2m]) +
+    increase(aerospike_namespace_client_proxy_error{job=\"aerospike\"}[2m]) + increase(aerospike_namespace_batch_sub_proxy_complete{job=\"aerospike\"}[2m])
+    + increase(aerospike_namespace_batch_sub_proxy_timeout{job=\"aerospike\"}[2m])
+    + increase(aerospike_namespace_batch_sub_proxy_error{job=\"aerospike\"}[2m]))
+    > 0\n      for: 30s\n      labels:\n        severity: \"2\"\n      annotations:\n
+    \       description: 'Active proxies detected for {{ $labels.ns }} on node {{
+    $labels.instance }}'\n        summary: Node is doing proxy. Proxies can happen
+    during cluster change / migrations or if there are any network issues.\n    -
+    alert: NamespaceSupervisorFallingBehind\n      expr: aerospike_namespace_nsup_cycle_deleted_pct{job=\"aerospike\"}
+    > 1 # (Aerospike 6.3 and later) \n      for: 30s\n      labels:\n        severity:
+    \"1\"\n      annotations:\n        description: 'There seems some lag falling
+    behind and/or display the length of time the most recent NSUP cycle lasted {{
+    $labels.ns }} in node {{ $labels.instance }}'\n        summary: NSUP is falling
+    behind and/or display the length of time the most recent NSUP cycle lasted\n    -
+    alert: NamespaceFreeMemoryCloseToStopWrites\n      expr: (aerospike_namespace_stop_writes_sys_memory_pct{job=\"aerospike\"}
+    - scalar(100 - (aerospike_node_stats_system_free_mem_pct{job=\"aerospike\"})))
+    <= 10\n      for: 30s\n      labels:\n        severity: \"1\"\n      annotations:\n
+    \       description: 'Free memory for namespace {{ $labels.ns }} in node {{ $labels.instance
+    }} is close to stop writes limit.'\n        summary: Close to stop writes for
+    {{ $labels.instance }}/{{ $labels.ns }} due to memory\n    - alert: NamespaceSetQuotaWarning\n
+    \     expr: (((aerospike_sets_device_data_bytes{job=\"aerospike\"} + aerospike_sets_memory_data_bytes{job=\"aerospike\"})
+    / (aerospike_sets_stop_writes_size{job=\"aerospike\"} != 0)) * 100) > 80\n      for:
+    30s\n      labels:\n        severity: \"1\"\n      annotations:\n        description:
+    'Nearing memory quota for {{ $labels.set }} in namespace {{ $labels.ns }} in node
+    {{ $labels.instance }}.'\n        summary: One of your nodes is at 80% of the
+    quota you have configured on the set.\n    - alert: NamespaceSetQuotaAlert\n      expr:
+    (((aerospike_sets_device_data_bytes{job=\"aerospike\"} + aerospike_sets_memory_data_bytes{job=\"aerospike\"})
+    / (aerospike_sets_stop_writes_size{job=\"aerospike\"} != 0)) * 100) > 99\n      for:
+    30s\n      labels:\n        severity: \"1\"\n      annotations:\n        description:
+    'At or Above memory quota for {{ $labels.set }} in namespace {{ $labels.ns }}
+    in node {{ $labels.instance }}.'\n        summary: One of your nodes is at 99%
+    of the quota you have configured on the set.\n"
+  node_exporter_alerts.yml: "groups:\n- name: node_exporter_alerts\n  rules:\n  -
+    alert: HostNodeExporterDownCritical\n    expr: up{job=\"node-exporter\"} == 0\n
+    \   for: 1m\n    labels:\n      severity: critical\n    annotations:\n      summary:
+    \"Host ({{ $labels.instance }}) is down in cluster {{ $labels.cluster_name }}
+    \"\n      description: \"Failed to scrape {{ $labels.job }} on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }} for more than 1m minutes. node-exporter
+    seems down.\"\n\n  - alert: HostMemoryFillingUpWarn\n    expr: 100 - (node_memory_MemAvailable_bytes{job=\"node-exporter\"}
+    / node_memory_MemTotal_bytes{job=\"node-exporter\"} * 100 ) > 70\n    for: 1m\n
+    \   labels:\n      severity: warn\n    annotations:\n      summary: \"Host memory
+    filling up on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}\"\n
+    \     description: \"Memory is filling up (> 70%) on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }} VALUE = {{ $value }} \"\n\n  - alert:
+    HostMemoryFillingUpCritical\n    expr: 100 - (node_memory_MemAvailable_bytes{job=\"node-exporter\"}
+    / node_memory_MemTotal_bytes{job=\"node-exporter\"} * 100 ) > 90\n    for: 1m\n
+    \   labels:\n      severity: critical\n    annotations:\n      summary: \"Host
+    memory filling up on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Node memory is filling up (> 90%) on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }} \"\n\n  - alert:
+    HostDiskSpaceFillingUpWarn\n    expr: 100 - (node_filesystem_avail_bytes{job=\"node-exporter\"}
+    * 100) / node_filesystem_size_bytes{job=\"node-exporter\"} > 70 and ON (instance,
+    device, mountpoint) node_filesystem_readonly{job=\"node-exporter\"} == 0\n    for:
+    1m\n    labels:\n      severity: warn\n    annotations:\n      summary: \"Host
+    disk space is filling up on ({{ $labels.instance }})of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Disk is crossing (> 70% ) on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }} VALUE = {{ $value }} \"\n\n  - alert:
+    HostDiskSpaceFillingUpCritical\n    expr: 100 - (node_filesystem_avail_bytes{job=\"node-exporter\"}
+    * 100) / node_filesystem_size_bytes{job=\"node-exporter\"} > 90 and ON (instance,
+    device, mountpoint) node_filesystem_readonly{job=\"node-exporter\"} == 0\n    for:
+    1m\n    labels:\n      severity: critical\n    annotations:\n      summary: \"Host
+    disk space is filling up on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Disk is crossing (> 90% ) on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }} \"\n\n  - alert:
+    HostInodesFillingUpWarn\n    expr: 100 - node_filesystem_files_free{job=\"node-exporter\"}
+    / node_filesystem_files{job=\"node-exporter\"} * 100 > 70 and ON (instance, device,
+    mountpoint) node_filesystem_readonly{job=\"node-exporter\"} == 0\n    for: 1m\n
+    \   labels:\n      severity: warn\n    annotations:\n      summary: \"Host inodes
+    filling Up on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}\"\n
+    \     description: \"Disk is running out of available inodes (> 70%) on host {{
+    $labels.instance }} of cluster {{ $labels.cluster_name }} VALUE = {{ $value }}
+    \"\n\n  - alert: HostInodesFillingUpCritical\n    expr: 100 - node_filesystem_files_free{job=\"node-exporter\"}
+    / node_filesystem_files{job=\"node-exporter\"} * 100 > 90 and ON (instance, device,
+    mountpoint) node_filesystem_readonly{job=\"node-exporter\"} == 0\n    for: 1m\n
+    \   labels:\n      severity: critical\n    annotations:\n      summary: \"Host
+    inodes filling Up on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Disk is running out of available inodes (> 90%) on
+    host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE = {{
+    $value }} \"\n\n  - alert: HostUnusualDiskReadLatencyWarn\n    expr: (node_disk_read_time_seconds_total{job=\"node-exporter\"})
+    / (node_disk_reads_completed_total{job=\"node-exporter\"})  > 0.1  and (node_disk_reads_completed_total{job=\"node-exporter\"})
+    > 0\n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Host unusual disk read latency on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Disk read latency is increasing (read operations >
+    0.1s)  on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }} VALUE
+    = {{ $value }} \"\n\n  - alert: HostUnusualDiskReadLatencyCritical\n    expr:
+    (node_disk_read_time_seconds_total{job=\"node-exporter\"}) / (node_disk_reads_completed_total{job=\"node-exporter\"})
+    \ > 0.5  and (node_disk_reads_completed_total{job=\"node-exporter\"}) > 0\n    for:
+    1m\n    labels:\n      severity: critical\n    annotations:\n      summary: \"Host
+    unusual disk read latency on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Disk read latency is increasing (read operations >
+    0.5s) on host {{ $labels.instance }}  of cluster {{ $labels.cluster_name }}. VALUE
+    = {{ $value }} \"\n\n  - alert: HostUnusualDiskWriteLatencyWarn\n    expr: (node_disk_write_time_seconds_total{job=\"node-exporter\"})
+    / (node_disk_writes_completed_total{job=\"node-exporter\"})  > 0.1 and (node_disk_writes_completed_total{job=\"node-exporter\"})
+    > 0\n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Host unusual disk write latency on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Disk write latency is increasing (write operations
+    > 0.1s) on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}.
+    VALUE = {{ $value }}\"\n\n  - alert: HostUnusualDiskWriteLatencyCritical\n    expr:
+    (node_disk_write_time_seconds_total{job=\"node-exporter\"}) / (node_disk_writes_completed_total{job=\"node-exporter\"})
+    \ > 0.5 and (node_disk_writes_completed_total{job=\"node-exporter\"}) > 0\n    for:
+    1m\n    labels:\n      severity: critical\n    annotations:\n      summary: \"Host
+    unusual disk write latency ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Disk write latency is increasing (write operations
+    > 0.5s) on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}.
+    VALUE = {{ $value }}\"\n\n  - alert: HostHighCpuUtilizationWarn(Host)\n    expr:
+    sum by (instance) (node_cpu_seconds_total{mode!=\"idle\", job=\"node-exporter\"})
+    / on(instance) group_left sum by (instance)((node_cpu_seconds_total{job=\"node-exporter\"}))
+    * 100 > 70\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n
+    \     summary: \"Host high CPU load on ({{ $labels.instance }}) of cluster {{
+    $labels.cluster_name }}\"\n      description: \"CPU utilization is crossing (>
+    70%) on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE
+    = {{ $value }}\"\n\n  - alert: HostHighCpuUtilizationCritical(Host)\n    expr:
+    sum by (instance) (node_cpu_seconds_total{mode!=\"idle\", job=\"node-exporter\"})
+    / on(instance) group_left sum by (instance)((node_cpu_seconds_total{job=\"node-exporter\"}))
+    * 100 > 90\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Host high CPU load on ({{ $labels.instance }}) of cluster {{
+    $labels.cluster_name }}\"\n      description: \"CPU utilization is crossing (>
+    90%) on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE
+    = {{ $value }}\"\n\n  - alert: HostHighCpuUtilizationWarn(Core)\n    expr: sum
+    by (instance, cpu) (node_cpu_seconds_total{mode!=\"idle\", job=\"node-exporter\"})
+    / on(instance) group_left sum by (instance)((node_cpu_seconds_total{job=\"node-exporter\"}))
+    * 100 > 70\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n
+    \     summary: \"Host high CPU load on ({{ $labels.instance }}) of cluster {{
+    $labels.cluster_name }}\"\n      description: \"CPU utilization is crossing (>
+    70%) for ({{ $labels.cpu }}) on host {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }}. VALUE = {{ $value }}\"\n\n  - alert: HostHighCpuUtilizationCritical(Core)\n
+    \   expr: sum by (instance, cpu) (node_cpu_seconds_total{mode!=\"idle\", job=\"node-exporter\"})
+    / on(instance) group_left sum by (instance)((node_cpu_seconds_total{job=\"node-exporter\"}))
+    * 100 > 90\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Host high CPU load on ({{ $labels.instance }}) of cluster {{
+    $labels.cluster_name }}\"\n      description: \"CPU utilization is crossing (>
+    90%) for ({{ $labels.cpu }}) on host {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }}. VALUE = {{ $value }}\"\n\n  - alert: HostCpuStealWarn(Host)\n    expr: sum
+    by (instance)(node_cpu_seconds_total{mode=\"steal\", job=\"node-exporter\"})  /
+    on(instance) group_left sum by (instance)((node_cpu_seconds_total{job=\"node-exporter\"}))
+    * 100 > 3\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n
+    \     summary: \"Host CPU steal on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"CPU steal is > 3% on host {{ $labels.instance }} of
+    cluster {{ $labels.cluster_name }}. VALUE = {{ $value }}. A noisy neighbor is
+    killing VM performances or a spot instance may be out of credit. \"\n\n  - alert:
+    HostCpuStealCritical(Host)\n    expr: sum by (instance)(node_cpu_seconds_total{mode=\"steal\",
+    job=\"node-exporter\"})  / on(instance) group_left sum by (instance)((node_cpu_seconds_total{job=\"node-exporter\"}))
+    * 100 > 5\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Host CPU steal on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"CPU steal is (> 5%) on host {{ $labels.instance }}
+    of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }}. A noisy neighbor
+    is killing VM performances or a spot instance may be out of credit. \"\n\n  -
+    alert: HostCpuStealWarn(Core)\n    expr: sum by (instance, cpu)(node_cpu_seconds_total{mode=\"steal\",
+    job=\"node-exporter\"})  / on(instance) group_left sum by (instance)((node_cpu_seconds_total{job=\"node-exporter\"}))
+    * 100 > 3\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n
+    \     summary: \"Host CPU steal on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"CPU steal is (> 3%) for ({{ $labels.cpu }}) on host
+    {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value
+    }}. A noisy neighbor is killing VM performances or a spot instance may be out
+    of credit. \"\n\n  - alert: HostCpuStealCritical(Core)\n    expr: sum by (instance
+    ,cpu)(node_cpu_seconds_total{mode=\"steal\", job=\"node-exporter\"})  / on(instance)
+    group_left sum by (instance)((node_cpu_seconds_total{job=\"node-exporter\"}))
+    * 100 > 5\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Host CPU steal on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"CPU steal is (> 5%) for ({{ $labels.cpu }}) on host
+    {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value
+    }}. A noisy neighbor is killing VM performances or a spot instance may be out
+    of credit. \"\n\n  - alert: HostNetworkReceiveErrorsWarn\n    expr: ((node_network_receive_errs_total{job=\"node-exporter\"})
+    / (node_network_receive_packets_total{job=\"node-exporter\"})) * 100 > 3\n    for:
+    1m\n    labels:\n      severity: warn\n    annotations:\n      summary: \"Host
+    Network Receive Errors on ({{ $labels.instance }}:{{ $labels.device }}) of cluster
+    {{ $labels.cluster_name }}\"\n      description: \"Instance interface has encountered
+    {{ $value }} receive errors for {{ $labels.device }} on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }} \"\n\n  - alert:
+    HostNetworkReceiveErrorsCritical\n    expr: ((node_network_receive_errs_total{job=\"node-exporter\"})
+    / (node_network_receive_packets_total{job=\"node-exporter\"})) * 100 > 5\n    for:
+    1m\n    labels:\n      severity: critical\n    annotations:\n      summary: \"Host
+    Network Receive Errors on ({{ $labels.instance }}:{{ $labels.device }}) of cluster
+    {{ $labels.cluster_name }}\"\n      description: \"Instance interface has encountered
+    {{ $value }} receive errors for {{ $labels.device }} on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }} \"\n\n  - alert:
+    HostNetworkTransmitErrorsWarn\n    expr:  ((node_network_transmit_errs_total{job=\"node-exporter\"})
+    / (node_network_transmit_packets_total{job=\"node-exporter\"})) * 100 > 3\n    for:
+    1m\n    labels:\n      severity: warn\n    annotations:\n      summary: \"Host
+    Network Transmit Errors on ({{ $labels.instance }}:{{ $labels.device }}) of cluster
+    {{ $labels.cluster_name }}\"\n      description: \"Instance has encountered {{
+    $value }} transmit errors for {{ $labels.device }} on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }}\"\n\n  - alert:
+    HostNetworkTransmitErrorsCritical\n    expr:  ((node_network_transmit_errs_total{job=\"node-exporter\"})
+    / (node_network_transmit_packets_total{job=\"node-exporter\"})) * 100 > 5\n    for:
+    1m\n    labels:\n      severity: critical\n    annotations:\n      summary: \"Host
+    Network Transmit Errors on ({{ $labels.instance }}:{{ $labels.device }}) of cluster
+    {{ $labels.cluster_name }}\"\n      description: \"Instance has encountered {{
+    $value }} transmit errors for {{ $labels.device }} on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }}. VALUE = {{ $value }}\"\n\n  - alert:
+    HostNetworkInterfaceSaturatedWarn\n    expr: ((node_network_receive_bytes_total{job=\"node-exporter\"})
+    + (node_network_transmit_bytes_total{job=\"node-exporter\"})) / (node_network_speed_bytes{job=\"node-exporter\"})
+    > 0.8\n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Host Network Interface Saturated ({{ $labels.instance }}:{{ $labels.interface
+    }}) of cluster {{ $labels.cluster_name }}\"\n      description: \"The network
+    interface is getting overloaded (> 0.8) on host  {{ $labels.instance }} of cluster
+    {{ $labels.cluster_name }} {{ $value }}.  VALUE = {{ $value }}\"\n\n  - alert:
+    HostNetworkInterfaceSaturatedCritical\n    expr: ((node_network_receive_bytes_total{job=\"node-exporter\"})
+    + (node_network_transmit_bytes_total{job=\"node-exporter\"})) / (node_network_speed_bytes{job=\"node-exporter\"})
+    > 0.9\n    for: 1m\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Host Network Interface Saturated on ({{ $labels.instance }}:{{
+    $labels.interface }}) of cluster {{ $labels.cluster_name }}\"\n      description:
+    \"The network interface is getting overloaded (> 0.9) {{ $value }} on host {{
+    $labels.instance }}:{{ $labels.interface }} of cluster {{ $labels.cluster_name
+    }}.  VALUE = {{ $value }}\"\n\n  - alert: HostClockNotSynchronisingWarn\n    expr:
+    min_over_time(node_timex_sync_status{job=\"node-exporter\"}[2m]) == 0 and node_timex_maxerror_seconds{job=\"node-exporter\"}
+    >= 16\n    for: 2m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Host clock not synchronising on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Clock not synchronising on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }}.  VALUE = {{ $value }}\"\n      \n  -
+    alert: HostSwapInWarn\n    expr: (node_vmstat_pswpin{job=\"node-exporter\"})  >
+    5\n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Host PageSwapIn value is too high on {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"PageSwapIn(data from swap space on disk back into the
+    physical memory (RAM)) value exceeds 5 on host {{ $labels.instance }}  of cluster
+    {{ $labels.cluster_name }}. Current value is {{ $value }}.\"\n\n  - alert: HostSwapInCritical\n
+    \   expr: (node_vmstat_pswpin{job=\"node-exporter\"})  > 10\n    for: 1m\n    labels:\n
+    \     severity: critical\n    annotations:\n      summary: \"Host PageSwapIn value
+    is too high on {{ $labels.instance }} of cluster {{ $labels.cluster_name }}\"\n
+    \     description: \"PageSwapIn(data from swap space on disk back into the physical
+    memory (RAM)) value exceeds 10 on host {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }}. Current value is {{ $value }}.\"\n\n  - alert: HostSwapOutWarn\n    expr:
+    (node_vmstat_pswpout{job=\"node-exporter\"}) > 5\n    for: 1m\n    labels:\n      severity:
+    warn\n    annotations:\n      summary: \"Host PageSwapOut value is too high on
+    {{ $labels.instance }} of cluster {{ $labels.cluster_name }}\"\n      description:
+    \"PageSwapOut(move data from RAM to swap space on disk to free up space in memory)
+    value exceeds 5 on host {{ $labels.instance }}  of cluster {{ $labels.cluster_name
+    }}. Current value is {{ $value }}.\"\n\n  - alert: HostSwapOutCritical\n    expr:
+    (node_vmstat_pswpout{job=\"node-exporter\"}) > 10\n    for: 1m\n    labels:\n
+    \     severity: critical\n    annotations:\n      summary: \"Host PageSwapOut
+    value is too high on {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"PageSwapOut(move data from RAM to swap space on disk
+    to free up space in physical memory) value exceeds 10 on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }}. Current value is {{ $value }}.\"\n\n\n
+    \ - alert: HostMemoryFillingUpWarn(Rate)\n    expr: (rate(node_memory_MemAvailable_bytes{job=\"node-exporter\"}[
+    1m]) / node_memory_MemTotal_bytes{job=\"node-exporter\"}) * 100 > 15\n    for:
+    1m\n    labels:\n      severity: warn\n    annotations:\n      summary: \"Host
+    memory filling up on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Node memory is filling up (> 15%) on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }} VALUE = {{ $value }}\"\n\n  - alert:
+    HostMemoryFillingUpCritical(Rate)\n    expr: (rate(node_memory_MemAvailable_bytes{job=\"node-exporter\"}[
+    1m]) / node_memory_MemTotal_bytes{job=\"node-exporter\"}) * 100 > 30\n    for:
+    1m\n    labels:\n      severity: critical\n    annotations:\n      summary: \"Host
+    memory filling up on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Node memory is filling up (> 30%) on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }} VALUE = {{ $value }}\"\n\n  - alert:
+    HostMemoryUnderMemoryPressureWarn(Rate)\n    expr: rate(node_vmstat_pgmajfault{job=\"node-exporter\"}[1m])
+    > 3\n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Host memory under memory pressure on ({{ $labels.instance }}) of cluster {{
+    $labels.cluster_name }}\"\n      description: \"High rate of major page faults
+    on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }} VALUE = {{
+    $value }}\"\n\n  - alert: HostMemoryUnderMemoryPressureCritical(Rate)\n    expr:
+    rate(node_vmstat_pgmajfault{job=\"node-exporter\"}[1m]) > 5\n    for: 1m\n    labels:\n
+    \     severity: critical\n    annotations:\n      summary: \"Host memory under
+    memory pressure on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"High rate of major page faults on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }} VALUE = {{ $value }}\"\n\n  - alert:
+    HostDiskSpaceFillingUpWarn(Rate)\n    expr: avg by (instance)(rate(node_filesystem_avail_bytes{job=\"node-exporter\"}[1m])
+    * 100 / node_filesystem_size_bytes{job=\"node-exporter\"}) > 15\n    for: 1m\n
+    \   labels:\n      severity: warn\n    annotations:\n      summary: \"Host disk
+    space as filling up on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Disk is crossing (> 15% ) on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }} VALUE = {{ $value }}\"\n\n  - alert:
+    HostDiskSpaceFillingUpCritical(Rate)\n    expr: avg by (instance)(rate(node_filesystem_avail_bytes{job=\"node-exporter\"}[1m])
+    * 100 / node_filesystem_size_bytes{job=\"node-exporter\"}) > 30\n    for: 1m\n
+    \   labels:\n      severity: critical\n    annotations:\n      summary: \"Host
+    disk space as filling up on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Disk is crossing (> 30% ) on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }} VALUE = {{ $value }}\"\n\n  - alert:
+    HostInodesFillingUpWarn(Rate)\n    expr: (rate(node_filesystem_files_free{job=\"node-exporter\"}[1m]))
+    / node_filesystem_files{job=\"node-exporter\"} * 100 > 20 \n    for: 1m\n    labels:\n
+    \     severity: warn\n    annotations:\n      summary: \"Host inodes filling Up
+    on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}\"\n      description:
+    \"Disk is running out of available inodes (> 20%) on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }} VALUE = {{ $value }} \"\n\n  - alert:
+    HostInodesFillingUpCritical(Rate)\n    expr: (rate(node_filesystem_files_free{job=\"node-exporter\"}[1m]))
+    / node_filesystem_files{job=\"node-exporter\"} * 100 > 30 \n    for: 1m\n    labels:\n
+    \     severity: critical\n    annotations:\n      summary: \"Host inodes filling
+    Up of ({{ $labels.instance }}) of cluster {{ $labels.cluster_name }}\"\n      description:
+    \"Disk is running out of available inodes (> 30%)  on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }} VALUE = {{ $value }} \"\n   \n  - alert:
+    HostUnusualDiskReadLatencyWarn(Rate)\n    expr: rate(node_disk_read_time_seconds_total{job=\"node-exporter\"}[1m])
+    / rate(node_disk_reads_completed_total{job=\"node-exporter\"}[1m]) > 0.05 and
+    rate(node_disk_reads_completed_total{job=\"node-exporter\"}[1m]) > 0\n    for:
+    1m\n    labels:\n      severity: warn\n    annotations:\n      summary: \"Host
+    unusual disk read latency on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Disk Read latency is increasing (read operations >
+    0.05s)  on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }} VALUE
+    = {{ $value }}\"\n\n  - alert: HostUnusualDiskReadLatencyCritical(Rate)\n    expr:
+    rate(node_disk_read_time_seconds_total{job=\"node-exporter\"}[1m]) / rate(node_disk_reads_completed_total{job=\"node-exporter\"}[1m])
+    > 0.1 and rate(node_disk_reads_completed_total{job=\"node-exporter\"}[1m]) > 0\n
+    \   for: 1m\n    labels:\n      severity: critical\n    annotations:\n      summary:
+    \"Host unusual disk read latency on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Disk Read latency is increasing (read operations >
+    0.1s)   on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }} VALUE
+    = {{ $value }}\"\n\n  - alert: HostUnusualDiskWriteLatencyWarn(Rate)\n    expr:
+    rate(node_disk_write_time_seconds_total{job=\"node-exporter\"}[1m]) / rate(node_disk_writes_completed_total{job=\"node-exporter\"}[1m])
+    > 0.05 and rate(node_disk_writes_completed_total{job=\"node-exporter\"}[1m]) >
+    0\n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Host unusual disk write latency on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Disk write latency is increasing (write operations
+    > 0.05s) on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}
+    VALUE = {{ $value }}\"\n\n  - alert: HostUnusualDiskWriteLatencyCritical(Rate)\n
+    \   expr: rate(node_disk_write_time_seconds_total{job=\"node-exporter\"}[1m])
+    / rate(node_disk_writes_completed_total{job=\"node-exporter\"}[1m]) > 0.1 and
+    rate(node_disk_writes_completed_total{job=\"node-exporter\"}[1m]) > 0\n    for:
+    1m\n    labels:\n      severity: critical\n    annotations:\n      summary: \"Host
+    unusual disk write latency on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Disk write latency is increasing (write operations
+    > 0.1s)  on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}
+    VALUE = {{ $value }}\"\n\n  - alert: HostRateCPUutilizationWarn(Host)\n    expr:
+    (sum by(instance) (rate(node_cpu_seconds_total{job=\"node-exporter\", mode!=\"idle\"}[1m]))
+    / on(instance) group_left sum by (instance)((rate(node_cpu_seconds_total{job=\"node-exporter\"}[1m]))))
+    * 100 > 20\n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n
+    \     summary: \"Host high CPU utilization on ({{ $labels.instance }}) of cluster
+    {{ $labels.cluster_name }}\"\n      description: \"CPU utilization is > 20%  on
+    host {{ $labels.instance }} of cluster {{ $labels.cluster_name }} VALUE = {{ $value
+    }}\"\n\n  - alert: HostRateCPUutilizationCritical(Host)\n    expr: (sum by(instance)
+    (rate(node_cpu_seconds_total{job=\"node-exporter\", mode!=\"idle\"}[1m])) / on(instance)
+    group_left sum by (instance)((rate(node_cpu_seconds_total{job=\"node-exporter\"}[1m]))))
+    * 100 > 30\n    for: 1m\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Host high CPU utilization on ({{ $labels.instance }}) of cluster
+    {{ $labels.cluster_name }}\"\n      description: \"CPU utilization is > 30%  on
+    host {{ $labels.instance }} of cluster {{ $labels.cluster_name }} VALUE = {{ $value
+    }}\"\n\n  - alert: HostRateCPUutilizationWarn(Core)\n    expr: (sum by(instance,
+    cpu) (rate(node_cpu_seconds_total{job=\"node-exporter\", mode!=\"idle\"}[1m]))
+    / on(instance) group_left sum by (instance)((rate(node_cpu_seconds_total{job=\"node-exporter\"}[1m]))))
+    * 100 > 20\n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n
+    \     summary: \"Host high CPU utilization on ({{ $labels.instance }}:{{ $labels.cpu
+    }}) of cluster {{ $labels.cluster_name }}\"\n      description: \"CPU utilization
+    is > 20%  on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}
+    VALUE = {{ $value }}\"\n\n  - alert: HostRateCPUutilizationCritical(Core)\n    expr:
+    (sum by(instance, cpu) (rate(node_cpu_seconds_total{job=\"node-exporter\", mode!=\"idle\"}[1m]))
+    / on(instance) group_left sum by (instance)((rate(node_cpu_seconds_total{job=\"node-exporter\"}[1m]))))
+    * 100 > 30\n    for: 1m\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Host high CPU Utilization on ({{ $labels.instance }}:{{ $labels.cpu
+    }}) of cluster {{ $labels.cluster_name }}\"\n      description: \"CPU utilization
+    is > 30%  on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}
+    VALUE = {{ $value }}\"\n\n  - alert: HostCpuStealRate(Host)\n    expr: (sum by(instance)
+    (rate(node_cpu_seconds_total{job=\"node-exporter\", mode=\"steal\"}[1m])) / on(instance)
+    group_left sum by (instance)((rate(node_cpu_seconds_total{job=\"node-exporter\"}[1m]))))
+    * 100 > 5\n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n
+    \     summary: \"Host CPU steal on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"CPU steal is > 5% on host {{ $labels.instance }} of
+    cluster {{ $labels.cluster_name }}. A noisy neighbor is killing VM performances
+    or a spot instance may be out of credit. VALUE = {{ $value }}\"\n\n  - alert:
+    HostCpuStealRate(Host)\n    expr: (sum by(instance) (rate(node_cpu_seconds_total{job=\"node-exporter\",
+    mode=\"steal\"}[1m])) / on(instance) group_left sum by (instance)((rate(node_cpu_seconds_total{job=\"node-exporter\"}[1m]))))
+    * 100 > 8\n    for: 1m\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Host CPU steal on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"CPU steal is > 8% on host {{ $labels.instance }} of
+    cluster {{ $labels.cluster_name }}. A noisy neighbor is killing VM performances
+    or a spot instance may be out of credit. VALUE = {{ $value }}\"\n\n  - alert:
+    HostCpuStealRate(Core)\n    expr: (sum by(instance, cpu) (rate(node_cpu_seconds_total{job=\"node-exporter\",
+    mode=\"steal\"}[1m])) / on(instance) group_left sum by (instance)((rate(node_cpu_seconds_total{job=\"node-exporter\"}[1m]))))
+    * 100 > 5\n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n
+    \     summary: \"Host CPU steal on ({{ $labels.instance }}:{{ $labels.cpu }})
+    of cluster {{ $labels.cluster_name }}\"\n      description: \"CPU steal is > 5%
+    on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. A noisy
+    neighbor is killing VM performances or a spot instance may be out of credit. VALUE
+    = {{ $value }}\"\n\n  - alert: HostCpuStealRate(Core)\n    expr: (sum by(instance,
+    cpu) (rate(node_cpu_seconds_total{job=\"node-exporter\", mode=\"steal\"}[1m]))
+    / on(instance) group_left sum by (instance)((rate(node_cpu_seconds_total{job=\"node-exporter\"}[1m]))))
+    * 100 > 8\n    for: 1m\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Host CPU steal on ({{ $labels.instance }}:{{ $labels.cpu }})
+    of cluster {{ $labels.cluster_name }}\"\n      description: \"CPU steal is > 8%
+    on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. A noisy
+    neighbor is killing VM performances or a spot instance may be out of credit. VALUE
+    = {{ $value }}\"\n\n  - alert: HostContextSwitchingWarn(Rate)\n    expr: (rate(node_context_switches_total{job=\"node-exporter\"}[1m]))
+    / (count without(cpu, mode) (node_cpu_seconds_total{mode=\"idle\", job=\"node-exporter\"}))
+    > 1000\n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Host context switching on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Context switching is increasing (> 1000 /s) on host
+    {{ $labels.instance }} of cluster {{ $labels.cluster_name }} VALUE = {{ $value
+    }}\"\n\n  - alert: HostContextSwitchingCritical(Rate)\n    expr: (rate(node_context_switches_total{job=\"node-exporter\"}[1m]))
+    / (count without(cpu, mode) (node_cpu_seconds_total{mode=\"idle\", job=\"node-exporter\"}))
+    > 2000\n    for: 1m\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Host context switching on ({{ $labels.instance }}) of cluster
+    {{ $labels.cluster_name }}\"\n      description: \"Context switching is increasing
+    (> 2000 /s) on host {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }} VALUE = {{ $value }}\"\n\n  - alert: HostNetworkReceiveErrorsWarn(Rate)\n    expr:
+    rate(node_network_receive_errs_total{job=\"node-exporter\"}[30s]) / rate(node_network_receive_packets_total{job=\"node-exporter\"}[30s])
+    > 3\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Host Network Receive Errors on ({{ $labels.instance }}:{{ $labels.device }})
+    of cluster {{ $labels.cluster_name }}\"\n      description: \"Instance interface
+    has encountered {{ $value }} receive errors on host {{ $labels.instance }} of
+    cluster {{ $labels.cluster_name }} VALUE = {{ $value }} \"\n\n  - alert: HostNetworkReceiveErrorsCritical(Rate)\n
+    \   expr: rate(node_network_receive_errs_total{job=\"node-exporter\"}[30s]) /
+    rate(node_network_receive_packets_total{job=\"node-exporter\"}[30s]) > 5\n    for:
+    30s\n    labels:\n      severity: critical\n    annotations:\n      summary: \"Host
+    Network Receive Errors on ({{ $labels.instance }}:{{ $labels.device }}) of cluster
+    {{ $labels.cluster_name }}\"\n      description: \"Instance interface has encountered
+    {{ $value }} receive errors on host {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }} VALUE = {{ $value }} \"\n\n  - alert: HostNetworkTransmitErrorsWarn(Rate)\n
+    \   expr: rate(node_network_transmit_errs_total{job=\"node-exporter\"}[30s]) /
+    rate(node_network_transmit_packets_total{job=\"node-exporter\"}[30s]) > 3\n    for:
+    30s\n    labels:\n      severity: warn\n    annotations:\n      summary: \"Host
+    Network Transmit Errors on ({{ $labels.instance }}:{{ $labels.device }}) of cluster
+    {{ $labels.cluster_name }}\"\n      description: \"Instance has encountered {{
+    $value }} transmit errors on host {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }} VALUE = {{ $value }}\"\n\n  - alert: HostNetworkTransmitErrorsCritical(Rate)\n
+    \   expr: rate(node_network_transmit_errs_total{job=\"node-exporter\"}[30s]) /
+    rate(node_network_transmit_packets_total{job=\"node-exporter\"}[30s]) > 5\n    for:
+    30s\n    labels:\n      severity: critical\n    annotations:\n      summary: \"Host
+    Network Transmit Errors on ({{ $labels.instance }}:{{ $labels.device }}) of cluster
+    {{ $labels.cluster_name }}\"\n      description: \"Instance has encountered {{
+    $value }} transmit errors on host {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }}  VALUE = {{ $value }}\"\n\n  - alert: HostNetworkInterfaceSaturatedWarn(Rate)\n
+    \   expr: ((rate(node_network_receive_bytes_total{job=\"node-exporter\"}[1m])
+    + rate(node_network_transmit_bytes_total{job=\"node-exporter\"}[1m])) / (node_network_speed_bytes{job=\"node-exporter\"}))
+    * 100 > 80\n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n
+    \     summary: \"Host Network Interface Saturated on ({{ $labels.instance }}:{{
+    $labels.device }}) of cluster {{ $labels.cluster_name }}\"\n      description:
+    \"The network interface rate is getting overloaded {{ $value }} on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }}.  VALUE = {{ $value }}\"\n\n  - alert:
+    HostNetworkInterfaceSaturatedCritical(Rate)\n    expr: ((rate(node_network_receive_bytes_total{job=\"node-exporter\"}[1m])
+    + rate(node_network_transmit_bytes_total{job=\"node-exporter\"}[1m])) / (node_network_speed_bytes{job=\"node-exporter\"}))
+    * 100 > 90\n    for: 1m\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Host Network Interface Saturated on ({{ $labels.instance }}:{{
+    $labels.device }}) of cluster {{ $labels.cluster_name }}\"\n      description:
+    \"The network interface rate is getting overloaded {{ $value }} on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }}.  VALUE = {{ $value }}\"\n\n  - alert:
+    HostSwapInRateWarn\n    expr: rate(node_vmstat_pswpin{job=\"node-exporter\"}[1m])
+    > 5\n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Host PageSwapIn rate is too high on host {{ $labels.instance }} of cluster {{
+    $labels.cluster_name }}\"\n      description: \"PageSwapIn rate exceeds 5 on host
+    {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. Current rate is
+    {{ $value }}.\"\n\n  - alert: HostSwapInRateCritical\n    expr: rate(node_vmstat_pswpin{job=\"node-exporter\"}[1m])
+    > 10\n    for: 1m\n    labels:\n      severity: critical\n    annotations:\n      summary:
+    \"PageSwapIn rate is too high on host {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"PageSwapIn rate exceeds 10 on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }}. Current rate is {{ $value }}.\"\n\n
+    \ - alert: HostSwapOutRateWarn\n    expr: rate(node_vmstat_pswpout{job=\"node-exporter\"}[1m])
+    > 5\n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"PageSwapOut rate is too high on host {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"PageSwapOut rate exceeds 5 on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }}. Current rate is {{ $value }}.\"\n\n
+    \ - alert: HostSwapOutRatecritical\n    expr: rate(node_vmstat_pswpout{job=\"node-exporter\"}[1m])
+    > 10\n    for: 1m\n    labels:\n      severity: critical\n    annotations:\n      summary:
+    \"PageSwapOut rate is too high on host {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"PageSwapOut rate exceeds 10 on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }}. Current rate is {{ $value }}.\"\n\n
+    \ - alert: HostDiskReadIOPSWarn(Host)\n    expr: sum by(instance) (rate(node_disk_reads_completed_total{job=\"node-exporter\"}[1m]))
+    > 300\n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"High disk read IOPS detected on host {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Sustained high disk read IOPS rate (> 300) on host
+    {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. Current value is
+    {{ $value }}.\"\n\n  - alert: HostDiskReadIOPSCritical(Host)\n    expr: sum by(instance)
+    (rate(node_disk_reads_completed_total{job=\"node-exporter\"}[1m])) > 500\n    for:
+    1m\n    labels:\n      severity: critical\n    annotations:\n      summary: \"High
+    disk read IOPS detected on host {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Sustained high disk read IOPS rate (> 500) on host
+    {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. Current value is
+    {{ $value }}.\"\n\n  - alert: HostDiskReadIOPSWarn(Device)\n    expr: sum by(instance,
+    device) (rate(node_disk_reads_completed_total{job=\"node-exporter\"}[1m])) > 100\n
+    \   for: 1m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"High disk read IOPS detected on host ({{ $labels.instance }}:{{ $labels.device
+    }}) of cluster {{ $labels.cluster_name }}\"\n      description: \"Sustained high
+    disk read IOPS rate (> 100) on host {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }}. Current value is {{ $value }}.\"\n\n  - alert: HostDiskReadIOPSCritical(Device)\n
+    \   expr: sum by(instance, device) (rate(node_disk_reads_completed_total{job=\"node-exporter\"}[1m]))
+    > 250\n    for: 1m\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"High disk read IOPS detected on host ({{ $labels.instance }}:{{
+    $labels.device }}) of cluster {{ $labels.cluster_name }}\"\n      description:
+    \"Sustained high disk read IOPS rate (> 250) on host {{ $labels.instance }} of
+    cluster {{ $labels.cluster_name }}. Current value is {{ $value }}.\"\n\n  - alert:
+    HostDiskWriteIOPSWarn(Host)\n    expr: sum by(instance) (rate(node_disk_writes_completed_total{job=\"node-exporter\"}[1m]))
+    > 300\n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"High disk write IOPS detected on host {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Sustained high disk write IOPS rate (> 300) on host
+    {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. Current value is
+    {{ $value }}.\"\n\n  - alert: HostDiskWriteIOPSCritical(Host)\n    expr: sum by(instance)
+    (rate(node_disk_writes_completed_total{job=\"node-exporter\"}[1m])) > 500\n    for:
+    1m\n    labels:\n      severity: critical\n    annotations:\n      summary: \"High
+    disk write IOPS detected on host {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Sustained high disk write IOPS rate (> 500) on host
+    {{ $labels.instance }} of cluster {{ $labels.cluster_name }}. Current value is
+    {{ $value }}.\"\n\n  - alert: HostDiskWriteIOPSWarn(Device)\n    expr: sum by(instance,
+    device) (rate(node_disk_writes_completed_total{job=\"node-exporter\"}[1m])) >
+    100\n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"High disk write IOPS detected on host ({{ $labels.instance }}:{{ $labels.device
+    }}) of cluster {{ $labels.cluster_name }}\"\n      description: \"Sustained high
+    disk write IOPS rate (> 100) on host {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }}. Current value is {{ $value }}.\"\n\n  - alert: HostDiskWriteIOPSCritical(Device)\n
+    \   expr: sum by(instance, device) (rate(node_disk_writes_completed_total{job=\"node-exporter\"}[1m]))
+    > 250\n    for: 1m\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"High disk write IOPS detected on host ({{ $labels.instance }}:{{
+    $labels.device }}) of cluster {{ $labels.cluster_name }}\"\n      description:
+    \"Sustained high disk write IOPS rate (> 250) on host {{ $labels.instance }} of
+    cluster {{ $labels.cluster_name }}. Current value is {{ $value }}.\"\n\n  - alert:
+    HostRateUnusualNetworkThroughputInWarn(Host)\n    expr: 100 -  (((sum by (instance)(rate(node_network_receive_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100) / (sum by (instance)(rate(node_network_receive_bytes_total{job=\"node-exporter\"}[1m]))))
+    \ > 20  or  100 -  (((sum by (instance)(rate(node_network_receive_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100) / (sum by (instance)(rate(node_network_receive_bytes_total{job=\"node-exporter\"}[1m]))))
+    < -20\n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Host unusual network throughput in rate ({{ $labels.instance }}) of cluster
+    {{ $labels.cluster_name }}\"\n      description: \"Host network interfaces are
+    probably receiving data (> 20/ < -20%)  on host {{ $labels.instance }} of cluster
+    {{ $labels.cluster_name }} VALUE = {{ $value }}\"\n\n  - alert: HostRateUnusualNetworkThroughputInCritical(Host)\n
+    \   expr: 100 -  (((sum by (instance)(rate(node_network_receive_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100) / (sum by (instance)(rate(node_network_receive_bytes_total{job=\"node-exporter\"}[1m]))))
+    \ > 30  or  100 -  (((sum by (instance)(rate(node_network_receive_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100) / (sum by (instance)(rate(node_network_receive_bytes_total{job=\"node-exporter\"}[1m]))))
+    < -30\n    for: 1m\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Host unusual network throughput in rate ({{ $labels.instance
+    }}) of cluster {{ $labels.cluster_name }}\"\n      description: \"Host network
+    interfaces are probably receiving data (> 30/ < -30 %) on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }} VALUE = {{ $value }}\"\n\n  - alert:
+    HostRateUnusualNetworkThroughputInWarn(Device)\n    expr: 100 -  (((sum by (instance,
+    device)(rate(node_network_receive_bytes_total{job=\"node-exporter\"}[30s]))) *
+    100) / (sum by (instance, device)(rate(node_network_receive_bytes_total{job=\"node-exporter\"}[1m]))))
+    \ > 20  or  100 -  (((sum by (instance, device)(rate(node_network_receive_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100) / (sum by (instance, device)(rate(node_network_receive_bytes_total{job=\"node-exporter\"}[1m]))))
+    < -20\n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Host unusual network throughput in rate ({{ $labels.instance }}:{{ $labels.device
+    }}) of cluster {{ $labels.cluster_name }}\"\n      description: \"Host network
+    interfaces are probably receiving data (> 20/ < -20 %)  on host {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }} VALUE = {{ $value }}\"\n\n  - alert:
+    HostRateUnusualNetworkThroughputInCritical(Device)\n    expr: 100 -  (((sum by
+    (instance, device)(rate(node_network_receive_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100) / (sum by (instance, device)(rate(node_network_receive_bytes_total{job=\"node-exporter\"}[1m]))))
+    \ > 30  or  100 -  (((sum by (instance, device)(rate(node_network_receive_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100) / (sum by (instance, device)(rate(node_network_receive_bytes_total{job=\"node-exporter\"}[1m]))))
+    \ < -30\n    for: 1m\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Host unusual network throughput in rate ({{ $labels.instance
+    }}:{{ $labels.device }}) of cluster {{ $labels.cluster_name }}\"\n      description:
+    \"Host network interfaces are probably receiving data (> 30/ < -30 %) on host
+    {{ $labels.instance }} of cluster {{ $labels.cluster_name }} VALUE = {{ $value
+    }}\"\n\n  - alert: HostRateUnusualNetworkThroughputOutWarn(Host)\n    expr: 100
+    -  (((sum by (instance)(rate(node_network_transmit_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100) /  (sum by (instance)(rate(node_network_transmit_bytes_total{job=\"node-exporter\"}[1m]))))
+    > 20  or  100 -  (((sum by (instance)(rate(node_network_transmit_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100) /  (sum by (instance)(rate(node_network_transmit_bytes_total{job=\"node-exporter\"}[1m]))))
+    < -20\n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Host unusual network throughput out rate on ({{ $labels.instance }}) of cluster
+    {{ $labels.cluster_name }}\"\n      description: \"Host network interfaces are
+    probably sending data (> 20/ < -20 %) on {{ $labels.instance }} of cluster {{
+    $labels.cluster_name }} VALUE = {{ $value }}\"\n\n  - alert: HostRateUnusualNetworkThroughputOutCritical(Host)\n
+    \   expr: 100 -  (((sum by (instance)(rate(node_network_transmit_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100) /  (sum by (instance)(rate(node_network_transmit_bytes_total{job=\"node-exporter\"}[1m]))))
+    \ > 30 or  100 -  (((sum by (instance)(rate(node_network_transmit_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100) /  (sum by (instance)(rate(node_network_transmit_bytes_total{job=\"node-exporter\"}[1m]))))
+    < -30\n    for: 1m\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Host unusual network throughput out rate on ({{ $labels.instance
+    }}) of cluster {{ $labels.cluster_name }}\"\n      description: \"Host network
+    interfaces are probably sending data (> 30/ < -30 %)  on {{ $labels.instance }}
+    of cluster {{ $labels.cluster_name }} VALUE = {{ $value }}\"\n\n  - alert: HostRateUnusualNetworkThroughputOutWarn(Device)\n
+    \   expr: 100 -  (((sum by (instance)(rate(node_network_transmit_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100) /  (sum by (instance)(rate(node_network_transmit_bytes_total{job=\"node-exporter\"}[1m]))))
+    > 20  or  100 -  (((sum by (instance)(rate(node_network_transmit_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100) /  (sum by (instance)(rate(node_network_transmit_bytes_total{job=\"node-exporter\"}[1m]))))
+    < -20\n    for: 1m\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Host unusual network throughput out rate on ({{ $labels.instance }}:{{ $labels.device
+    }}) of cluster {{ $labels.cluster_name }}\"\n      description: \"Host network
+    interfaces are probably sending data (> 20/ < -20 %) on {{ $labels.instance }}
+    of cluster {{ $labels.cluster_name }} VALUE = {{ $value }}\"\n\n  - alert: HostRateUnusualNetworkThroughputOutCritical(Device)\n
+    \   expr: 100 -  (((sum by (instance)(rate(node_network_transmit_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100) /  (sum by (instance)(rate(node_network_transmit_bytes_total{job=\"node-exporter\"}[1m]))))
+    \ > 30  or  100 -  (((sum by (instance)(rate(node_network_transmit_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100) /  (sum by (instance)(rate(node_network_transmit_bytes_total{job=\"node-exporter\"}[1m]))))
+    \ < -30\n    for: 1m\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Host unusual network throughput out rate on ({{ $labels.instance
+    }}:{{ $labels.device }}) of cluster {{ $labels.cluster_name }}\"\n      description:
+    \"Host network interfaces are probably sending data (> 30/ < -30 %)  on {{ $labels.instance
+    }} of cluster {{ $labels.cluster_name }} VALUE = {{ $value }}\"\n\n  - alert:
+    HostUnusualDiskReadRateWarn(Host)\n    expr: 100 -  (((sum by (instance)(rate(node_disk_read_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100)  /  (sum by (instance)(rate(node_disk_read_bytes_total{job=\"node-exporter\"}[1m]))))
+    > 20  or 100 -  (((sum by (instance)(rate(node_disk_read_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100)  /  (sum by (instance)(rate(node_disk_read_bytes_total{job=\"node-exporter\"}[1m]))))
+    < -20  \n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Host unusual disk read rate on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Disk rate is probably reading data (> 20/ < -20 %)
+    on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }} VALUE = {{
+    $value }} \"\n\n  - alert: HostUnusualDiskReadRateCritical(Host)\n    expr: 100
+    -  (((sum by (instance)(rate(node_disk_read_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100)  /  (sum by (instance)(rate(node_disk_read_bytes_total{job=\"node-exporter\"}[1m]))))
+    > 30  or  100 -  (((sum by (instance)(rate(node_disk_read_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100)  /  (sum by (instance)(rate(node_disk_read_bytes_total{job=\"node-exporter\"}[1m]))))
+    < -30\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Host unusual disk read rate on ({{ $labels.instance }}) of cluster
+    {{ $labels.cluster_name }}\"\n      description: \"Disk rate is probably reading
+    less data (> 30/ < -30 %) on host {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }} VALUE = {{ $value }} \"\n\n  - alert: HostUnusualDiskReadRateWarn(Device)\n
+    \   expr: 100 -  (((sum by (instance, device)(rate(node_disk_read_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100)  /  (sum by (instance, device)(rate(node_disk_read_bytes_total{job=\"node-exporter\"}[1m]))))
+    > 20  or  100 -  (((sum by (instance, device)(rate(node_disk_read_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100)  /  (sum by (instance, device)(rate(node_disk_read_bytes_total{job=\"node-exporter\"}[1m]))))
+    < -20\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Host unusual disk read rate on ({{ $labels.instance }}:{{ $labels.device }})
+    of cluster {{ $labels.cluster_name }}\"\n      description: \"Disk rate is probably
+    reading data (> 20/ < -20 %) on host {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }} VALUE = {{ $value }} \"\n\n  - alert: HostUnusualDiskReadRateCritical(Device)\n
+    \   expr: 100 -  (((sum by (instance, device)(rate(node_disk_read_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100)  /  (sum by (instance, device)(rate(node_disk_read_bytes_total{job=\"node-exporter\"}[1m]))))
+    > 30  or  100 -  (((sum by (instance, device)(rate(node_disk_read_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100)  /  (sum by (instance, device)(rate(node_disk_read_bytes_total{job=\"node-exporter\"}[1m]))))
+    < -30\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Host unusual disk read rate on ({{ $labels.instance }}:{{ $labels.device
+    }}) of cluster {{ $labels.cluster_name }}\"\n      description: \"Disk rate is
+    probably reading data (> 30/ < -30 %) on host {{ $labels.instance }} of cluster
+    {{ $labels.cluster_name }} VALUE = {{ $value }} \"\n\n  - alert: HostUnusualDiskWriteRateWarn(Host)\n
+    \   expr: 100 -  (((sum by (instance)(rate(node_disk_written_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100)  /  (sum by (instance)(rate(node_disk_written_bytes_total{job=\"node-exporter\"}[1m]))))
+    > 20 or  100 -  (((sum by (instance)(rate(node_disk_written_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100)  /  (sum by (instance)(rate(node_disk_written_bytes_total{job=\"node-exporter\"}[1m]))))
+    < -20\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Host unusual disk write rate on ({{ $labels.instance }}) of cluster {{ $labels.cluster_name
+    }}\"\n      description: \"Disk rate is probably writing data (> 20/ < -20 %)
+    on host {{ $labels.instance }} of cluster {{ $labels.cluster_name }} VALUE = {{
+    $value }} \"\n\n  - alert: HostUnusualDiskWriteRateCritical(Host)\n    expr: 100
+    -  (((sum by (instance)(rate(node_disk_written_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100)  /  (sum by (instance)(rate(node_disk_written_bytes_total{job=\"node-exporter\"}[1m]))))
+    > 30  or  100 -  (((sum by (instance)(rate(node_disk_written_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100)  /  (sum by (instance)(rate(node_disk_written_bytes_total{job=\"node-exporter\"}[1m]))))
+    < -30\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Host unusual disk write rate on ({{ $labels.instance }}) of cluster
+    {{ $labels.cluster_name }}\"\n      description: \"Disk rate is probably writing
+    data (> 30/ < -30 %) on host {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }} VALUE = {{ $value }} \"\n\n  - alert: HostUnusualDiskWriteRateWarn(Device)\n
+    \   expr: 100 -  (((sum by (instance, device)(rate(node_disk_written_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100)  /  (sum by (instance, device)(rate(node_disk_written_bytes_total{job=\"node-exporter\"}[1m]))))
+    > 20  or  100 -  (((sum by (instance, device)(rate(node_disk_written_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100)  /  (sum by (instance, device)(rate(node_disk_written_bytes_total{job=\"node-exporter\"}[1m]))))
+    < -20\n    for: 30s\n    labels:\n      severity: warn\n    annotations:\n      summary:
+    \"Host unusual disk write rate on ({{ $labels.instance }}:{{ $labels.device }})
+    of cluster {{ $labels.cluster_name }}\"\n      description: \"Disk rate is probably
+    writing data (> 20/ < -20 %) on host {{ $labels.instance }} of cluster {{ $labels.cluster_name
+    }} VALUE = {{ $value }} \"\n\n  - alert: HostUnusualDiskWriteRateCritical(Device)\n
+    \   expr: 100 -  (((sum by (instance, device)(rate(node_disk_written_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100)  /  (sum by (instance, device)(rate(node_disk_written_bytes_total{job=\"node-exporter\"}[1m]))))
+    > 30  or  100 -  (((sum by (instance, device)(rate(node_disk_written_bytes_total{job=\"node-exporter\"}[30s])))
+    * 100)  /  (sum by (instance, device)(rate(node_disk_written_bytes_total{job=\"node-exporter\"}[1m]))))
+    < -30\n    for: 30s\n    labels:\n      severity: critical\n    annotations:\n
+    \     summary: \"Host unusual disk write rate on ({{ $labels.instance }}:{{ $labels.device
+    }}) of cluster {{ $labels.cluster_name }}\"\n      description: \"Disk rate is
+    probably writing data (> 30/ < -30 %) on host {{ $labels.instance }} of cluster
+    {{ $labels.cluster_name }} VALUE = {{ $value }} \"\n\n"
+kind: ConfigMap
+metadata:
+  name: prometheus-rules
+  namespace: monitoring

@@ -1,0 +1,1245 @@
+apiVersion: v1
+data:
+  geoview.json: |-
+    {
+      "__requires": [
+        {
+          "type": "panel",
+          "id": "geomap",
+          "name": "Geomap",
+          "version": ""
+        },
+        {
+          "type": "grafana",
+          "id": "grafana",
+          "name": "Grafana",
+          "version": "12.2.1"
+        },
+        {
+          "type": "panel",
+          "id": "piechart",
+          "name": "Pie chart",
+          "version": ""
+        },
+        {
+          "type": "datasource",
+          "id": "prometheus",
+          "name": "Prometheus",
+          "version": "1.0.0"
+        },
+        {
+          "type": "panel",
+          "id": "stat",
+          "name": "Stat",
+          "version": ""
+        }
+      ],
+      "annotations": {
+        "list": [
+          {
+            "builtIn": 1,
+            "datasource": {
+              "type": "grafana",
+              "uid": "-- Grafana --"
+            },
+            "enable": true,
+            "hide": true,
+            "iconColor": "rgba(0, 211, 255, 1)",
+            "name": "Annotations & Alerts",
+            "target": {
+              "limit": 100,
+              "matchAny": false,
+              "tags": [],
+              "type": "dashboard"
+            },
+            "type": "dashboard"
+          }
+        ]
+      },
+      "description": "Multi Cluster view dashboard helps visualise multiple clusters across regions and data centers with focus on health as well as alerts and errors associated with them",
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 1,
+      "id": null,
+      "links": [],
+      "panels": [
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 0
+          },
+          "id": 16,
+          "panels": [],
+          "title": "Cluster Geo Locations",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "To enable geomap, set cluster_name, longitude and latitude labels on your exporter.\nNOTE: This panel requires Polystat plugin",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "links": [
+                {
+                  "targetBlank": true,
+                  "title": "View",
+                  "url": "/d/03SlXxlVz/multi-cluster-view?orgId=1&refresh=1m&var-cluster=${__data.fields.cluster_name}"
+                }
+              ],
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": 0
+                  },
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              }
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "latitude"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": true,
+                      "viz": false
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "longitude"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": true,
+                      "viz": false
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Cluster size"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Time"
+                },
+                "properties": [
+                  {
+                    "id": "displayName",
+                    "value": "Last Refreshed"
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Time"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": true,
+                      "viz": true
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Value"
+                },
+                "properties": [
+                  {
+                    "id": "custom.hideFrom",
+                    "value": {
+                      "legend": true,
+                      "tooltip": true,
+                      "viz": true
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 14,
+            "w": 24,
+            "x": 0,
+            "y": 1
+          },
+          "id": 2,
+          "options": {
+            "basemap": {
+              "config": {},
+              "name": "Layer 0",
+              "type": "default"
+            },
+            "controls": {
+              "mouseWheelZoom": true,
+              "showAttribution": false,
+              "showDebug": false,
+              "showMeasure": false,
+              "showScale": false,
+              "showZoom": true
+            },
+            "layers": [
+              {
+                "config": {
+                  "showLegend": false,
+                  "style": {
+                    "color": {
+                      "field": "Value",
+                      "fixed": "green"
+                    },
+                    "opacity": 0.6,
+                    "rotation": {
+                      "fixed": 0,
+                      "max": 360,
+                      "min": -360,
+                      "mode": "mod"
+                    },
+                    "size": {
+                      "field": "Value",
+                      "fixed": 5,
+                      "max": 15,
+                      "min": 8
+                    },
+                    "symbol": {
+                      "field": "",
+                      "fixed": "img/icons/marker/circle.svg",
+                      "mode": "fixed"
+                    },
+                    "text": {
+                      "field": "cluster_name",
+                      "fixed": "",
+                      "mode": "field"
+                    },
+                    "textConfig": {
+                      "fontSize": 20,
+                      "offsetX": 0,
+                      "offsetY": 0,
+                      "textAlign": "center",
+                      "textBaseline": "top"
+                    }
+                  }
+                },
+                "filterData": {
+                  "id": "byRefId",
+                  "options": "clusters"
+                },
+                "location": {
+                  "latitude": "Value",
+                  "longitude": "Value",
+                  "mode": "auto"
+                },
+                "name": "Layer 1",
+                "tooltip": true,
+                "type": "markers"
+              }
+            ],
+            "tooltip": {
+              "mode": "details"
+            },
+            "view": {
+              "allLayers": true,
+              "id": "zero",
+              "lat": 0,
+              "lon": 0,
+              "noRepeat": false,
+              "zoom": 1
+            }
+          },
+          "pluginVersion": "12.2.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "count by (latitude, longitude, cluster_name) (ALERTS{cluster_name!=\"\", job=\"aerospike\", severity=~\"critical|warn\"}) * -1\nor\ncount by (latitude, longitude, cluster_name) (aerospike_node_up)\n",
+              "format": "table",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "__auto",
+              "range": false,
+              "refId": "clusters"
+            }
+          ],
+          "type": "geomap"
+        },
+        {
+          "collapsed": true,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 15
+          },
+          "id": 22,
+          "panels": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "description": "Displays topology of the connected aerospike servers across data centers, this diagram panel is dependent on cluster-name and the xdr names configured in the aerospike configuration files. This panel requires the diagram-panel plugin.",
+              "fieldConfig": {
+                "defaults": {
+                  "custom": {
+                    "valueName": "last"
+                  },
+                  "mappings": [],
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green"
+                      }
+                    ]
+                  },
+                  "unit": "bytes"
+                },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 14,
+                "w": 24,
+                "x": 0,
+                "y": 16
+              },
+              "id": 24,
+              "options": {
+                "authPassword": "",
+                "authUsername": "",
+                "composites": [],
+                "content": "graph LR\n%% START Comment\n%% Below line starts with a comma because other IP are coming with a comma becuase of Grafana advanced formatting \"raw\" appending a multi-list variable\n%% END Comment\n,${mermaid_text:raw};\n,${servers_mermaid_text:raw};",
+                "legend": {
+                  "asTable": true,
+                  "displayMode": "table",
+                  "gradient": {
+                    "enabled": true,
+                    "show": true
+                  },
+                  "hideEmpty": false,
+                  "hideZero": false,
+                  "placement": "bottom",
+                  "show": true,
+                  "sortBy": "last",
+                  "sortDesc": true,
+                  "stats": [
+                    "mean",
+                    "last",
+                    "min",
+                    "max",
+                    "sum"
+                  ]
+                },
+                "maxWidth": true,
+                "mermaidServiceUrl": "",
+                "mermaidThemeVariablesDark": {
+                  "classDiagram": {},
+                  "common": {
+                    "fontFamily": "Roboto,Helvetica Neue,Arial,sans-serif",
+                    "lineColor": "green"
+                  },
+                  "flowChart": {
+                    "nodeBorder": "yellow"
+                  },
+                  "sequenceDiagram": {},
+                  "stateDiagram": {},
+                  "userJourneyDiagram": {}
+                },
+                "mermaidThemeVariablesLight": {
+                  "classDiagram": {},
+                  "common": {
+                    "fontFamily": "Roboto,Helvetica Neue,Arial,sans-serif",
+                    "lineColor": "blue"
+                  },
+                  "flowChart": {},
+                  "sequenceDiagram": {},
+                  "stateDiagram": {},
+                  "userJourneyDiagram": {}
+                },
+                "metricCharacterReplacements": [],
+                "moddedSeriesVal": 0,
+                "mode": "content",
+                "nodeSize": {
+                  "minHeight": 40,
+                  "minWidth": 30
+                },
+                "pluginVersion": "",
+                "style": "",
+                "useBackground": true,
+                "useBasicAuth": false,
+                "valueName": "last"
+              },
+              "pluginVersion": "1.7.3",
+              "targets": [
+                {
+                  "datasource": {
+                    "type": "prometheus",
+                    "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+                  },
+                  "editorMode": "code",
+                  "expr": "",
+                  "legendFormat": "__auto",
+                  "range": true,
+                  "refId": "A"
+                }
+              ],
+              "title": "",
+              "type": "jdbranham-diagram-panel"
+            }
+          ],
+          "title": "Data Replication topology",
+          "type": "row"
+        },
+        {
+          "collapsed": false,
+          "gridPos": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 16
+          },
+          "id": 15,
+          "panels": [],
+          "repeat": "cluster",
+          "title": "Cluster Details - $cluster",
+          "type": "row"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Displays the number of aerospike nodes configured within a cluster, in case if there is a condition like split-brain or different cluster-sizes reported, this panel displays different values indicating issues",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "continuous-GrYlRd"
+              },
+              "links": [
+                {
+                  "targetBlank": true,
+                  "title": "Cluster View",
+                  "url": "/d/dR0dDRHWz/cluster-overview?orgId=1&refresh=1m&${cluster:queryparam}"
+                }
+              ],
+              "mappings": [],
+              "noValue": "Select a cluster",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 4,
+            "x": 0,
+            "y": 17
+          },
+          "id": 10,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "name",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.2.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "count_values (\"size\", (aerospike_node_stats_cluster_size{cluster_name=\"$cluster\"}) )",
+              "instant": true,
+              "legendFormat": "{{label_name}}",
+              "range": false,
+              "refId": "cluster_size"
+            }
+          ],
+          "title": "Cluster Size (Unique values)",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Alert count",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                }
+              },
+              "links": [
+                {
+                  "targetBlank": true,
+                  "title": "Alerts view dashboard",
+                  "url": "/d/hP_Uhx94k/alerts-view?orgId=1&var-cluster=$cluster"
+                }
+              ],
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null",
+                    "result": {
+                      "color": "#299c46",
+                      "index": 0,
+                      "text": "0"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "noValue": "N/A",
+              "unit": "none"
+            },
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "critical"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "red",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "warn"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#e0b400",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "info"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#37872d",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              },
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "error"
+                },
+                "properties": [
+                  {
+                    "id": "color",
+                    "value": {
+                      "fixedColor": "#fa6400",
+                      "mode": "fixed"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 4,
+            "x": 4,
+            "y": 17
+          },
+          "id": 26,
+          "maxDataPoints": 100,
+          "options": {
+            "displayLabels": [
+              "name",
+              "value"
+            ],
+            "legend": {
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": false
+            },
+            "pieType": "pie",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "sort": "desc",
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "single",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "12.2.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "count by (severity) (ALERTS{job=\"$job_name\",cluster_name=~\"$cluster\", severity=~\"$severity\"}) or vector(0)",
+              "format": "time_series",
+              "instant": true,
+              "intervalFactor": 1,
+              "legendFormat": "{{severity}}",
+              "refId": "A"
+            }
+          ],
+          "title": "Alerts",
+          "type": "piechart"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "",
+          "gridPos": {
+            "h": 11,
+            "w": 8,
+            "x": 8,
+            "y": 17
+          },
+          "id": 6,
+          "options": {
+            "autoSizeColumns": true,
+            "autoSizePolygons": true,
+            "autoSizeRows": true,
+            "compositeConfig": {
+              "animationSpeed": "1500",
+              "composites": [],
+              "enabled": true
+            },
+            "ellipseCharacters": 18,
+            "ellipseEnabled": false,
+            "globalAutoScaleFonts": true,
+            "globalClickthrough": "https://",
+            "globalClickthroughNewTabEnabled": true,
+            "globalClickthroughSanitizedEnabled": true,
+            "globalDecimals": 0,
+            "globalDisplayMode": "all",
+            "globalDisplayTextTriggeredEmpty": "Select a cluster",
+            "globalFillColor": "green",
+            "globalFontSize": 12,
+            "globalGradientsEnabled": true,
+            "globalOperator": "sum",
+            "globalPolygonBorderColor": "orange",
+            "globalPolygonBorderSize": 1,
+            "globalPolygonSize": 25,
+            "globalRegexPattern": "(.*):.*",
+            "globalShape": "hexagon_pointed_top",
+            "globalShowTooltipColumnHeadersEnabled": false,
+            "globalShowValueEnabled": false,
+            "globalTextFontAutoColorEnabled": false,
+            "globalTextFontColor": "#ffffff",
+            "globalTextFontFamily": "Roboto",
+            "globalThresholdsConfig": [
+              {
+                "color": "#F2495C",
+                "state": 3,
+                "value": 0
+              },
+              {
+                "color": "#299c46",
+                "state": 0,
+                "value": 1
+              }
+            ],
+            "globalTooltipsEnabled": true,
+            "globalTooltipsFontFamily": "Roboto",
+            "globalTooltipsShowTimestampEnabled": false,
+            "globalUnitFormat": "string",
+            "layoutDisplayLimit": 100,
+            "layoutNumColumns": 8,
+            "layoutNumRows": 8,
+            "overrideConfig": {
+              "overrides": [
+                {
+                  "alias": "",
+                  "clickThrough": "/d/UcZD2iHAk/node-overview?orgId=1&refresh=1m&var-cluster=$3&var-node=$1",
+                  "clickThroughOpenNewTab": true,
+                  "clickThroughSanitize": true,
+                  "colors": [
+                    "#299c46",
+                    "#ed8128",
+                    "#f53636",
+                    "#0a55a1"
+                  ],
+                  "decimals": "2",
+                  "enabled": true,
+                  "label": "url_constructor",
+                  "metricName": "(..*)(\\:(.*))",
+                  "operatorName": "mean",
+                  "order": 0,
+                  "prefix": "",
+                  "suffix": "",
+                  "thresholds": [],
+                  "unitFormat": "short"
+                }
+              ]
+            },
+            "sortByDirection": 1,
+            "sortByField": "name",
+            "tooltipDisplayMode": "all",
+            "tooltipDisplayTextTriggeredEmpty": "OK",
+            "tooltipPrimarySortByField": "thresholdLevel",
+            "tooltipPrimarySortDirection": 1,
+            "tooltipSecondarySortByField": "value",
+            "tooltipSecondarySortDirection": 1
+          },
+          "pluginVersion": "12.2.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "count by (service,cluster_name) (ALERTS{cluster_name=\"$cluster\", service!=\"\", severity=~\"critical|warn\"}) * -1\nor\ncount by (service,cluster_name) (aerospike_node_up{ cluster_name=\"$cluster\"})",
+              "format": "time_series",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{service}}:{{cluster_name}}",
+              "range": false,
+              "refId": "alerts_node"
+            }
+          ],
+          "title": "$cluster - Nodes",
+          "type": "grafana-polystat-panel"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "links": [
+                {
+                  "targetBlank": true,
+                  "title": "View",
+                  "url": "/d/zGcUKcDZz/namespace-view?orgId=1&refresh=1m&${cluster:queryparam}&var-namespace=${__field.labels.ns}"
+                }
+              ],
+              "mappings": [],
+              "noValue": "Select a cluster",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "red",
+                    "value": 0
+                  },
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 11,
+            "w": 8,
+            "x": 16,
+            "y": 17
+          },
+          "id": 14,
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "name",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.2.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "(count by (ns) (ALERTS{cluster_name=\"$cluster\", ns=~\"..*\", severity=~\"critical|warn\"}) * -1 \n* on (ns) group_left\nsum by (ns) (aerospike_namespace_objects{cluster_name=\"$cluster\"} ))\nor\nsum by (ns) (aerospike_namespace_objects{cluster_name=\"$cluster\"} ) \n",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "{{ns}}",
+              "range": false,
+              "refId": "B"
+            }
+          ],
+          "title": "$cluster - Namespaces",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "links": [
+                {
+                  "targetBlank": true,
+                  "title": "Cluster View",
+                  "url": "/d/hU_4PTqWk/xdr-view-aerospike-5-0-only?orgId=1&refresh=1m&${cluster:queryparam}"
+                }
+              ],
+              "mappings": [],
+              "noValue": "N/A",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 5
+                  },
+                  {
+                    "color": "red",
+                    "value": 300
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 3,
+            "x": 0,
+            "y": 23
+          },
+          "id": 20,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "last"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.2.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": " max(aerospike_xdr_lag{cluster_name=~\"$cluster\"}) ",
+              "hide": false,
+              "instant": true,
+              "interval": "",
+              "legendFormat": "Lag",
+              "range": false,
+              "refId": "xdr_lag"
+            }
+          ],
+          "title": "XDR Lag (max)",
+          "type": "stat"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "thresholds"
+              },
+              "links": [
+                {
+                  "targetBlank": true,
+                  "title": "Cluster View",
+                  "url": "/d/ZoeGW1DBk/latency-view?orgId=1&refresh=1m&${cluster:queryparam}"
+                }
+              ],
+              "mappings": [],
+              "noValue": "N/A",
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 5
+                  },
+                  {
+                    "color": "red",
+                    "value": 50
+                  }
+                ]
+              },
+              "unit": "none"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 5,
+            "w": 5,
+            "x": 3,
+            "y": 23
+          },
+          "id": 18,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "center",
+            "orientation": "auto",
+            "percentChangeColorMode": "standard",
+            "reduceOptions": {
+              "calcs": [
+                "lastNotNull"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "12.2.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum (aerospike_latencies_write_ms_bucket{cluster_name=~\"$cluster\", le=\"+Inf\"})\n- \nsum (aerospike_latencies_write_ms_bucket{cluster_name=~\"$cluster\", le=\"4\"}) ",
+              "hide": false,
+              "instant": true,
+              "legendFormat": "Write > 4ms",
+              "range": false,
+              "refId": "write_latency"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "exemplar": false,
+              "expr": "sum (aerospike_latencies_read_ms_bucket{cluster_name=~\"$cluster\", le=\"+Inf\",}) \n- \nsum (aerospike_latencies_read_ms_bucket{cluster_name=~\"$cluster\", le=\"4\",}) ",
+              "hide": false,
+              "instant": true,
+              "legendFormat": "Read > 4ms",
+              "range": false,
+              "refId": "read_latency"
+            }
+          ],
+          "title": "Latencies (total)",
+          "type": "stat"
+        }
+      ],
+      "refresh": "10s",
+      "schemaVersion": 42,
+      "tags": [
+        "usecase",
+        "cluster",
+        "monitoring",
+        "topology"
+      ],
+      "templating": {
+        "list": [
+          {
+            "current": {},
+            "includeAll": false,
+            "label": "Datasource",
+            "name": "DS_AEROSPIKE_PROMETHEUS",
+            "options": [],
+            "query": "prometheus",
+            "refresh": 1,
+            "regex": "",
+            "type": "datasource"
+          },
+          {
+            "current": {},
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+            },
+            "definition": "label_values(aerospike_node_stats_uptime,job)",
+            "includeAll": false,
+            "label": "job_name",
+            "name": "job_name",
+            "options": [],
+            "query": {
+              "query": "label_values(aerospike_node_stats_uptime,job)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "type": "query"
+          },
+          {
+            "allValue": "All",
+            "current": {},
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+            },
+            "definition": "label_values(aerospike_node_stats_uptime{job=\"$job_name\"},cluster_name)",
+            "description": "Displays all the cluster names",
+            "includeAll": true,
+            "label": "Cluster",
+            "name": "cluster",
+            "options": [],
+            "query": {
+              "query": "label_values(aerospike_node_stats_uptime{job=\"$job_name\"},cluster_name)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "type": "query"
+          },
+          {
+            "current": {},
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+            },
+            "definition": "label_values(aerospike_node_stats_uptime{job=\"$job_name\", cluster_name=~\"$cluster\" },service)",
+            "hide": 2,
+            "includeAll": true,
+            "label": "node",
+            "name": "node",
+            "options": [],
+            "query": {
+              "query": "label_values(aerospike_node_stats_uptime{job=\"$job_name\", cluster_name=~\"$cluster\" },service)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 1,
+            "regex": "",
+            "type": "query"
+          },
+          {
+            "current": {},
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+            },
+            "definition": "label_values(ALERTS{job=\"$job_name\", },severity)",
+            "hide": 2,
+            "includeAll": true,
+            "label": "Alert Severity",
+            "multi": true,
+            "name": "severity",
+            "options": [],
+            "query": {
+              "query": "label_values(ALERTS{job=\"$job_name\", },severity)",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 1,
+            "regex": "/^[A-Za-z]+$/",
+            "type": "query"
+          },
+          {
+            "current": {},
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+            },
+            "definition": "query_result( ( label_join(label_join (label_join  (label_join( label_join(label_replace( label_replace( ((count_values by (cluster_name, dc, ns) ( \"xdr_bytes\", sum by (cluster_name, dc, ns) (aerospike_xdr_bytes_shipped{} and aerospike_xdr_dc_namespace_enabled{}==1)  ) + on (cluster_name,  dc, ns ) group_left(xdr_lag) count_values by (cluster_name, dc, ns) ( \"xdr_lag\", max by (cluster_name, dc, ns) (aerospike_xdr_lag{} and aerospike_xdr_dc_namespace_enabled{}==1 )  ) + on (cluster_name, ns ) group_left(ns_objects) count_values by (cluster_name, ns) ( \"ns_objects\", sum by (cluster_name, ns) (aerospike_namespace_objects{})) )), \"dc\", \",$1[$1];\", \"dc\", \"(.*)\"), \"cluster_name\", \"$1[$1]\", \"cluster_name\", \"(.*)\")\t\t, \"L1\", \",\", \"cluster_name\"),\"L1\",\"==Namespace: \", \"L1\", \"ns\" ),\"L1\",\"<br>Bytes: \", \"L1\", \"xdr_bytes\" )   ,\"L1\",\"<br>Max. Lag: \", \"L1\", \"xdr_lag\" )  ,\"L1\", \"==>\", \"L1\", \"dc\" ) or on() label_join(label_replace(  (count_values by (cluster_name, ns) ( \"ns_objects\", sum by (cluster_name, ns) (aerospike_namespace_objects{})) ) , \"cluster_name\", \"$1[($1)];\", \"cluster_name\", \"(.*)\") , \"L1\", \",\", \"cluster_name\") or on() label_replace( count_values(\"xdr_data_absent\", (absent(aerospike_xdr_dc_namespace_enabled{}))),\"L1\",\"no-data[no data]\", \"no_data\", \"(.*)\" ) ))",
+            "description": "describes and displays the aerospike server topology using mermaid markup-language syntax",
+            "hide": 2,
+            "includeAll": true,
+            "label": "Topology definitions",
+            "multi": true,
+            "name": "mermaid_text",
+            "options": [],
+            "query": {
+              "query": "query_result( ( label_join(label_join (label_join  (label_join( label_join(label_replace( label_replace( ((count_values by (cluster_name, dc, ns) ( \"xdr_bytes\", sum by (cluster_name, dc, ns) (aerospike_xdr_bytes_shipped{} and aerospike_xdr_dc_namespace_enabled{}==1)  ) + on (cluster_name,  dc, ns ) group_left(xdr_lag) count_values by (cluster_name, dc, ns) ( \"xdr_lag\", max by (cluster_name, dc, ns) (aerospike_xdr_lag{} and aerospike_xdr_dc_namespace_enabled{}==1 )  ) + on (cluster_name, ns ) group_left(ns_objects) count_values by (cluster_name, ns) ( \"ns_objects\", sum by (cluster_name, ns) (aerospike_namespace_objects{})) )), \"dc\", \",$1[$1];\", \"dc\", \"(.*)\"), \"cluster_name\", \"$1[$1]\", \"cluster_name\", \"(.*)\")\t\t, \"L1\", \",\", \"cluster_name\"),\"L1\",\"==Namespace: \", \"L1\", \"ns\" ),\"L1\",\"<br>Bytes: \", \"L1\", \"xdr_bytes\" )   ,\"L1\",\"<br>Max. Lag: \", \"L1\", \"xdr_lag\" )  ,\"L1\", \"==>\", \"L1\", \"dc\" ) or on() label_join(label_replace(  (count_values by (cluster_name, ns) ( \"ns_objects\", sum by (cluster_name, ns) (aerospike_namespace_objects{})) ) , \"cluster_name\", \"$1[($1)];\", \"cluster_name\", \"(.*)\") , \"L1\", \",\", \"cluster_name\") or on() label_replace( count_values(\"xdr_data_absent\", (absent(aerospike_xdr_dc_namespace_enabled{}))),\"L1\",\"no-data[no data]\", \"no_data\", \"(.*)\" ) ))",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "/.*L1=\"([^\"]+)\".*/",
+            "type": "query"
+          },
+          {
+            "current": {},
+            "datasource": {
+              "type": "prometheus",
+              "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+            },
+            "definition": "query_result( (  label_join(label_replace(  (count_values by (cluster_name, ns) ( \"ns_objects\", sum by (cluster_name, ns) (aerospike_namespace_objects{})) ) , \"cluster_name\", \"$1[($1)];\", \"cluster_name\", \"(.*)\") , \"L1\", \",\", \"cluster_name\") or label_replace( count_values(\"no_ns_objects\", (absent(aerospike_namespace_objects{}))),\"L1\",\"no-data[no data]\", \"no_data\", \"(.*)\" )))",
+            "description": "describes and displays the aerospike server topology using mermaid markup-language syntax",
+            "hide": 2,
+            "includeAll": true,
+            "label": "Topology definitions",
+            "multi": true,
+            "name": "servers_mermaid_text",
+            "options": [],
+            "query": {
+              "query": "query_result( (  label_join(label_replace(  (count_values by (cluster_name, ns) ( \"ns_objects\", sum by (cluster_name, ns) (aerospike_namespace_objects{})) ) , \"cluster_name\", \"$1[($1)];\", \"cluster_name\", \"(.*)\") , \"L1\", \",\", \"cluster_name\") or label_replace( count_values(\"no_ns_objects\", (absent(aerospike_namespace_objects{}))),\"L1\",\"no-data[no data]\", \"no_data\", \"(.*)\" )))",
+              "refId": "StandardVariableQuery"
+            },
+            "refresh": 2,
+            "regex": "/.*L1=\"([^\"]+)\".*/",
+            "type": "query"
+          }
+        ]
+      },
+      "time": {
+        "from": "now-6h",
+        "to": "now"
+      },
+      "timepicker": {},
+      "timezone": "",
+      "title": "Multi Cluster View",
+      "uid": "03SlXxlVz",
+      "version": 1,
+      "weekStart": ""
+    }
+kind: ConfigMap
+metadata:
+  labels:
+    grafana_dashboard: "1"
+  name: geoview-dashboard
+  namespace: monitoring

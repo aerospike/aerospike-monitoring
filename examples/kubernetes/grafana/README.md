@@ -1,0 +1,236 @@
+# Aerospike Monitoring Stack on Kubernetes 
+
+This guide explains how to deploy **Aerospike Server**, **Aerospike Prometheus Exporter**, and set up **Prometheus + Grafana** monitoring on a Kubernetes cluster using the Aerospike Kubernetes Operator (AKO).
+
+---
+
+## 🧩 Prerequisites
+
+- A working **Kubernetes cluster** (v1.25+)
+- `kubectl` installed and configured
+- Internet access to pull container images and apply manifests
+- Sufficient permissions to create namespaces, CRDs, and cluster-wide roles
+- Aerospike server configuration and feature files
+
+---
+
+## 🧠 Step 1 — Install Operator Lifecycle Manager (OLM)
+
+OLM manages the installation and upgrades of Kubernetes operators.
+
+```bash
+curl -sL https://github.com/operator-framework/operator-lifecycle-manager/releases/download/v0.38.0/install.sh | bash -s v0.38.0
+```
+
+Verify that OLM pods are running:
+
+```bash
+kubectl get pods -n olm
+```
+
+---
+
+## 🧰 Step 2 — Install Aerospike Kubernetes Operator (AKO)
+
+The Aerospike Operator automates Aerospike cluster management in Kubernetes.
+For reference, see [Aerospike AKO Installation Docs](https://aerospike.com/docs/kubernetes/install/olm/).
+
+```bash
+kubectl create -f https://operatorhub.io/install/aerospike-kubernetes-operator.yaml
+```
+
+Check operator status (may take a few seconds):
+
+```bash
+kubectl get csv -n operators aerospike-kubernetes-operator.v4.1.1 -w
+```
+
+---
+
+## 🏗️ Step 3 — Configure Aerospike Namespace, ServiceAccount & Secrets
+
+Create required namespaces, service accounts, role bindings, and secrets.  
+For reference, see [Aerospike AKO Installation Docs](https://aerospike.com/docs/kubernetes/install/olm/).
+
+```bash
+# Create application namespace
+kubectl create namespace aerospike
+
+# Service account for operator controller
+kubectl -n aerospike create serviceaccount aerospike-operator-controller-manager
+
+kubectl create clusterrolebinding aerospike-cluster   --clusterrole=aerospike-cluster   --serviceaccount=aerospike:aerospike-operator-controller-manager
+
+# NOTE: Copy your features.conf file 'secrets' folder
+
+# Create secrets
+kubectl -n aerospike create secret generic aerospike-secret --from-file=secrets
+kubectl -n aerospike create secret generic auth-secret --from-literal=password='admin123'
+```
+
+---
+
+## 🚀 Step 4 — Deploy Aerospike Server & Exporter
+
+Apply the **Aerospike cluster custom resource** manifest.
+
+```bash
+kubectl apply -f dim_nostorage_cluster_skip_validation_cr.yaml
+```
+
+This YAML typically contains:
+- Aerospike cluster configuration (namespace, service, storage)
+- Prometheus exporter configuration for metrics
+- Authentication reference to secrets created above
+
+> 📘 Example file: `dim_nostorage_cluster_skip_validation_cr.yaml`
+
+Verify deployment:
+
+```bash
+kubectl -n aerospike get pods
+kubectl -n aerospike logs aerocluster-0-0
+kubectl -n aerospike get aerospikecluster
+kubectl describe pod aerocluster-0-0 -n aerospike
+```
+
+Look for the message:
+```
+service ready: soon there will be cake
+```
+
+---
+
+## 📊 Step 5 — Set Up Monitoring (Prometheus & Grafana)
+
+### 5.1 Create Monitoring Namespace
+```bash
+kubectl create namespace monitoring
+```
+
+---
+
+### 5.2 Deploy Prometheus
+
+```bash
+# Prometheus configuration
+kubectl apply -f prometheus-config.yaml
+
+# Prometheus deployment
+kubectl apply -f prometheus-deploy.yaml
+
+# Prometheus alerting rules
+kubectl apply -f prometheus-rules.yaml
+```
+
+Verify: if Prometheus monitoring pod are UP
+
+```bash
+kubectl -n monitoring get pods
+```
+
+Access Prometheus UI via port-forwarding:
+```bash
+kubectl -n monitoring port-forward svc/prometheus 8090:9090
+```
+Open [http://localhost:8090](http://localhost:8090)
+
+---
+
+### 5.3 Deploy Grafana
+
+```bash
+# Default Prometheus Datasource 'Aerospike Prometheus'
+kubectl apply -f grafana-datasource.yaml
+
+# Load all existing Aerospike Grafana Dashboards
+kubectl apply -f grafana-dashboard-provider.yaml
+
+# Setup ConfigMap for required Dashboards
+kubectl -n monitoring create -f dashboard_configmaps/cluster-dashboard.yaml
+kubectl -n monitoring create -f dashboard_configmaps/namespace-dashboard.yaml
+kubectl -n monitoring create -f dashboard_configmaps/node-dashboard.yaml
+kubectl -n monitoring create -f dashboard_configmaps/set-dashboard.yaml
+
+# Run the blow commands to see additional dashboards 
+#
+#kubectl -n monitoring create -f dashboard_configmaps/users-dashboard.yaml
+#kubectl -n monitoring create -f dashboard_configmaps/alertsview-dashboard.yaml
+#kubectl -n monitoring create -f dashboard_configmaps/geoview-dashboard.yaml
+#kubectl -n monitoring create -f dashboard_configmaps/uniquedata-dashboard.yaml
+#kubectl -n monitoring create -f dashboard_configmaps/sindex-dashboard.yaml
+#kubectl -n monitoring create -f dashboard_configmaps/xdr-dashboard.yaml
+
+# Grafana deployment
+kubectl apply -f grafana-deploy.yaml
+```
+
+Verify that Prometheus and Grafana pods are running:
+
+```bash
+kubectl get pods -n monitoring
+```
+
+Port-forward Grafana:
+```bash
+kubectl -n monitoring port-forward svc/grafana 13090:3000
+```
+Access Grafana at [http://localhost:13090](http://localhost:13090)
+
+> Default credentials (unless changed):  
+> **Username:** `admin`  
+> **Password:** `admin`
+
+Once logged in, import the **Aerospike Dashboards** (JSON files available in Aerospike’s Grafana repo or bundled with this setup).
+
+---
+
+## 🧾 Files Used in This Setup
+
+| File Name | Purpose |
+|------------|----------|
+| `dim_nostorage_cluster_skip_validation_cr.yaml` | Aerospike cluster and exporter deployment (CR) |
+| `prometheus-config.yaml` | Prometheus scrape configuration |
+| `prometheus-deploy.yaml` | Prometheus Deployment |
+| `prometheus-rules.yaml` | Prometheus alert and rule configuration |
+| `grafana-deploy.yaml` | Grafana Deployment |
+| `grafana-datasource.yaml` | Prometheus datasource for Grafana |
+| `grafana-dashboard-provider.yaml` | Grafana dashboard configuration |
+
+---
+
+## 🔍 Verification Commands
+
+```bash
+# Aerospike pods
+kubectl -n aerospike get pods
+
+# Monitoring pods
+kubectl -n monitoring get pods
+
+# Check metrics endpoint
+kubectl -n aerospike port-forward svc/aerospike-prometheus-exporter 9145:9145
+curl http://localhost:9145/metrics | head
+```
+
+---
+
+## 🧹 Cleanup
+
+To remove all components:
+
+```bash
+kubectl delete namespace monitoring
+kubectl delete namespace aerospike
+kubectl delete namespace operators
+```
+
+---
+
+## 📚 References
+
+- [Aerospike Kubernetes Operator Documentation](https://aerospike.com/docs/kubernetes)
+- [Aerospike Prometheus Exporter](https://github.com/aerospike/aerospike-prometheus-exporter)
+- [Operator Lifecycle Manager](https://github.com/operator-framework/operator-lifecycle-manager)
+
+---

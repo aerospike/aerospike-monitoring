@@ -1,0 +1,104 @@
+# Simple demo Aerospike cluster with Prometheus exporter + Datadog sidecar (no host mounts)
+
+apiVersion: asdb.aerospike.com/v1
+kind: AerospikeCluster
+metadata:
+  name: aerocluster
+  namespace: aerospike
+
+spec:
+  size: 2
+  image: aerospike/aerospike-server-enterprise:8.1.0.0
+
+  podSpec:
+    multiPodPerHost: true
+    sidecars:
+      - name: aerospike-prometheus-exporter
+        image: aerospike/aerospike-prometheus-exporter:1.27.0
+        ports:
+          - containerPort: 9145
+            name: exporter
+
+      - name: datadog-agent
+        image: aerospike/datadog-aerospike-integration:1.0.0
+        imagePullPolicy: IfNotPresent
+        env:
+          # REQUIRED: Datadog API key
+          - name: DD_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: datadog-secret
+                key: api-key
+
+          # Required: your Datadog site
+          - name: DD_SITE
+            value: datadoghq.com
+
+          # Disable logs
+          - name: DD_LOGS_ENABLED
+            value: "false"
+          - name: DD_PROCESS_AGENT_ENABLED
+            value: "false"
+          - name: DD_APM_ENABLED
+            value: "false"
+
+          # Just to be safe, exclude itself
+          - name: DD_CONTAINER_EXCLUDE
+            value: "name:datadog-agent"
+
+          # Map K8s labels to tags
+          - name: DD_KUBERNETES_POD_LABELS_AS_TAGS
+            value: '{"aerospike.com/cr": "aerocluster"}'
+
+          - name: DD_HOSTNAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name  # Use pod name as hostname
+
+  validationPolicy:
+    skipWorkDirValidate: true
+    skipXdrDlogFileValidate: true
+
+  storage:
+    volumes:
+      - name: aerospike-config-secret
+        source:
+          secret:
+            secretName: aerospike-secret
+        aerospike:
+          path: /etc/aerospike/secret
+
+  aerospikeConfig:
+    service:
+      feature-key-file: /etc/aerospike/secret/features.conf
+    network:
+      service:
+        port: 3000
+      fabric:
+        port: 3001
+      heartbeat:
+        port: 3002
+    namespaces:
+      - name: test
+        replication-factor: 2
+        storage-engine:
+          type: memory
+          data-size: 1073741824
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aerocluster-metrics
+  namespace: aerospike
+spec:
+  selector:
+    aerospike.com/cr: aerocluster
+    app: aerospike-cluster
+  ports:
+    - name: metrics
+      port: 9145
+      targetPort: 9145
+      protocol: TCP
+  type: ClusterIP
+---
