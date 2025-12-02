@@ -1,53 +1,18 @@
 {
-  "title": "Secondary Index Summary",
-  "description": "",
+  "title": "Aerospike Enterprise - Secondary Index Summary Overview",
+  "description": "Visualizes key secondary index metrics, including long and short queries, both cumulatively and as time-series across namespaces.",
   "widgets": [
     {
-      "id": 4562923306895504,
+      "id": 884994916238942,
       "definition": {
         "type": "image",
         "url": "/static/images/logos/aerospike_small.svg",
         "sizing": "cover",
+        "margin": "md",
         "has_background": true,
         "has_border": true,
         "vertical_align": "center",
         "horizontal_align": "center"
-      },
-      "layout": {
-        "x": 0,
-        "y": 0,
-        "width": 2,
-        "height": 1
-      }
-    },
-    {
-      "id": 3894420641073904,
-      "definition": {
-        "title": "Cluster Overview",
-        "background_color": "vivid_purple",
-        "show_title": true,
-        "type": "group",
-        "layout_type": "ordered",
-        "widgets": []
-      },
-      "layout": {
-        "x": 2,
-        "y": 0,
-        "width": 10,
-        "height": 1
-      }
-    },
-    {
-      "id": 5058731761672998,
-      "definition": {
-        "type": "note",
-        "content": "**Secondary Index Summary** dashboard provides information about overview of secondary index usage at namespace level.",
-        "background_color": "white",
-        "font_size": "24",
-        "text_align": "left",
-        "show_tick": false,
-        "tick_pos": "50%",
-        "tick_edge": "left"
       },
       "layout": {
         "x": 0,
@@ -57,92 +22,42 @@
       }
     },
     {
-      "id": 3816405053135670,
+      "id": 3894420641073904,
       "definition": {
-        "title": "Sindex Count (total)",
-        "title_size": "16",
-        "title_align": "left",
-        "type": "query_value",
-        "requests": [
-          {
-            "response_format": "scalar",
-            "queries": [
-              {
-                "data_source": "metrics",
-                "name": "query1",
-                "query": "sum:aerospike.sindex.entries{$aerospike_cluster} by {sindex}",
-                "aggregator": "last"
-              }
-            ],
-            "conditional_formats": [
-              {
-                "comparator": ">",
-                "value": 0,
-                "palette": "white_on_green"
-              }
-            ],
-            "formulas": [
-              {
-                "formula": "count_not_null(query1)"
-              }
-            ]
-          }
-        ],
-        "autoscale": true,
-        "text_align": "center",
-        "custom_links": [],
-        "precision": 2,
-        "timeseries_background": {
-          "type": "area",
-          "yaxis": {
-            "include_zero": true
-          }
-        }
-      },
-      "layout": {
-        "x": 4,
-        "y": 0,
-        "width": 2,
-        "height": 2
-      }
-    },
-    {
-      "id": 8675798975409096,
-      "definition": {
-        "title": "UDF Queries (max) (rate/one hour)",
-        "background_color": "vivid_purple",
+        "title": "Overview",
+        "background_color": "vivid_blue",
         "show_title": true,
         "type": "group",
         "layout_type": "ordered",
         "widgets": [
           {
-            "id": 3204378703808430,
+            "id": 3816405053135670,
             "definition": {
-              "title": "Completed",
+              "title": "Sindex Count (total)",
               "title_size": "16",
               "title_align": "left",
               "type": "query_value",
               "requests": [
                 {
-                  "formulas": [
-                    {
-                      "formula": "rate(query1)"
-                    }
-                  ],
+                  "response_format": "scalar",
                   "queries": [
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "max:aerospike.namespace.si_query_udf_bg_complete{$aerospike_cluster}.rollup(max, 3600)",
+                      "query": "sum:aerospike.server.sindex.entries{$aerospike_cluster} by {sindex}",
                       "aggregator": "last"
                     }
                   ],
-                  "response_format": "scalar",
                   "conditional_formats": [
                     {
-                      "comparator": ">=",
+                      "comparator": ">",
                       "value": 0,
                       "palette": "white_on_green"
+                    }
+                  ],
+                  "formulas": [
+                    {
+                      "formula": "count_not_null(query1)"
                     }
                   ]
                 }
@@ -152,824 +67,25 @@
               "custom_links": [],
               "precision": 2,
               "timeseries_background": {
+                "type": "area",
                 "yaxis": {
                   "include_zero": true
-                },
-                "type": "area"
+                }
               }
             },
             "layout": {
               "x": 0,
               "y": 0,
-              "width": 2,
-              "height": 1
+              "width": 3,
+              "height": 2
             }
           },
-          {
-            "id": 7648759188515174,
-            "definition": {
-              "title": "Aborted",
-              "title_size": "16",
-              "title_align": "left",
-              "type": "query_value",
-              "requests": [
-                {
-                  "formulas": [
-                    {
-                      "formula": "rate(query1)"
-                    }
-                  ],
-                  "queries": [
-                    {
-                      "data_source": "metrics",
-                      "name": "query1",
-                      "query": "max:aerospike.namespace.si_query_udf_bg_abort{$aerospike_cluster}.rollup(max, 3600)",
-                      "aggregator": "last"
-                    }
-                  ],
-                  "response_format": "scalar",
-                  "conditional_formats": [
-                    {
-                      "comparator": ">=",
-                      "value": 0,
-                      "palette": "white_on_green"
-                    }
-                  ]
-                }
-              ],
-              "autoscale": true,
-              "text_align": "center",
-              "custom_links": [],
-              "precision": 2,
-              "timeseries_background": {
-                "yaxis": {
-                  "include_zero": true
-                },
-                "type": "area"
-              }
-            },
-            "layout": {
-              "x": 2,
-              "y": 0,
-              "width": 2,
-              "height": 1
-            }
-          },
-          {
-            "id": 1122925628110134,
-            "definition": {
-              "title": "Errors",
-              "title_size": "16",
-              "title_align": "left",
-              "type": "query_value",
-              "requests": [
-                {
-                  "formulas": [
-                    {
-                      "formula": "rate(query1)"
-                    }
-                  ],
-                  "queries": [
-                    {
-                      "data_source": "metrics",
-                      "name": "query1",
-                      "query": "max:aerospike.namespace.si_query_udf_bg_error{$aerospike_cluster}.rollup(max, 3600)",
-                      "aggregator": "last"
-                    }
-                  ],
-                  "response_format": "scalar",
-                  "conditional_formats": [
-                    {
-                      "comparator": ">=",
-                      "value": 0,
-                      "palette": "white_on_green"
-                    }
-                  ]
-                }
-              ],
-              "autoscale": true,
-              "text_align": "center",
-              "custom_links": [],
-              "precision": 2,
-              "timeseries_background": {
-                "yaxis": {
-                  "include_zero": true
-                },
-                "type": "area"
-              }
-            },
-            "layout": {
-              "x": 4,
-              "y": 0,
-              "width": 2,
-              "height": 1
-            }
-          }
-        ]
-      },
-      "layout": {
-        "x": 6,
-        "y": 0,
-        "width": 6,
-        "height": 2
-      }
-    },
-    {
-      "id": 7296789291906384,
-      "definition": {
-        "title": "Short Queries (max) (rate/one hour)",
-        "background_color": "vivid_purple",
-        "show_title": true,
-        "type": "group",
-        "layout_type": "ordered",
-        "widgets": [
-          {
-            "id": 1274822495393818,
-            "definition": {
-              "title": "Completed",
-              "title_size": "16",
-              "title_align": "left",
-              "type": "query_value",
-              "requests": [
-                {
-                  "formulas": [
-                    {
-                      "formula": "rate(query1)"
-                    }
-                  ],
-                  "queries": [
-                    {
-                      "data_source": "metrics",
-                      "name": "query1",
-                      "query": "max:aerospike.namespace.si_query_short_basic_complete{$aerospike_cluster}.rollup(max, 3600)",
-                      "aggregator": "last"
-                    }
-                  ],
-                  "response_format": "scalar",
-                  "conditional_formats": [
-                    {
-                      "comparator": ">=",
-                      "value": 0,
-                      "palette": "white_on_green"
-                    }
-                  ]
-                }
-              ],
-              "autoscale": true,
-              "text_align": "center",
-              "custom_links": [],
-              "precision": 2,
-              "timeseries_background": {
-                "yaxis": {
-                  "include_zero": true
-                },
-                "type": "area"
-              }
-            },
-            "layout": {
-              "x": 0,
-              "y": 0,
-              "width": 2,
-              "height": 1
-            }
-          },
-          {
-            "id": 8834472706665212,
-            "definition": {
-              "title": "Timeout",
-              "title_size": "16",
-              "title_align": "left",
-              "type": "query_value",
-              "requests": [
-                {
-                  "formulas": [
-                    {
-                      "formula": "rate(query1)"
-                    }
-                  ],
-                  "queries": [
-                    {
-                      "data_source": "metrics",
-                      "name": "query1",
-                      "query": "max:aerospike.namespace.si_query_short_basic_timeout{$aerospike_cluster}.rollup(max, 3600)",
-                      "aggregator": "last"
-                    }
-                  ],
-                  "response_format": "scalar",
-                  "conditional_formats": [
-                    {
-                      "comparator": ">=",
-                      "value": 0,
-                      "palette": "white_on_green"
-                    }
-                  ]
-                }
-              ],
-              "autoscale": true,
-              "text_align": "center",
-              "custom_links": [],
-              "precision": 2,
-              "timeseries_background": {
-                "yaxis": {
-                  "include_zero": true
-                },
-                "type": "area"
-              }
-            },
-            "layout": {
-              "x": 2,
-              "y": 0,
-              "width": 2,
-              "height": 1
-            }
-          },
-          {
-            "id": 2546732479312086,
-            "definition": {
-              "title": "Errors",
-              "title_size": "16",
-              "title_align": "left",
-              "type": "query_value",
-              "requests": [
-                {
-                  "formulas": [
-                    {
-                      "formula": "rate(query1)"
-                    }
-                  ],
-                  "queries": [
-                    {
-                      "data_source": "metrics",
-                      "name": "query1",
-                      "query": "max:aerospike.namespace.si_query_short_basic_error{$aerospike_cluster}.rollup(max, 3600)",
-                      "aggregator": "last"
-                    }
-                  ],
-                  "response_format": "scalar",
-                  "conditional_formats": [
-                    {
-                      "comparator": ">=",
-                      "value": 0,
-                      "palette": "white_on_green"
-                    }
-                  ]
-                }
-              ],
-              "autoscale": true,
-              "text_align": "center",
-              "custom_links": [],
-              "precision": 2,
-              "timeseries_background": {
-                "yaxis": {
-                  "include_zero": true
-                },
-                "type": "area"
-              }
-            },
-            "layout": {
-              "x": 4,
-              "y": 0,
-              "width": 2,
-              "height": 1
-            }
-          }
-        ]
-      },
-      "layout": {
-        "x": 0,
-        "y": 0,
-        "width": 6,
-        "height": 2
-      }
-    },
-    {
-      "id": 3734907342644984,
-      "definition": {
-        "title": "Long Queries (max) (rate/one hour)",
-        "background_color": "vivid_purple",
-        "show_title": true,
-        "type": "group",
-        "layout_type": "ordered",
-        "widgets": [
-          {
-            "id": 3157428016405320,
-            "definition": {
-              "title": "Completed",
-              "title_size": "16",
-              "title_align": "left",
-              "type": "query_value",
-              "requests": [
-                {
-                  "formulas": [
-                    {
-                      "formula": "rate(query1)"
-                    }
-                  ],
-                  "queries": [
-                    {
-                      "data_source": "metrics",
-                      "name": "query1",
-                      "query": "max:aerospike.namespace.si_query_long_basic_complete{$aerospike_cluster}.rollup(max, 3600)",
-                      "aggregator": "last"
-                    }
-                  ],
-                  "response_format": "scalar",
-                  "conditional_formats": [
-                    {
-                      "comparator": ">=",
-                      "value": 0,
-                      "palette": "white_on_green"
-                    }
-                  ]
-                }
-              ],
-              "autoscale": true,
-              "text_align": "center",
-              "custom_links": [],
-              "precision": 2,
-              "timeseries_background": {
-                "yaxis": {
-                  "include_zero": true
-                },
-                "type": "area"
-              }
-            },
-            "layout": {
-              "x": 0,
-              "y": 0,
-              "width": 2,
-              "height": 1
-            }
-          },
-          {
-            "id": 2891922198243158,
-            "definition": {
-              "title": "Aborted",
-              "title_size": "16",
-              "title_align": "left",
-              "time": {},
-              "type": "query_value",
-              "requests": [
-                {
-                  "formulas": [
-                    {
-                      "formula": "rate(query1)"
-                    }
-                  ],
-                  "queries": [
-                    {
-                      "data_source": "metrics",
-                      "name": "query1",
-                      "query": "max:aerospike.namespace.si_query_long_basic_abort{$aerospike_cluster}.rollup(max, 3600)",
-                      "aggregator": "last"
-                    }
-                  ],
-                  "response_format": "scalar",
-                  "conditional_formats": [
-                    {
-                      "comparator": ">=",
-                      "value": 0,
-                      "palette": "white_on_green"
-                    }
-                  ]
-                }
-              ],
-              "autoscale": true,
-              "text_align": "center",
-              "custom_links": [],
-              "precision": 2,
-              "timeseries_background": {
-                "yaxis": {
-                  "include_zero": true
-                },
-                "type": "area"
-              }
-            },
-            "layout": {
-              "x": 2,
-              "y": 0,
-              "width": 2,
-              "height": 1
-            }
-          },
-          {
-            "id": 1873993765296782,
-            "definition": {
-              "title": "Errors",
-              "title_size": "16",
-              "title_align": "left",
-              "time": {},
-              "type": "query_value",
-              "requests": [
-                {
-                  "formulas": [
-                    {
-                      "formula": "rate(query1)"
-                    }
-                  ],
-                  "queries": [
-                    {
-                      "data_source": "metrics",
-                      "name": "query1",
-                      "query": "max:aerospike.namespace.si_query_long_basic_error{$aerospike_cluster}.rollup(max, 3600)",
-                      "aggregator": "last"
-                    }
-                  ],
-                  "response_format": "scalar",
-                  "conditional_formats": [
-                    {
-                      "comparator": ">=",
-                      "value": 0,
-                      "palette": "white_on_green"
-                    }
-                  ]
-                }
-              ],
-              "autoscale": true,
-              "text_align": "center",
-              "custom_links": [],
-              "precision": 2,
-              "timeseries_background": {
-                "yaxis": {
-                  "include_zero": true
-                },
-                "type": "area"
-              }
-            },
-            "layout": {
-              "x": 4,
-              "y": 0,
-              "width": 2,
-              "height": 1
-            }
-          }
-        ]
-      },
-      "layout": {
-        "x": 6,
-        "y": 0,
-        "width": 6,
-        "height": 2
-      }
-    },
-    {
-      "id": 2005737017732368,
-      "definition": {
-        "title": "Query Aggregations (max) (rate/one hour)",
-        "background_color": "vivid_purple",
-        "show_title": true,
-        "type": "group",
-        "layout_type": "ordered",
-        "widgets": [
-          {
-            "id": 1871396530645472,
-            "definition": {
-              "title": "Completed",
-              "title_size": "16",
-              "title_align": "left",
-              "time": {},
-              "type": "query_value",
-              "requests": [
-                {
-                  "formulas": [
-                    {
-                      "formula": "rate(query1)"
-                    }
-                  ],
-                  "queries": [
-                    {
-                      "data_source": "metrics",
-                      "name": "query1",
-                      "query": "max:aerospike.namespace.si_query_aggr_complete{$aerospike_cluster}.rollup(max, 3600)",
-                      "aggregator": "last"
-                    }
-                  ],
-                  "response_format": "scalar",
-                  "conditional_formats": [
-                    {
-                      "comparator": ">=",
-                      "value": 0,
-                      "palette": "white_on_green"
-                    }
-                  ]
-                }
-              ],
-              "autoscale": true,
-              "text_align": "center",
-              "custom_links": [],
-              "precision": 2,
-              "timeseries_background": {
-                "yaxis": {
-                  "include_zero": true
-                },
-                "type": "area"
-              }
-            },
-            "layout": {
-              "x": 0,
-              "y": 0,
-              "width": 2,
-              "height": 1
-            }
-          },
-          {
-            "id": 1904001826102278,
-            "definition": {
-              "title": "Aborted",
-              "title_size": "16",
-              "title_align": "left",
-              "time": {},
-              "type": "query_value",
-              "requests": [
-                {
-                  "formulas": [
-                    {
-                      "formula": "rate(query1)"
-                    }
-                  ],
-                  "queries": [
-                    {
-                      "data_source": "metrics",
-                      "name": "query1",
-                      "query": "max:aerospike.namespace.si_query_aggr_abort{$aerospike_cluster}.rollup(max, 3600)",
-                      "aggregator": "last"
-                    }
-                  ],
-                  "response_format": "scalar",
-                  "conditional_formats": [
-                    {
-                      "comparator": ">=",
-                      "value": 0,
-                      "palette": "white_on_green"
-                    }
-                  ]
-                }
-              ],
-              "autoscale": true,
-              "text_align": "center",
-              "custom_links": [],
-              "precision": 2,
-              "timeseries_background": {
-                "yaxis": {
-                  "include_zero": true
-                },
-                "type": "area"
-              }
-            },
-            "layout": {
-              "x": 2,
-              "y": 0,
-              "width": 2,
-              "height": 1
-            }
-          },
-          {
-            "id": 7553511958568458,
-            "definition": {
-              "title": "Errors",
-              "title_size": "16",
-              "title_align": "left",
-              "time": {},
-              "type": "query_value",
-              "requests": [
-                {
-                  "formulas": [
-                    {
-                      "formula": "rate(query1)"
-                    }
-                  ],
-                  "queries": [
-                    {
-                      "data_source": "metrics",
-                      "name": "query1",
-                      "query": "max:aerospike.namespace.si_query_aggr_error{$aerospike_cluster}.rollup(max, 3600)",
-                      "aggregator": "last"
-                    }
-                  ],
-                  "response_format": "scalar",
-                  "conditional_formats": [
-                    {
-                      "comparator": ">=",
-                      "value": 0,
-                      "palette": "white_on_green"
-                    }
-                  ]
-                }
-              ],
-              "autoscale": true,
-              "text_align": "center",
-              "custom_links": [],
-              "precision": 2,
-              "timeseries_background": {
-                "yaxis": {
-                  "include_zero": true
-                },
-                "type": "area"
-              }
-            },
-            "layout": {
-              "x": 4,
-              "y": 0,
-              "width": 2,
-              "height": 1
-            }
-          }
-        ]
-      },
-      "layout": {
-        "x": 0,
-        "y": 0,
-        "width": 6,
-        "height": 2
-      }
-    },
-    {
-      "id": 8491552053987508,
-      "definition": {
-        "title": "Ops Background Queries (max) (rate/one hour)",
-        "background_color": "vivid_purple",
-        "show_title": true,
-        "type": "group",
-        "layout_type": "ordered",
-        "widgets": [
-          {
-            "id": 1727716751517380,
-            "definition": {
-              "title": "Completed",
-              "title_size": "16",
-              "title_align": "left",
-              "time": {},
-              "type": "query_value",
-              "requests": [
-                {
-                  "formulas": [
-                    {
-                      "formula": "rate(query1)"
-                    }
-                  ],
-                  "queries": [
-                    {
-                      "data_source": "metrics",
-                      "name": "query1",
-                      "query": "max:aerospike.namespace.si_query_ops_bg_complete{$aerospike_cluster}.rollup(max, 3600)",
-                      "aggregator": "last"
-                    }
-                  ],
-                  "response_format": "scalar",
-                  "conditional_formats": [
-                    {
-                      "comparator": ">=",
-                      "value": 0,
-                      "palette": "white_on_green"
-                    }
-                  ]
-                }
-              ],
-              "autoscale": true,
-              "text_align": "center",
-              "custom_links": [],
-              "precision": 2,
-              "timeseries_background": {
-                "yaxis": {
-                  "include_zero": true
-                },
-                "type": "area"
-              }
-            },
-            "layout": {
-              "x": 0,
-              "y": 0,
-              "width": 2,
-              "height": 1
-            }
-          },
-          {
-            "id": 113884743919294,
-            "definition": {
-              "title": "Aborted",
-              "title_size": "16",
-              "title_align": "left",
-              "time": {},
-              "type": "query_value",
-              "requests": [
-                {
-                  "formulas": [
-                    {
-                      "formula": "rate(query1)"
-                    }
-                  ],
-                  "queries": [
-                    {
-                      "data_source": "metrics",
-                      "name": "query1",
-                      "query": "max:aerospike.namespace.si_query_ops_bg_abort{$aerospike_cluster}.rollup(max, 3600)",
-                      "aggregator": "last"
-                    }
-                  ],
-                  "response_format": "scalar",
-                  "conditional_formats": [
-                    {
-                      "comparator": ">=",
-                      "value": 0,
-                      "palette": "white_on_green"
-                    }
-                  ]
-                }
-              ],
-              "autoscale": true,
-              "text_align": "center",
-              "custom_links": [],
-              "precision": 2,
-              "timeseries_background": {
-                "yaxis": {
-                  "include_zero": true
-                },
-                "type": "area"
-              }
-            },
-            "layout": {
-              "x": 2,
-              "y": 0,
-              "width": 2,
-              "height": 1
-            }
-          },
-          {
-            "id": 4756856328549964,
-            "definition": {
-              "title": "Errors",
-              "title_size": "16",
-              "title_align": "left",
-              "time": {},
-              "type": "query_value",
-              "requests": [
-                {
-                  "formulas": [
-                    {
-                      "formula": "rate(query1)"
-                    }
-                  ],
-                  "queries": [
-                    {
-                      "data_source": "metrics",
-                      "name": "query1",
-                      "query": "max:aerospike.namespace.si_query_ops_bg_error{$aerospike_cluster}.rollup(max, 3600)",
-                      "aggregator": "last"
-                    }
-                  ],
-                  "response_format": "scalar",
-                  "conditional_formats": [
-                    {
-                      "comparator": ">=",
-                      "value": 0,
-                      "palette": "white_on_green"
-                    }
-                  ]
-                }
-              ],
-              "autoscale": true,
-              "text_align": "center",
-              "custom_links": [],
-              "precision": 2,
-              "timeseries_background": {
-                "yaxis": {
-                  "include_zero": true
-                },
-                "type": "area"
-              }
-            },
-            "layout": {
-              "x": 4,
-              "y": 0,
-              "width": 2,
-              "height": 1
-            }
-          }
-        ]
-      },
-      "layout": {
-        "x": 6,
-        "y": 0,
-        "width": 6,
-        "height": 2
-      }
-    },
-    {
-      "id": 3173383210671846,
-      "definition": {
-        "title": "Memory (total)",
-        "background_color": "vivid_purple",
-        "show_title": true,
-        "type": "group",
-        "layout_type": "ordered",
-        "widgets": [
           {
             "id": 6663635624099076,
             "definition": {
-              "title": "Used (bytes)",
+              "title": "Memory Used (bytes)",
               "title_size": "16",
               "title_align": "left",
-              "time": {},
               "type": "query_value",
               "requests": [
                 {
@@ -978,7 +94,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "sum:aerospike.namespace.sindex_used_bytes{$aerospike_cluster}",
+                      "query": "sum:aerospike.server.namespace.sindex_used_bytes{$aerospike_cluster}",
                       "aggregator": "last"
                     }
                   ],
@@ -1014,19 +130,93 @@
               }
             },
             "layout": {
-              "x": 0,
+              "x": 3,
               "y": 0,
               "width": 2,
               "height": 1
             }
           },
           {
-            "id": 4562325215569758,
+            "id": 5153709695764856,
             "definition": {
-              "title": "Garbage Collected (rate)",
+              "title": "Memory Used (bytes)",
               "title_size": "16",
               "title_align": "left",
-              "time": {},
+              "type": "query_table",
+              "requests": [
+                {
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "query1",
+                      "query": "min:aerospike.server.sindex.used_bytes{$aerospike_cluster}",
+                      "aggregator": "last"
+                    },
+                    {
+                      "data_source": "metrics",
+                      "name": "query2",
+                      "query": "avg:aerospike.server.sindex.used_bytes{$aerospike_cluster}",
+                      "aggregator": "last"
+                    },
+                    {
+                      "data_source": "metrics",
+                      "name": "query3",
+                      "query": "max:aerospike.server.sindex.used_bytes{$aerospike_cluster}",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "response_format": "scalar",
+                  "sort": {
+                    "count": 5,
+                    "order_by": [
+                      {
+                        "type": "formula",
+                        "index": 0,
+                        "order": "desc"
+                      }
+                    ]
+                  },
+                  "formulas": [
+                    {
+                      "cell_display_mode": "number",
+                      "alias": "Min",
+                      "formula": "query1"
+                    },
+                    {
+                      "cell_display_mode": "number",
+                      "alias": "Avg",
+                      "formula": "query2"
+                    },
+                    {
+                      "cell_display_mode": "number",
+                      "alias": "Max",
+                      "formula": "query3"
+                    }
+                  ]
+                }
+              ],
+              "has_search_bar": "auto",
+              "custom_links": [
+                {
+                  "override_label": "containers",
+                  "link": "/dashboard/c6j-wa7-7h7/cluster-overview?aerospike_cluster={{$aerospike_cluster}}&aerospike_service={{$aerospike_service}}&ns={{$ns}}&live=true",
+                  "is_hidden": false
+                }
+              ]
+            },
+            "layout": {
+              "x": 5,
+              "y": 0,
+              "width": 3,
+              "height": 2
+            }
+          },
+          {
+            "id": 4562325215569758,
+            "definition": {
+              "title": "GC (rate)",
+              "title_size": "16",
+              "title_align": "left",
               "type": "query_value",
               "requests": [
                 {
@@ -1039,7 +229,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "sum:aerospike.namespace.sindex_gc_cleaned{$aerospike_cluster}.rollup(max, 30)",
+                      "query": "sum:aerospike.server.namespace.sindex_gc_cleaned{$aerospike_cluster}.rollup(max, 30)",
                       "aggregator": "last"
                     }
                   ],
@@ -1065,9 +255,533 @@
               }
             },
             "layout": {
-              "x": 2,
-              "y": 0,
+              "x": 3,
+              "y": 1,
               "width": 2,
+              "height": 1
+            }
+          }
+        ]
+      },
+      "layout": {
+        "x": 4,
+        "y": 0,
+        "width": 8,
+        "height": 3
+      }
+    },
+    {
+      "id": 5058731761672998,
+      "definition": {
+        "type": "note",
+        "content": "The **Secondary Index Summary Overview** dashboard visualizes key secondary index metrics, including long and short queries, shown both cumulatively and as time-series across namespaces.",
+        "background_color": "white",
+        "font_size": "14",
+        "text_align": "left",
+        "show_tick": false,
+        "tick_pos": "50%",
+        "tick_edge": "left",
+        "has_padding": false
+      },
+      "layout": {
+        "x": 0,
+        "y": 2,
+        "width": 4,
+        "height": 1
+      }
+    },
+    {
+      "id": 7296789291906384,
+      "definition": {
+        "title": "Short Queries (max) (rate/one hour)",
+        "background_color": "blue",
+        "show_title": true,
+        "type": "group",
+        "layout_type": "ordered",
+        "widgets": [
+          {
+            "id": 1274822495393818,
+            "definition": {
+              "title": "Completed",
+              "title_size": "16",
+              "title_align": "left",
+              "type": "query_value",
+              "requests": [
+                {
+                  "formulas": [
+                    {
+                      "formula": "rate(query1)"
+                    }
+                  ],
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "query1",
+                      "query": "max:aerospike.server.namespace.si_query_short_basic_complete{$aerospike_cluster}.rollup(max, 3600)",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "response_format": "scalar",
+                  "conditional_formats": [
+                    {
+                      "comparator": ">=",
+                      "value": 0,
+                      "palette": "white_on_green"
+                    }
+                  ]
+                }
+              ],
+              "autoscale": true,
+              "text_align": "center",
+              "custom_links": [],
+              "precision": 2,
+              "timeseries_background": {
+                "yaxis": {
+                  "include_zero": true
+                },
+                "type": "area"
+              }
+            },
+            "layout": {
+              "x": 0,
+              "y": 0,
+              "width": 4,
+              "height": 1
+            }
+          },
+          {
+            "id": 8834472706665212,
+            "definition": {
+              "title": "Timeout",
+              "title_size": "16",
+              "title_align": "left",
+              "type": "query_value",
+              "requests": [
+                {
+                  "formulas": [
+                    {
+                      "formula": "rate(query1)"
+                    }
+                  ],
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "query1",
+                      "query": "max:aerospike.server.namespace.si_query_short_basic_timeout{$aerospike_cluster}.rollup(max, 3600)",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "response_format": "scalar",
+                  "conditional_formats": [
+                    {
+                      "comparator": ">=",
+                      "value": 0,
+                      "palette": "white_on_green"
+                    }
+                  ]
+                }
+              ],
+              "autoscale": true,
+              "text_align": "center",
+              "custom_links": [],
+              "precision": 2,
+              "timeseries_background": {
+                "yaxis": {
+                  "include_zero": true
+                },
+                "type": "area"
+              }
+            },
+            "layout": {
+              "x": 4,
+              "y": 0,
+              "width": 4,
+              "height": 1
+            }
+          },
+          {
+            "id": 2546732479312086,
+            "definition": {
+              "title": "Errors",
+              "title_size": "16",
+              "title_align": "left",
+              "type": "query_value",
+              "requests": [
+                {
+                  "formulas": [
+                    {
+                      "formula": "rate(query1)"
+                    }
+                  ],
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "query1",
+                      "query": "max:aerospike.server.namespace.si_query_short_basic_error{$aerospike_cluster}.rollup(max, 3600)",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "response_format": "scalar",
+                  "conditional_formats": [
+                    {
+                      "comparator": ">=",
+                      "value": 0,
+                      "palette": "white_on_green"
+                    }
+                  ]
+                }
+              ],
+              "autoscale": true,
+              "text_align": "center",
+              "custom_links": [],
+              "precision": 2,
+              "timeseries_background": {
+                "yaxis": {
+                  "include_zero": true
+                },
+                "type": "area"
+              }
+            },
+            "layout": {
+              "x": 8,
+              "y": 0,
+              "width": 4,
+              "height": 1
+            }
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 3,
+        "width": 12,
+        "height": 1
+      }
+    },
+    {
+      "id": 3734907342644984,
+      "definition": {
+        "title": "Long Queries (max) (rate/one hour)",
+        "background_color": "purple",
+        "show_title": true,
+        "type": "group",
+        "layout_type": "ordered",
+        "widgets": [
+          {
+            "id": 3157428016405320,
+            "definition": {
+              "title": "Completed",
+              "title_size": "16",
+              "title_align": "left",
+              "type": "query_value",
+              "requests": [
+                {
+                  "formulas": [
+                    {
+                      "formula": "rate(query1)"
+                    }
+                  ],
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "query1",
+                      "query": "max:aerospike.server.namespace.si_query_long_basic_complete{$aerospike_cluster}.rollup(max, 3600)",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "response_format": "scalar",
+                  "conditional_formats": [
+                    {
+                      "comparator": ">=",
+                      "value": 0,
+                      "palette": "white_on_green"
+                    }
+                  ]
+                }
+              ],
+              "autoscale": true,
+              "text_align": "center",
+              "custom_links": [],
+              "precision": 2,
+              "timeseries_background": {
+                "yaxis": {
+                  "include_zero": true
+                },
+                "type": "area"
+              }
+            },
+            "layout": {
+              "x": 0,
+              "y": 0,
+              "width": 4,
+              "height": 1
+            }
+          },
+          {
+            "id": 2891922198243158,
+            "definition": {
+              "title": "Aborted",
+              "title_size": "16",
+              "title_align": "left",
+              "type": "query_value",
+              "requests": [
+                {
+                  "formulas": [
+                    {
+                      "formula": "rate(query1)"
+                    }
+                  ],
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "query1",
+                      "query": "max:aerospike.server.namespace.si_query_long_basic_abort{$aerospike_cluster}.rollup(max, 3600)",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "response_format": "scalar",
+                  "conditional_formats": [
+                    {
+                      "comparator": ">=",
+                      "value": 0,
+                      "palette": "white_on_green"
+                    }
+                  ]
+                }
+              ],
+              "autoscale": true,
+              "text_align": "center",
+              "custom_links": [],
+              "precision": 2,
+              "timeseries_background": {
+                "yaxis": {
+                  "include_zero": true
+                },
+                "type": "area"
+              }
+            },
+            "layout": {
+              "x": 4,
+              "y": 0,
+              "width": 4,
+              "height": 1
+            }
+          },
+          {
+            "id": 1873993765296782,
+            "definition": {
+              "title": "Errors",
+              "title_size": "16",
+              "title_align": "left",
+              "type": "query_value",
+              "requests": [
+                {
+                  "formulas": [
+                    {
+                      "formula": "rate(query1)"
+                    }
+                  ],
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "query1",
+                      "query": "max:aerospike.server.namespace.si_query_long_basic_error{$aerospike_cluster}.rollup(max, 3600)",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "response_format": "scalar",
+                  "conditional_formats": [
+                    {
+                      "comparator": ">=",
+                      "value": 0,
+                      "palette": "white_on_green"
+                    }
+                  ]
+                }
+              ],
+              "autoscale": true,
+              "text_align": "center",
+              "custom_links": [],
+              "precision": 2,
+              "timeseries_background": {
+                "yaxis": {
+                  "include_zero": true
+                },
+                "type": "area"
+              }
+            },
+            "layout": {
+              "x": 8,
+              "y": 0,
+              "width": 4,
+              "height": 1
+            }
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 4,
+        "width": 12,
+        "height": 1
+      }
+    },
+    {
+      "id": 2005737017732368,
+      "definition": {
+        "title": "Query Aggregations (max) (rate/one hour)",
+        "background_color": "pink",
+        "show_title": true,
+        "type": "group",
+        "layout_type": "ordered",
+        "widgets": [
+          {
+            "id": 1871396530645472,
+            "definition": {
+              "title": "Completed",
+              "title_size": "16",
+              "title_align": "left",
+              "type": "query_value",
+              "requests": [
+                {
+                  "formulas": [
+                    {
+                      "formula": "rate(query1)"
+                    }
+                  ],
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "query1",
+                      "query": "max:aerospike.server.namespace.si_query_aggr_complete{$aerospike_cluster}.rollup(max, 3600)",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "response_format": "scalar",
+                  "conditional_formats": [
+                    {
+                      "comparator": ">=",
+                      "value": 0,
+                      "palette": "white_on_green"
+                    }
+                  ]
+                }
+              ],
+              "autoscale": true,
+              "text_align": "center",
+              "custom_links": [],
+              "precision": 2,
+              "timeseries_background": {
+                "yaxis": {
+                  "include_zero": true
+                },
+                "type": "area"
+              }
+            },
+            "layout": {
+              "x": 0,
+              "y": 0,
+              "width": 4,
+              "height": 1
+            }
+          },
+          {
+            "id": 1904001826102278,
+            "definition": {
+              "title": "Aborted",
+              "title_size": "16",
+              "title_align": "left",
+              "type": "query_value",
+              "requests": [
+                {
+                  "formulas": [
+                    {
+                      "formula": "rate(query1)"
+                    }
+                  ],
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "query1",
+                      "query": "max:aerospike.server.namespace.si_query_aggr_abort{$aerospike_cluster}.rollup(max, 3600)",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "response_format": "scalar",
+                  "conditional_formats": [
+                    {
+                      "comparator": ">=",
+                      "value": 0,
+                      "palette": "white_on_green"
+                    }
+                  ]
+                }
+              ],
+              "autoscale": true,
+              "text_align": "center",
+              "custom_links": [],
+              "precision": 2,
+              "timeseries_background": {
+                "yaxis": {
+                  "include_zero": true
+                },
+                "type": "area"
+              }
+            },
+            "layout": {
+              "x": 4,
+              "y": 0,
+              "width": 4,
+              "height": 1
+            }
+          },
+          {
+            "id": 7553511958568458,
+            "definition": {
+              "title": "Errors",
+              "title_size": "16",
+              "title_align": "left",
+              "type": "query_value",
+              "requests": [
+                {
+                  "formulas": [
+                    {
+                      "formula": "rate(query1)"
+                    }
+                  ],
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "query1",
+                      "query": "max:aerospike.server.namespace.si_query_aggr_error{$aerospike_cluster}.rollup(max, 3600)",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "response_format": "scalar",
+                  "conditional_formats": [
+                    {
+                      "comparator": ">=",
+                      "value": 0,
+                      "palette": "white_on_green"
+                    }
+                  ]
+                }
+              ],
+              "autoscale": true,
+              "text_align": "center",
+              "custom_links": [],
+              "precision": 2,
+              "timeseries_background": {
+                "yaxis": {
+                  "include_zero": true
+                },
+                "type": "area"
+              }
+            },
+            "layout": {
+              "x": 8,
+              "y": 0,
+              "width": 4,
               "height": 1
             }
           }
@@ -1076,90 +790,352 @@
       "layout": {
         "x": 0,
         "y": 0,
-        "width": 4,
-        "height": 2
+        "width": 12,
+        "height": 1,
+        "is_column_break": true
       }
     },
     {
-      "id": 5153709695764856,
+      "id": 8491552053987508,
       "definition": {
-        "title": "Memory Used (bytes)",
-        "title_size": "16",
-        "title_align": "left",
-        "type": "query_table",
-        "requests": [
+        "title": "Ops Background Queries (max) (rate/one hour)",
+        "background_color": "orange",
+        "show_title": true,
+        "type": "group",
+        "layout_type": "ordered",
+        "widgets": [
           {
-            "queries": [
-              {
-                "data_source": "metrics",
-                "name": "query1",
-                "query": "min:aerospike.sindex.used_bytes{$aerospike_cluster}",
-                "aggregator": "last"
-              },
-              {
-                "data_source": "metrics",
-                "name": "query2",
-                "query": "avg:aerospike.sindex.used_bytes{$aerospike_cluster}",
-                "aggregator": "last"
-              },
-              {
-                "data_source": "metrics",
-                "name": "query3",
-                "query": "max:aerospike.sindex.used_bytes{$aerospike_cluster}",
-                "aggregator": "last"
-              }
-            ],
-            "response_format": "scalar",
-            "sort": {
-              "count": 5,
-              "order_by": [
+            "id": 1727716751517380,
+            "definition": {
+              "title": "Completed",
+              "title_size": "16",
+              "title_align": "left",
+              "type": "query_value",
+              "requests": [
                 {
-                  "type": "formula",
-                  "index": 0,
-                  "order": "desc"
+                  "formulas": [
+                    {
+                      "formula": "rate(query1)"
+                    }
+                  ],
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "query1",
+                      "query": "max:aerospike.server.namespace.si_query_ops_bg_complete{$aerospike_cluster}.rollup(max, 3600)",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "response_format": "scalar",
+                  "conditional_formats": [
+                    {
+                      "comparator": ">=",
+                      "value": 0,
+                      "palette": "white_on_green"
+                    }
+                  ]
                 }
-              ]
-            },
-            "formulas": [
-              {
-                "cell_display_mode": "number",
-                "alias": "Min",
-                "formula": "query1"
-              },
-              {
-                "cell_display_mode": "number",
-                "alias": "Avg",
-                "formula": "query2"
-              },
-              {
-                "cell_display_mode": "number",
-                "alias": "Max",
-                "formula": "query3"
+              ],
+              "autoscale": true,
+              "text_align": "center",
+              "custom_links": [],
+              "precision": 2,
+              "timeseries_background": {
+                "yaxis": {
+                  "include_zero": true
+                },
+                "type": "area"
               }
-            ]
-          }
-        ],
-        "has_search_bar": "auto",
-        "custom_links": [
+            },
+            "layout": {
+              "x": 0,
+              "y": 0,
+              "width": 4,
+              "height": 1
+            }
+          },
           {
-            "override_label": "containers",
-            "link": "/dashboard/c6j-wa7-7h7/cluster-overview?aerospike_cluster={{$aerospike_cluster}}&aerospike_service={{$aerospike_service}}&ns={{$ns}}&live=true",
-            "is_hidden": false
+            "id": 113884743919294,
+            "definition": {
+              "title": "Aborted",
+              "title_size": "16",
+              "title_align": "left",
+              "type": "query_value",
+              "requests": [
+                {
+                  "formulas": [
+                    {
+                      "formula": "rate(query1)"
+                    }
+                  ],
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "query1",
+                      "query": "max:aerospike.server.namespace.si_query_ops_bg_abort{$aerospike_cluster}.rollup(max, 3600)",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "response_format": "scalar",
+                  "conditional_formats": [
+                    {
+                      "comparator": ">=",
+                      "value": 0,
+                      "palette": "white_on_green"
+                    }
+                  ]
+                }
+              ],
+              "autoscale": true,
+              "text_align": "center",
+              "custom_links": [],
+              "precision": 2,
+              "timeseries_background": {
+                "yaxis": {
+                  "include_zero": true
+                },
+                "type": "area"
+              }
+            },
+            "layout": {
+              "x": 4,
+              "y": 0,
+              "width": 4,
+              "height": 1
+            }
+          },
+          {
+            "id": 4756856328549964,
+            "definition": {
+              "title": "Errors",
+              "title_size": "16",
+              "title_align": "left",
+              "type": "query_value",
+              "requests": [
+                {
+                  "formulas": [
+                    {
+                      "formula": "rate(query1)"
+                    }
+                  ],
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "query1",
+                      "query": "max:aerospike.server.namespace.si_query_ops_bg_error{$aerospike_cluster}.rollup(max, 3600)",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "response_format": "scalar",
+                  "conditional_formats": [
+                    {
+                      "comparator": ">=",
+                      "value": 0,
+                      "palette": "white_on_green"
+                    }
+                  ]
+                }
+              ],
+              "autoscale": true,
+              "text_align": "center",
+              "custom_links": [],
+              "precision": 2,
+              "timeseries_background": {
+                "yaxis": {
+                  "include_zero": true
+                },
+                "type": "area"
+              }
+            },
+            "layout": {
+              "x": 8,
+              "y": 0,
+              "width": 4,
+              "height": 1
+            }
           }
         ]
       },
       "layout": {
-        "x": 4,
-        "y": 0,
-        "width": 4,
-        "height": 2
+        "x": 0,
+        "y": 1,
+        "width": 12,
+        "height": 1
+      }
+    },
+    {
+      "id": 8675798975409096,
+      "definition": {
+        "title": "UDF Queries (max) (rate/one hour)",
+        "background_color": "yellow",
+        "show_title": true,
+        "type": "group",
+        "layout_type": "ordered",
+        "widgets": [
+          {
+            "id": 3204378703808430,
+            "definition": {
+              "title": "Completed",
+              "title_size": "16",
+              "title_align": "left",
+              "type": "query_value",
+              "requests": [
+                {
+                  "formulas": [
+                    {
+                      "formula": "rate(query1)"
+                    }
+                  ],
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "query1",
+                      "query": "max:aerospike.server.namespace.si_query_udf_bg_complete{$aerospike_cluster}.rollup(max, 3600)",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "response_format": "scalar",
+                  "conditional_formats": [
+                    {
+                      "comparator": ">=",
+                      "value": 0,
+                      "palette": "white_on_green"
+                    }
+                  ]
+                }
+              ],
+              "autoscale": true,
+              "text_align": "center",
+              "custom_links": [],
+              "precision": 2,
+              "timeseries_background": {
+                "yaxis": {
+                  "include_zero": true
+                },
+                "type": "area"
+              }
+            },
+            "layout": {
+              "x": 0,
+              "y": 0,
+              "width": 4,
+              "height": 1
+            }
+          },
+          {
+            "id": 7648759188515174,
+            "definition": {
+              "title": "Aborted",
+              "title_size": "16",
+              "title_align": "left",
+              "type": "query_value",
+              "requests": [
+                {
+                  "formulas": [
+                    {
+                      "formula": "rate(query1)"
+                    }
+                  ],
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "query1",
+                      "query": "max:aerospike.server.namespace.si_query_udf_bg_abort{$aerospike_cluster}.rollup(max, 3600)",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "response_format": "scalar",
+                  "conditional_formats": [
+                    {
+                      "comparator": ">=",
+                      "value": 0,
+                      "palette": "white_on_green"
+                    }
+                  ]
+                }
+              ],
+              "autoscale": true,
+              "text_align": "center",
+              "custom_links": [],
+              "precision": 2,
+              "timeseries_background": {
+                "yaxis": {
+                  "include_zero": true
+                },
+                "type": "area"
+              }
+            },
+            "layout": {
+              "x": 4,
+              "y": 0,
+              "width": 4,
+              "height": 1
+            }
+          },
+          {
+            "id": 1122925628110134,
+            "definition": {
+              "title": "Errors",
+              "title_size": "16",
+              "title_align": "left",
+              "type": "query_value",
+              "requests": [
+                {
+                  "formulas": [
+                    {
+                      "formula": "rate(query1)"
+                    }
+                  ],
+                  "queries": [
+                    {
+                      "data_source": "metrics",
+                      "name": "query1",
+                      "query": "max:aerospike.server.namespace.si_query_udf_bg_error{$aerospike_cluster}.rollup(max, 3600)",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "response_format": "scalar",
+                  "conditional_formats": [
+                    {
+                      "comparator": ">=",
+                      "value": 0,
+                      "palette": "white_on_green"
+                    }
+                  ]
+                }
+              ],
+              "autoscale": true,
+              "text_align": "center",
+              "custom_links": [],
+              "precision": 2,
+              "timeseries_background": {
+                "yaxis": {
+                  "include_zero": true
+                },
+                "type": "area"
+              }
+            },
+            "layout": {
+              "x": 8,
+              "y": 0,
+              "width": 4,
+              "height": 1
+            }
+          }
+        ]
+      },
+      "layout": {
+        "x": 0,
+        "y": 2,
+        "width": 12,
+        "height": 1
       }
     },
     {
       "id": 6324208856639248,
       "definition": {
         "title": "Namespace Overview",
-        "background_color": "vivid_purple",
+        "background_color": "green",
         "show_title": true,
         "type": "group",
         "layout_type": "ordered",
@@ -1182,7 +1158,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "sum:aerospike.sindex.entries{$aerospike_cluster, $ns} by {sindex}",
+                      "query": "sum:aerospike.server.sindex.entries{$aerospike_cluster, $ns} by {sindex}",
                       "aggregator": "last"
                     }
                   ],
@@ -1238,7 +1214,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "sum:aerospike.namespace.sindex_used_bytes{$aerospike_cluster,$ns}",
+                      "query": "sum:aerospike.server.namespace.sindex_used_bytes{$aerospike_cluster,$ns}",
                       "aggregator": "last"
                     }
                   ],
@@ -1294,7 +1270,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "avg:aerospike.namespace.sindex_mounts_used_pct{$aerospike_cluster, $ns}",
+                      "query": "avg:aerospike.server.namespace.sindex_mounts_used_pct{$aerospike_cluster, $ns}",
                       "aggregator": "last"
                     }
                   ],
@@ -1350,7 +1326,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "sum:aerospike.namespace.sindex_type_mounts_budget{$aerospike_cluster,$ns}",
+                      "query": "sum:aerospike.server.namespace.sindex_type_mounts_budget{$aerospike_cluster,$ns}",
                       "aggregator": "last"
                     }
                   ],
@@ -1400,7 +1376,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "sum:aerospike.namespace.sindex_gc_cleaned{$aerospike_cluster,$ns}.rollup(max, 30)",
+                      "query": "sum:aerospike.server.namespace.sindex_gc_cleaned{$aerospike_cluster,$ns}.rollup(max, 30)",
                       "aggregator": "last"
                     }
                   ],
@@ -1428,7 +1404,7 @@
             "layout": {
               "x": 8,
               "y": 0,
-              "width": 2,
+              "width": 3,
               "height": 1
             }
           },
@@ -1464,7 +1440,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "sum:aerospike.namespace.sindex_used_bytes{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}"
+                      "query": "sum:aerospike.server.namespace.sindex_used_bytes{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1520,7 +1496,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "sum:aerospike.namespace.sindex_type_mounts_budget{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service,ns,sindex}"
+                      "query": "sum:aerospike.server.namespace.sindex_type_mounts_budget{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service,ns,sindex}"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1570,7 +1546,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "sum:aerospike.sindex.entries{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service,ns,sindex}"
+                      "query": "sum:aerospike.server.sindex.entries{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service,ns,sindex}"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1620,7 +1596,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "sum:aerospike.sindex.entries_per_rec{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service,ns,sindex}"
+                      "query": "sum:aerospike.server.sindex.entries_per_rec{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service,ns,sindex}"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1670,7 +1646,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "sum:aerospike.sindex.entries_per_bval{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service,ns,sindex}"
+                      "query": "sum:aerospike.server.sindex.entries_per_bval{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service,ns,sindex}"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1720,7 +1696,7 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "sum:aerospike.namespace.sindex_gc_cleaned{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.sindex_gc_cleaned{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1778,17 +1754,17 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "sum:aerospike.namespace.si_query_udf_bg_complete{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.si_query_udf_bg_complete{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
                     },
                     {
                       "data_source": "metrics",
                       "name": "query2",
-                      "query": "sum:aerospike.namespace.si_query_udf_bg_abort{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.si_query_udf_bg_abort{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
                     },
                     {
                       "data_source": "metrics",
                       "name": "query3",
-                      "query": "sum:aerospike.namespace.si_query_udf_bg_error{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.si_query_udf_bg_error{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1846,17 +1822,17 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "sum:aerospike.namespace.si_query_short_basic_complete{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.si_query_short_basic_complete{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
                     },
                     {
                       "data_source": "metrics",
                       "name": "query2",
-                      "query": "sum:aerospike.namespace.si_query_short_basic_timeout{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.si_query_short_basic_timeout{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
                     },
                     {
                       "data_source": "metrics",
                       "name": "query3",
-                      "query": "sum:aerospike.namespace.si_query_short_basic_error{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.si_query_short_basic_error{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1914,17 +1890,17 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "sum:aerospike.namespace.si_query_ops_bg_complete{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.si_query_ops_bg_complete{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
                     },
                     {
                       "data_source": "metrics",
                       "name": "query2",
-                      "query": "sum:aerospike.namespace.si_query_ops_bg_abort{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.si_query_ops_bg_abort{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
                     },
                     {
                       "data_source": "metrics",
                       "name": "query3",
-                      "query": "sum:aerospike.namespace.si_query_ops_bg_error{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.si_query_ops_bg_error{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -1982,17 +1958,17 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "sum:aerospike.namespace.si_query_long_basic_complete{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.si_query_long_basic_complete{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
                     },
                     {
                       "data_source": "metrics",
                       "name": "query2",
-                      "query": "sum:aerospike.namespace.si_query_long_basic_abort{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.si_query_long_basic_abort{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
                     },
                     {
                       "data_source": "metrics",
                       "name": "query3",
-                      "query": "sum:aerospike.namespace.si_query_long_basic_error{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.si_query_long_basic_error{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -2050,17 +2026,17 @@
                     {
                       "data_source": "metrics",
                       "name": "query1",
-                      "query": "sum:aerospike.namespace.si_query_aggr_complete{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.si_query_aggr_complete{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
                     },
                     {
                       "data_source": "metrics",
                       "name": "query2",
-                      "query": "sum:aerospike.namespace.si_query_aggr_abort{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.si_query_aggr_abort{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
                     },
                     {
                       "data_source": "metrics",
                       "name": "query3",
-                      "query": "sum:aerospike.namespace.si_query_aggr_error{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
+                      "query": "sum:aerospike.server.namespace.si_query_aggr_error{$aerospike_cluster,$ns} by {aerospike_cluster,aerospike_service}.rollup(max, 30)"
                     }
                   ],
                   "response_format": "timeseries",
@@ -2088,9 +2064,9 @@
       },
       "layout": {
         "x": 0,
-        "y": 9,
+        "y": 3,
         "width": 12,
-        "height": 10
+        "height": 1
       }
     }
   ],
@@ -2110,5 +2086,6 @@
   ],
   "layout_type": "ordered",
   "notify_list": [],
-  "reflow_type": "fixed"
+  "reflow_type": "fixed",
+  "pause_auto_refresh": false
 }
