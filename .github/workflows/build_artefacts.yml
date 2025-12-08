@@ -11,8 +11,8 @@ permissions:
   contents: write
 
 jobs:         
-    tar_zipping_job:
-      runs-on: ubuntu-latest    
+    tar_zipping_and_sign_job:
+      runs-on: ubuntu-22.04
       steps:
         - name: Harden the runner (Audit all outbound calls)
           uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
@@ -24,14 +24,49 @@ jobs:
         - uses: actions-ecosystem/action-get-latest-tag@b7c32daec3395a9616f88548363a42652b22d435 # v1.6.0
           id: get-latest-tag
 
-        - name: Create tar files
+        - name: Set up GPG for signing
+          uses: aerospike/shared-workflows/.github/actions/setup-gpg@dda8173aca1f1e73f95267572a7d3849cd00f1b8
+          with:
+            gpg-private-key: ${{ secrets.GPG_SECRET_KEY }}
+            gpg-public-key: ${{ secrets.GPG_PUBLIC_KEY }}
+            gpg-key-pass: ${{ secrets.GPG_PASS }}
+          
+        - name: Create tar files and Sign packages
           env:
             GH_TOKEN: ${{ github.token }}
             TAG_NAME: "${{ steps.get-latest-tag.outputs.tag }}"
+            GPG_TTY: no-tty
+            HOME: /home/runner
+            GNUPGHOME: /home/runner/.gnupg
+            GPG_PASS: ${{ secrets.GPG_PASS }}
           run: |
             cd config/grafana
-            echo "Tar-zipping files"
-            tar czf aerospike-grafana-dashboards-$TAG_NAME.tar.gz dashboards/*
+            # TAG_NAME format v20.0.0 - remove the 'v'
+            # we move ams with plain veraion number like ams...20.0.0.tar.ga
+            AMS_ARTEFACT_NAME="aerospike-grafana-dashboards-${TAG_NAME#v}.tar.gz"
+
+            # tar, sign and upload
+            tar czf $AMS_ARTEFACT_NAME dashboards/*
+
+            echo "Generating sha256 and asc for $AMS_ARTEFACT_NAME"
+            sha256sum "$AMS_ARTEFACT_NAME" > "$AMS_ARTEFACT_NAME.sha256"
+              
+            # asc for tgz
+            gpg --armour --detach-sign \
+                  --no-tty --batch --yes \
+                  --passphrase "$GPG_PASS" \
+                  --pinentry-mode loopback \
+                  --local-user aerospike-inc \
+                  --output "$AMS_ARTEFACT_NAME.asc" "$AMS_ARTEFACT_NAME"  
+
+            gpg --armour --detach-sign \
+                  --no-tty --batch --yes \
+                  --passphrase "$GPG_PASS" \
+                  --pinentry-mode loopback \
+                  --local-user aerospike-inc \
+                  --output "$AMS_ARTEFACT_NAME.sha256.asc" "$AMS_ARTEFACT_NAME.sha256"  
+                  
             echo
-            echo "Uploading release asset"
-            gh release upload "$TAG_NAME" "aerospike-grafana-dashboards-$TAG_NAME.tar.gz"
+            echo "Uploading release asset - tar.gz, tar.gz.asc tar.sha256"
+            gh release upload "$TAG_NAME" "$AMS_ARTEFACT_NAME*"
+            
