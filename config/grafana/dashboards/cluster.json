@@ -66,7 +66,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
-  "id": null,
   "links": [],
   "panels": [
     {
@@ -106,7 +105,7 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 6,
+        "h": 7,
         "w": 5,
         "x": 0,
         "y": 1
@@ -140,7 +139,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count_values by (build) (\"build_numbers\", (aerospike_node_up{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", }) )",
+          "expr": "count by ( build) (count_values by (build) (\"build_numbers\", (aerospike_node_up{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", }) ))",
           "format": "time_series",
           "hide": false,
           "instant": true,
@@ -375,7 +374,7 @@
             "uid": "${DS_AEROSPIKE_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "#sum(aerospike_node_up{job=\"$job_name\", cluster_name=~\"$cluster\"})\ncount_values by (cluster_name) (\"cluster\",aerospike_node_stats_cluster_size{cluster_name=\"$cluster\"}) ",
+          "expr": "#sum(aerospike_node_up{job=\"$job_name\", cluster_name=~\"$cluster\"})\ncount by (cluster_name) (count_values by (cluster_name) (\"cluster\",aerospike_node_stats_cluster_size{cluster_name=\"$cluster\"}))",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
@@ -747,6 +746,308 @@
         "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
+      "description": "defines roster health if sc is enabled, across node and namespaces",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#299c46",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 3,
+        "x": 0,
+        "y": 8
+      },
+      "id": 206,
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {},
+        "textMode": "value_and_name",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.2.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": " count ( group by (ns) (aerospike_namespace_strong_consistency{ job=\"$job_name\", cluster_name=~\"$cluster\", }))",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "Namespaces",
+          "range": true,
+          "refId": "ns_sc_count"
+        }
+      ],
+      "title": "Roster Info - SC",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "defines roster health if sc is enabled, across node and namespaces",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#299c46",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 100
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 8,
+        "x": 3,
+        "y": 8
+      },
+      "id": 207,
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {},
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.2.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "avg by (ns) (aerospike_namespace_roster_size{ job=\"$job_name\", cluster_name=~\"$cluster\", })",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "{{ns}}",
+          "range": true,
+          "refId": "ns_sc_count"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": " count(count by (ns_r_size) (count_values(\"ns_r_size\", avg by (ns) (aerospike_namespace_roster_size{ job=\"$job_name\", cluster_name=~\"$cluster\", })))) > bool 2",
+          "hide": true,
+          "instant": false,
+          "legendFormat": "{{ns}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Roster Info - roster_size (unique)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "defines roster health if sc is enabled, across node and namespaces",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#299c46",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 100
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 8,
+        "x": 11,
+        "y": 8
+      },
+      "id": 208,
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {},
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.2.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "avg by (ns) (aerospike_namespace_roster_pending_size{ job=\"$job_name\", cluster_name=~\"$cluster\", })",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "{{ns}}",
+          "range": true,
+          "refId": "ns_sc_count"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "count(count by (ns_r_size) (count_values(\"ns_r_size\", avg by (ns) (aerospike_namespace_roster_pending_size{ job=\"$job_name\", cluster_name=~\"$cluster\", })))) > bool 1",
+          "hide": true,
+          "instant": false,
+          "legendFormat": "{{ns}}",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Roster Info - pending_size (unique)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
+      "description": "defines roster health if sc is enabled, across node and namespaces",
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "#299c46",
+                "value": 0
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 5,
+        "x": 19,
+        "y": 8
+      },
+      "id": 209,
+      "maxDataPoints": 100,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "text": {},
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.2.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "avg (aerospike_namespace_roster_observed_size{ job=\"$job_name\", cluster_name=~\"$cluster\", })",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "{{ns}}",
+          "range": true,
+          "refId": "ns_sc_count"
+        }
+      ],
+      "title": "Roster Info - observed_size (unique)",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+      },
       "description": "Total migration partitions remaining (transmit + receive)",
       "fieldConfig": {
         "defaults": {
@@ -783,7 +1084,7 @@
         "h": 3,
         "w": 24,
         "x": 0,
-        "y": 8
+        "y": 11
       },
       "id": 16,
       "maxDataPoints": 100,
@@ -930,7 +1231,7 @@
         "h": 6,
         "w": 12,
         "x": 0,
-        "y": 11
+        "y": 14
       },
       "id": 177,
       "options": {
@@ -1096,7 +1397,7 @@
         "h": 6,
         "w": 12,
         "x": 12,
-        "y": 11
+        "y": 14
       },
       "id": 187,
       "options": {
@@ -1182,7 +1483,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 20
       },
       "id": 38,
       "panels": [
@@ -1251,7 +1552,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 65
+            "y": 84
           },
           "id": 33,
           "options": {
@@ -1356,7 +1657,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 65
+            "y": 84
           },
           "id": 41,
           "options": {
@@ -1406,7 +1707,154 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 18
+        "y": 21
+      },
+      "id": 210,
+      "panels": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+          },
+          "description": "Namespace migrate_tx_partitions_remaining (transmit) and migrate_rx_partitions_remaining (receive)\nrx_partitions_active and\ntx_partitions_active",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "barWidthFactor": 0.6,
+                "drawStyle": "line",
+                "fillOpacity": 15,
+                "gradientMode": "opacity",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "auto",
+                "showValues": false,
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "decimals": 0,
+              "links": [],
+              "mappings": [],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": 0
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 24,
+            "x": 0,
+            "y": 20
+          },
+          "id": 211,
+          "options": {
+            "legend": {
+              "calcs": [
+                "last",
+                "min",
+                "max",
+                "mean"
+              ],
+              "displayMode": "table",
+              "placement": "right",
+              "showLegend": true
+            },
+            "tooltip": {
+              "hideZeros": false,
+              "mode": "multi",
+              "sort": "asc"
+            }
+          },
+          "pluginVersion": "12.2.1",
+          "targets": [
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "group by (ns) (aerospike_namespace_roster_size{ job=\"$job_name\", cluster_name=~\"$cluster\",})",
+              "format": "time_series",
+              "instant": false,
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "roster - {{ns}}",
+              "refId": "roster_size"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "avg by (ns) (aerospike_namespace_roster_pending_size{ job=\"$job_name\", cluster_name=~\"$cluster\", })",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "pending - {{ns}}",
+              "range": true,
+              "refId": "roster_pending_size"
+            },
+            {
+              "datasource": {
+                "type": "prometheus",
+                "uid": "${DS_AEROSPIKE_PROMETHEUS}"
+              },
+              "editorMode": "code",
+              "expr": "avg by (ns) (aerospike_namespace_roster_observed_size{ job=\"$job_name\", cluster_name=~\"$cluster\", })",
+              "hide": false,
+              "instant": false,
+              "legendFormat": "observed nodes - {{ns}}",
+              "range": true,
+              "refId": "roster_observed_nodes"
+            }
+          ],
+          "title": "Roster Info",
+          "type": "timeseries"
+        }
+      ],
+      "title": "Roster Info",
+      "type": "row"
+    },
+    {
+      "collapsed": true,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 22
       },
       "id": 62,
       "panels": [
@@ -1475,7 +1923,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 11
+            "y": 30
           },
           "id": 66,
           "options": {
@@ -1580,7 +2028,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 11
+            "y": 30
           },
           "id": 44,
           "options": {
@@ -1685,7 +2133,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 17
+            "y": 36
           },
           "id": 45,
           "options": {
@@ -1790,7 +2238,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 17
+            "y": 36
           },
           "id": 43,
           "options": {
@@ -1895,7 +2343,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 23
+            "y": 42
           },
           "id": 70,
           "options": {
@@ -2000,7 +2448,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 23
+            "y": 42
           },
           "id": 192,
           "options": {
@@ -2105,7 +2553,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 29
+            "y": 48
           },
           "id": 193,
           "options": {
@@ -2155,7 +2603,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 23
       },
       "id": 69,
       "panels": [
@@ -2224,7 +2672,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 12
+            "y": 31
           },
           "id": 71,
           "options": {
@@ -2329,7 +2777,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 12
+            "y": 31
           },
           "id": 73,
           "options": {
@@ -2434,7 +2882,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 18
+            "y": 37
           },
           "id": 74,
           "options": {
@@ -2539,7 +2987,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 18
+            "y": 37
           },
           "id": 72,
           "options": {
@@ -2589,7 +3037,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 24
       },
       "id": 195,
       "panels": [
@@ -2649,7 +3097,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 28
+            "y": 47
           },
           "id": 197,
           "options": {
@@ -2760,7 +3208,7 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 28
+            "y": 47
           },
           "id": 201,
           "options": {
@@ -2895,7 +3343,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 33
+            "y": 52
           },
           "id": 199,
           "options": {
@@ -3029,7 +3477,7 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 33
+            "y": 52
           },
           "id": 203,
           "options": {
@@ -3080,7 +3528,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 21
+        "y": 25
       },
       "id": 28,
       "panels": [
@@ -3094,7 +3542,7 @@
             "h": 2,
             "w": 24,
             "x": 0,
-            "y": 76
+            "y": 95
           },
           "id": 64,
           "links": [
@@ -3231,6 +3679,7 @@
   "timezone": "",
   "title": "Cluster Overview",
   "uid": "dR0dDRHWz",
-  "version": 1,
-  "weekStart": ""
+  "version": 10,
+  "weekStart": "",
+  "id": null
 }
