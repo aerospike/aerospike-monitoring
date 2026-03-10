@@ -1256,7 +1256,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 115
+            "y": 51
           },
           "id": 33,
           "options": {
@@ -1367,7 +1367,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 115
+            "y": 51
           },
           "id": 41,
           "options": {
@@ -1478,7 +1478,7 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": " count ( group by (ns) (aerospike_namespace_strong_consistency{ job=\"$job_name\", cluster_name=~\"$cluster\", }))",
+              "expr": " count ( group by (ns) (aerospike_namespace_strong_consistency{ job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"} > 0))",
               "hide": false,
               "instant": false,
               "legendFormat": "Namespaces",
@@ -1546,7 +1546,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "avg (aerospike_namespace_roster_observed_size{ job=\"$job_name\", cluster_name=~\"$cluster\", })",
+              "expr": "avg (\navg by (ns) (aerospike_namespace_pseudo_observed_nodes_size{ job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})\nand\navg by (ns) (aerospike_namespace_strong_consistency{ job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}>0)\n)",
               "hide": false,
               "instant": true,
               "legendFormat": "{{ns}}",
@@ -1614,7 +1614,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "avg by (ns) (aerospike_namespace_roster_size{ job=\"$job_name\", cluster_name=~\"$cluster\", }) \n!= \nscalar(avg (aerospike_namespace_roster_observed_size{ job=\"$job_name\", cluster_name=~\"$cluster\", }))",
+              "expr": "(((avg by (ns) (aerospike_namespace_pseudo_roster_size{ job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}) \n!= \nscalar(avg (aerospike_namespace_pseudo_observed_nodes_size{ job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})))\n)\nand\navg by (ns) (aerospike_namespace_strong_consistency{ job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}>0)) == 0",
               "hide": false,
               "instant": true,
               "legendFormat": "{{ns}}",
@@ -1695,7 +1695,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "avg by (ns) (aerospike_namespace_roster_pending_size{ job=\"$job_name\", cluster_name=~\"$cluster\", })\n!= \nscalar(avg (aerospike_namespace_roster_observed_size{ job=\"$job_name\", cluster_name=~\"$cluster\", }))",
+              "expr": "((avg by (ns) (aerospike_namespace_pseudo_pending_roster_size{ job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})\n!= \nscalar(avg (aerospike_namespace_pseudo_observed_nodes_size{ job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})))\nand\navg by (ns) (aerospike_namespace_strong_consistency{ job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}>0) ) == 0 ",
               "hide": false,
               "instant": true,
               "legendFormat": "{{ns}}",
@@ -1818,7 +1818,7 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg by (ns) (aerospike_namespace_roster_size{ job=\"$job_name\", cluster_name=~\"$cluster\",})",
+              "expr": "avg by (ns) (aerospike_namespace_pseudo_roster_size{ job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})",
               "format": "time_series",
               "instant": false,
               "interval": "",
@@ -1832,7 +1832,7 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg by (ns) (aerospike_namespace_roster_pending_size{ job=\"$job_name\", cluster_name=~\"$cluster\", })",
+              "expr": "avg by (ns) (aerospike_namespace_pseudo_pending_roster_size{ job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "pending - {{ns}}",
@@ -1845,7 +1845,7 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg by (ns) (aerospike_namespace_roster_observed_size{ job=\"$job_name\", cluster_name=~\"$cluster\", })",
+              "expr": "avg by (ns) (aerospike_namespace_pseudo_observed_nodes_size{ job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "observed nodes - {{ns}}",
@@ -1935,7 +1935,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 233
+            "y": 297
           },
           "id": 66,
           "options": {
@@ -2040,7 +2040,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 233
+            "y": 297
           },
           "id": 44,
           "options": {
@@ -2145,7 +2145,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 239
+            "y": 303
           },
           "id": 45,
           "options": {
@@ -2250,7 +2250,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 239
+            "y": 303
           },
           "id": 43,
           "options": {
@@ -2355,7 +2355,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 245
+            "y": 309
           },
           "id": 70,
           "options": {
@@ -2460,7 +2460,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 245
+            "y": 309
           },
           "id": 192,
           "options": {
@@ -2565,7 +2565,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 251
+            "y": 315
           },
           "id": 193,
           "options": {
@@ -2684,7 +2684,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 234
+            "y": 298
           },
           "id": 71,
           "options": {
@@ -2789,7 +2789,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 234
+            "y": 298
           },
           "id": 73,
           "options": {
@@ -2894,7 +2894,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 240
+            "y": 304
           },
           "id": 74,
           "options": {
@@ -2999,7 +2999,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 240
+            "y": 304
           },
           "id": 72,
           "options": {
@@ -3109,7 +3109,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 250
+            "y": 314
           },
           "id": 197,
           "options": {
@@ -3220,7 +3220,7 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 250
+            "y": 314
           },
           "id": 201,
           "options": {
@@ -3355,7 +3355,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 255
+            "y": 319
           },
           "id": 199,
           "options": {
@@ -3489,7 +3489,7 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 255
+            "y": 319
           },
           "id": 203,
           "options": {
@@ -3554,7 +3554,7 @@
             "h": 2,
             "w": 24,
             "x": 0,
-            "y": 298
+            "y": 362
           },
           "id": 64,
           "links": [
@@ -3691,7 +3691,7 @@
   "timezone": "",
   "title": "Cluster Overview",
   "uid": "dR0dDRHWz",
-  "version": 27,
+  "version": 4,
   "weekStart": "",
   "id": null
 }

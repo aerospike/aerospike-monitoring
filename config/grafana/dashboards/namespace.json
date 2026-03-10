@@ -612,7 +612,34 @@
               },
               "unit": "short"
             },
-            "overrides": []
+            "overrides": [
+              {
+                "matcher": {
+                  "id": "byName",
+                  "options": "Strong Consistency"
+                },
+                "properties": [
+                  {
+                    "id": "mappings",
+                    "value": [
+                      {
+                        "options": {
+                          "0": {
+                            "index": 0,
+                            "text": "No"
+                          },
+                          "1": {
+                            "index": 1,
+                            "text": "Yes"
+                          }
+                        },
+                        "type": "value"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           },
           "gridPos": {
             "h": 3,
@@ -649,7 +676,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "avg by (ns) (aerospike_namespace_roster_size{ job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+              "expr": "avg by (ns) (aerospike_namespace_pseudo_roster_size{ job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})\nand\navg by (ns) (aerospike_namespace_strong_consistency{ job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}>0)",
               "hide": false,
               "instant": true,
               "legendFormat": "Roster",
@@ -663,7 +690,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "avg by (ns) (aerospike_namespace_roster_pending_size{ job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+              "expr": "avg by (ns) (aerospike_namespace_pseudo_pending_roster_size{ job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})\nand\navg by (ns) (aerospike_namespace_strong_consistency{ job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}>0)",
               "hide": false,
               "instant": true,
               "legendFormat": "Pending Roster",
@@ -677,7 +704,7 @@
               },
               "editorMode": "code",
               "exemplar": false,
-              "expr": "avg by (ns) (aerospike_namespace_roster_observed_size{ job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+              "expr": "avg by (ns) (aerospike_namespace_pseudo_observed_nodes_size{ job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})\nand\navg by (ns) (aerospike_namespace_strong_consistency{ job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}>0)",
               "hide": false,
               "instant": true,
               "legendFormat": "Observed Nodes",
@@ -685,7 +712,7 @@
               "refId": "roster_observed_nodes"
             }
           ],
-          "title": "Roster Statistics ",
+          "title": "SC & Roster Statistics ",
           "type": "stat"
         },
         {
@@ -3642,7 +3669,7 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg by (ns) (aerospike_namespace_roster_size{ job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+              "expr": "avg by (ns) (aerospike_namespace_pseudo_roster_size{ job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
               "format": "time_series",
               "instant": false,
               "interval": "",
@@ -3656,7 +3683,7 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg by (ns) (aerospike_namespace_roster_pending_size{ job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+              "expr": "avg by (ns) (aerospike_namespace_pseudo_pending_roster_size{ job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Pending Roster",
@@ -3669,7 +3696,7 @@
                 "uid": "${DS_AEROSPIKE_PROMETHEUS}"
               },
               "editorMode": "code",
-              "expr": "avg by (ns) (aerospike_namespace_roster_observed_size{ job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
+              "expr": "avg by (ns) (aerospike_namespace_pseudo_observed_nodes_size{ job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})",
               "hide": false,
               "instant": false,
               "legendFormat": "Observed Nodes",
@@ -3691,7 +3718,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 117
+        "y": 4
       },
       "id": 3341,
       "panels": [
@@ -3757,7 +3784,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2547
+            "y": 4716
           },
           "id": 1283,
           "options": {
@@ -3860,7 +3887,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2547
+            "y": 4716
           },
           "id": 1285,
           "options": {
@@ -3923,7 +3950,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 118
+        "y": 5
       },
       "id": 181,
       "panels": [
@@ -3992,7 +4019,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2560
+            "y": 4729
           },
           "id": 1368,
           "options": {
@@ -4154,7 +4181,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2560
+            "y": 4729
           },
           "id": 1370,
           "options": {
@@ -4243,7 +4270,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 119
+        "y": 6
       },
       "id": 191,
       "panels": [
@@ -4312,7 +4339,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2561
+            "y": 4730
           },
           "id": 1453,
           "options": {
@@ -4470,7 +4497,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2561
+            "y": 4730
           },
           "id": 1536,
           "options": {
@@ -4608,7 +4635,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2567
+            "y": 4736
           },
           "id": 1538,
           "options": {
@@ -4699,7 +4726,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 120
+        "y": 7
       },
       "id": 1803,
       "panels": [
@@ -4768,7 +4795,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2562
+            "y": 4731
           },
           "id": 1621,
           "options": {
@@ -4873,7 +4900,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2562
+            "y": 4731
           },
           "id": 1623,
           "options": {
@@ -4978,7 +5005,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2568
+            "y": 4737
           },
           "id": 1706,
           "options": {
@@ -5084,7 +5111,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2568
+            "y": 4737
           },
           "id": 1801,
           "options": {
@@ -5190,7 +5217,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2574
+            "y": 4743
           },
           "id": 1797,
           "options": {
@@ -5295,7 +5322,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2574
+            "y": 4743
           },
           "id": 1710,
           "options": {
@@ -5400,7 +5427,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2580
+            "y": 4749
           },
           "id": 1714,
           "options": {
@@ -5505,7 +5532,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2580
+            "y": 4749
           },
           "id": 1708,
           "options": {
@@ -5610,7 +5637,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2586
+            "y": 4755
           },
           "id": 1712,
           "options": {
@@ -5717,7 +5744,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2586
+            "y": 4755
           },
           "id": 1799,
           "options": {
@@ -5769,7 +5796,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 121
+        "y": 8
       },
       "id": 3652,
       "panels": [
@@ -5834,7 +5861,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2550
+            "y": 4719
           },
           "id": 3653,
           "options": {
@@ -5931,7 +5958,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2550
+            "y": 4719
           },
           "id": 3654,
           "options": {
@@ -6052,7 +6079,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2556
+            "y": 4725
           },
           "id": 3655,
           "options": {
@@ -6173,7 +6200,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2556
+            "y": 4725
           },
           "id": 3656,
           "options": {
@@ -6294,7 +6321,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2562
+            "y": 4731
           },
           "id": 3660,
           "options": {
@@ -6415,7 +6442,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2562
+            "y": 4731
           },
           "id": 3657,
           "options": {
@@ -6536,7 +6563,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2568
+            "y": 4737
           },
           "id": 3658,
           "options": {
@@ -6633,7 +6660,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2568
+            "y": 4737
           },
           "id": 3659,
           "options": {
@@ -6691,7 +6718,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 122
+        "y": 9
       },
       "id": 3339,
       "panels": [
@@ -6759,7 +6786,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2550
+            "y": 4719
           },
           "id": 2021,
           "options": {
@@ -6992,7 +7019,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2550
+            "y": 4719
           },
           "id": 2023,
           "options": {
@@ -7123,7 +7150,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2556
+            "y": 4725
           },
           "id": 2463,
           "options": {
@@ -7253,7 +7280,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2556
+            "y": 4725
           },
           "id": 2025,
           "options": {
@@ -7388,7 +7415,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2562
+            "y": 4731
           },
           "id": 2681,
           "options": {
@@ -7522,7 +7549,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2562
+            "y": 4731
           },
           "id": 2027,
           "options": {
@@ -7627,7 +7654,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2568
+            "y": 4737
           },
           "id": 2899,
           "options": {
@@ -7761,7 +7788,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2568
+            "y": 4737
           },
           "id": 2245,
           "options": {
@@ -7866,7 +7893,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2574
+            "y": 4743
           },
           "id": 3119,
           "options": {
@@ -7986,7 +8013,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2574
+            "y": 4743
           },
           "id": 3121,
           "options": {
@@ -8108,7 +8135,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2580
+            "y": 4749
           },
           "id": 3117,
           "options": {
@@ -8268,7 +8295,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 123
+        "y": 10
       },
       "id": 700,
       "panels": [
@@ -8337,7 +8364,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2564
+            "y": 4733
           },
           "id": 701,
           "options": {
@@ -8481,7 +8508,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2564
+            "y": 4733
           },
           "id": 702,
           "options": {
@@ -8625,7 +8652,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2570
+            "y": 4739
           },
           "id": 703,
           "options": {
@@ -8769,7 +8796,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2570
+            "y": 4739
           },
           "id": 708,
           "options": {
@@ -8913,7 +8940,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2576
+            "y": 4745
           },
           "id": 704,
           "options": {
@@ -8977,7 +9004,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 124
+        "y": 11
       },
       "id": 400,
       "panels": [
@@ -9046,7 +9073,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 2565
+            "y": 4734
           },
           "id": 401,
           "options": {
@@ -9184,7 +9211,7 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 2565
+            "y": 4734
           },
           "id": 402,
           "options": {
@@ -9322,7 +9349,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 2570
+            "y": 4739
           },
           "id": 706,
           "options": {
@@ -9460,7 +9487,7 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 2570
+            "y": 4739
           },
           "id": 404,
           "options": {
@@ -9598,7 +9625,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 2575
+            "y": 4744
           },
           "id": 410,
           "options": {
@@ -9736,7 +9763,7 @@
             "h": 5,
             "w": 12,
             "x": 12,
-            "y": 2575
+            "y": 4744
           },
           "id": 403,
           "options": {
@@ -9874,7 +9901,7 @@
             "h": 5,
             "w": 12,
             "x": 0,
-            "y": 2580
+            "y": 4749
           },
           "id": 411,
           "options": {
@@ -9957,7 +9984,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 125
+        "y": 12
       },
       "id": 500,
       "panels": [
@@ -10026,7 +10053,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2566
+            "y": 4735
           },
           "id": 501,
           "options": {
@@ -10164,7 +10191,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2566
+            "y": 4735
           },
           "id": 504,
           "options": {
@@ -10302,7 +10329,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2572
+            "y": 4741
           },
           "id": 707,
           "options": {
@@ -10440,7 +10467,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2572
+            "y": 4741
           },
           "id": 505,
           "options": {
@@ -10578,7 +10605,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2578
+            "y": 4747
           },
           "id": 502,
           "options": {
@@ -10716,7 +10743,7 @@
             "h": 6,
             "w": 12,
             "x": 12,
-            "y": 2578
+            "y": 4747
           },
           "id": 506,
           "options": {
@@ -10854,7 +10881,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2584
+            "y": 4753
           },
           "id": 503,
           "options": {
@@ -10937,7 +10964,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 126
+        "y": 13
       },
       "id": 600,
       "panels": [
@@ -11006,7 +11033,7 @@
             "h": 6,
             "w": 12,
             "x": 0,
-            "y": 2563
+            "y": 4732
           },
           "id": 601,
           "options": {
@@ -11163,7 +11190,7 @@
   "timezone": "",
   "title": "Namespace View",
   "uid": "zGcUKcDZz",
-  "version": 19,
+  "version": 4,
   "weekStart": "",
   "id": null
 }
