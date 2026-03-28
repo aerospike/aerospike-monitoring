@@ -43,16 +43,27 @@ we have a dump of the metrics data which is used as a mock, we tried to simulate
 these metrics will be imported into a local running prometheus tsdb using promtool
 
 #### Step 1 - How to create mock data
-- generate a latest copy of the mock data, 
-  - cd tests/processing
-  - python3 gen_openmetrics.py
-- new mock data is generated into a file called "output.openmetrics.dat" with current timestamp with each metric
-  
+
+Generate a latest copy of the mock data:
+
+```bash
+cd tests/processing
+python3 gen_openmetrics.py
+```
+
+This creates a file called `output.openmetrics.dat` in `mockdata/` directory with current timestamp for each metric.
+
 #### Step 2 - How to import the mock data into Prometheus
-- goto the prometheus storage location where prometheus software is running
-  - example /etc/prometheus/data
-- copy the file "output.openmetrics.dat" to prometheus storage location
-- execute command promtool
-  - promtool tsdb create-blocks-from output.openmetrics.dat /etc/prometheus/data
-    - in /etc/prometheus/data folder this will create a sub-folder with an alphanumeric name like "01H7ZNBK9HV1GYTW7Y8RFXCM88"
+
+1. Navigate to the Prometheus storage location (e.g., `/etc/prometheus/data`)
+
+2. Copy the `output.openmetrics.dat` file to the Prometheus storage location
+
+3. Run the promtool command to import the data:
+
+```bash
+promtool tsdb create-blocks-from openmetrics output.openmetrics.dat /etc/prometheus/data
+```
+
+This will create a sub-folder with an alphanumeric name like `01H7ZNBK9HV1GYTW7Y8RFXCM88` in the `/etc/prometheus/data` directory.
 
