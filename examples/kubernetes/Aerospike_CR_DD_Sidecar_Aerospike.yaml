@@ -1,0 +1,119 @@
+# Defines an Aerospike cluster custom resource
+apiVersion: asdb.aerospike.com/v1
+kind: AerospikeCluster
+metadata:
+  name: testenv                     
+  namespace: aerospike             
+spec:
+  size: 1                             
+  image: aerospike/aerospike-server-enterprise:8.0.0.5 
+  podSpec:
+    multiPodPerHost: true   
+    sidecars:
+      - name: aerospike-prometheus-exporter
+        image: aerospike/aerospike-prometheus-exporter:1.22.0
+        ports:
+          - containerPort: 9145  
+            name: exporter            
+
+      - name: datadog-agent
+        image: gcr.io/datadoghq/agent:latest 
+        env:
+          - name: DD_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: datadog-secret 
+                key: DD_API_KEY
+          - name: DD_SITE
+            valueFrom:
+              secretKeyRef:
+                name: datadog-secret     
+                key: DD_SITE
+          - name: DD_PROMETHEUS_SCRAPE_ENABLED
+            value: "true"
+          - name: DD_LOGS_ENABLED
+            value: "false"
+          - name: DD_PROCESS_AGENT_ENABLED
+            value: "false"
+          - name: DD_SECURITY_AGENT_ENABLED
+            value: "false"
+          - name: DD_SYSTEM_PROBE_ENABLED
+            value: "false"
+          - name: DD_DOGSTATSD_PORT
+            value: "8125"
+          - name: DD_KUBELET_TLS_VERIFY
+            value: "false"
+          - name: DD_HOSTNAME
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name  # Use pod name as hostname
+        volumeMounts:
+          - name: datadog-scrape-config
+            mountPath: /etc/datadog-agent/conf.d/aerospike.d/
+            readOnly: true           
+
+  validationPolicy:
+    skipWorkDirValidate: true
+    skipXdrDlogFileValidate: true
+
+  storage:
+    volumes:
+      - name: aerospike-config-secret
+        source:
+          secret:
+            secretName: aerospike-secret
+        aerospike:
+          path: /etc/aerospike/secret  
+
+      - name: datadog-scrape-config
+        source:
+          configMap:
+            name: datadog-scrape-config
+        aerospike:
+          path: /etc/datadog-agent/conf.d/aerospike.d/
+
+  aerospikeConfig:
+    service:
+      feature-key-file: /etc/aerospike/secret/features.conf
+    network:
+      service:
+        port: 3000
+      fabric:
+        port: 3001
+      heartbeat:
+        port: 3002
+    namespaces:
+      - name: test
+        replication-factor: 2
+        storage-engine:
+          type: memory
+          data-size: 4294967296    
+---
+# Exporter config to tell it which Aerospike host to scrape
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: aerospike-exporter-config
+  namespace: aerospike
+  labels:
+    app: aerospike
+    component: exporter
+data:
+  config.yaml: |
+    aerospike:
+      - address: 127.0.0.1            
+        port: 3000                  
+---
+# Datadog config for Prometheus scrape
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: datadog-scrape-config
+  namespace: aerospike
+  labels:
+    app: aerospike
+    component: datadog
+data:
+  conf.yaml: |
+    instances:
+      - openmetrics_endpoint: http://localhost:9145/metrics
