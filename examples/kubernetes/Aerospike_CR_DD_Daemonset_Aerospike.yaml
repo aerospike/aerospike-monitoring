@@ -1,0 +1,63 @@
+#AerospikeCluster YAML Using Aerospike Integration Pod Annotations for Datadog
+apiVersion: asdb.aerospike.com/v1
+kind: AerospikeCluster
+metadata:
+  name: aerocluster
+  namespace: aerospike
+spec:
+  size: 2
+  image: aerospike/aerospike-server-enterprise:8.0.0.2
+  podSpec:
+    multiPodPerHost: true
+    sidecars:
+      - name: aerospike-prometheus-exporter
+        image: aerospike/aerospike-prometheus-exporter:1.22.0
+        ports:
+          - containerPort: 9145
+            name: exporter
+    metadata:
+      annotations:
+      # https://docs.datadoghq.com/integrations/aerospike/?tab=containerized
+        ad.datadoghq.com/aerospike-prometheus-exporter.checks: |  #aerospike-prometheus-exporter is the container name change accordingly
+          {
+            "aerospike": {
+              "init_config": {},
+              "instances": [
+                {
+                  "openmetrics_endpoint": "http://%%host%%:9145/metrics"
+                }
+              ]
+            }
+          }
+        # NOTE: If you use inti_config {}, the check will use the global Datadog Agent settings.
+        #  Override this to customize behavior, such as:
+        #   - Add scrape timeout:         [{ "timeout": 10 }]
+        #   - Skip SSL verification:      [{ "ssl_verify": false }] 
+        #   - Use bearer token:           [{ "bearer_token": "your-token-here" }]
+  validationPolicy:
+    skipWorkDirValidate: true
+    skipXdrDlogFileValidate: true
+  storage:
+    volumes:
+      - name: aerospike-config-secret
+        source:
+          secret:
+            secretName: aerospike-secret
+        aerospike:
+          path: /etc/aerospike/secret
+  aerospikeConfig:
+    service:
+      feature-key-file: /etc/aerospike/secret/features.conf
+    network:
+      service:
+        port: 3000
+      fabric:
+        port: 3001
+      heartbeat:
+        port: 3002
+    namespaces:
+      - name: test
+        replication-factor: 2
+        storage-engine:
+          type: memory
+          data-size: 1073741824
