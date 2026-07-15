@@ -5,7 +5,7 @@ For more details about installing Aerospike Monitoring Stack see [Aerospike prod
 
 For more details about Aerospike Server Metrics reference see [Aerospike System Metrics reference](https://aerospike.com/docs/reference/metrics).
 
-## Additional Plugin depedencies
+## Additional Plugin dependencies
 Some of the dashboard depends on external grafana plugins to render the panels, each dashboard and the plug-in dependency is mentioned below
 ### Multi-cluster-view dashboard
 This dashboard uses 2 grafana external plugin 
