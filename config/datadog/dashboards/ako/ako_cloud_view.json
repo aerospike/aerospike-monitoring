@@ -31,80 +31,37 @@
         "layout_type": "ordered",
         "widgets": [
           {
-            "id": 7914047792427028,
+            "id": 9900300400500100,
             "definition": {
-              "title": "Eviction Webhook Allowed",
-              "title_size": "16",
-              "title_align": "left",
-              "description": "Number of pod eviction requests allowed by the AKO validating webhook during the selected dashboard time range.",
-              "type": "query_value",
+              "title": "Cluster Phase (by status)",
+              "description": "Current number of AerospikeCluster resources grouped by phase, such as Completed, InProgress, and Error.",
+              "type": "treemap",
               "requests": [
                 {
-                  "response_format": "scalar",
                   "queries": [
                     {
-                      "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:aerospike_ako_eviction_webhook_requests_total{decision:allowed,$database_id}.as_count()",
-                      "aggregator": "sum"
+                      "name": "query1",
+                      "query": "sum:aerospike_ako_aerospikecluster_phase{$database_id} by {phase}",
+                      "aggregator": "last"
                     }
                   ],
+                  "response_format": "scalar",
+                  "style": {
+                    "palette": "datadog16"
+                  },
                   "formulas": [
                     {
                       "formula": "query1"
                     }
                   ]
                 }
-              ],
-              "autoscale": true,
-              "precision": 2,
-              "timeseries_background": {
-                "type": "bars"
-              }
+              ]
             },
             "layout": {
               "x": 0,
               "y": 0,
-              "width": 3,
-              "height": 2
-            }
-          },
-          {
-            "id": 8566196106600413,
-            "definition": {
-              "title": "Eviction Webhook Blocked",
-              "title_size": "16",
-              "title_align": "left",
-              "description": "Number of pod eviction requests blocked by the AKO validating webhook during the selected dashboard time range. Non-zero values indicate that AKO prevented potentially unsafe pod evictions.",
-              "type": "query_value",
-              "requests": [
-                {
-                  "response_format": "scalar",
-                  "queries": [
-                    {
-                      "name": "query1",
-                      "data_source": "metrics",
-                      "query": "sum:aerospike_ako_eviction_webhook_requests_total{decision:blocked,$database_id}.as_count()",
-                      "aggregator": "sum"
-                    }
-                  ],
-                  "formulas": [
-                    {
-                      "formula": "query1"
-                    }
-                  ]
-                }
-              ],
-              "autoscale": true,
-              "precision": 2,
-              "timeseries_background": {
-                "type": "bars"
-              }
-            },
-            "layout": {
-              "x": 3,
-              "y": 0,
-              "width": 3,
+              "width": 4,
               "height": 2
             }
           },
@@ -141,58 +98,8 @@
               }
             },
             "layout": {
-              "x": 6,
+              "x": 4,
               "y": 0,
-              "width": 2,
-              "height": 2
-            }
-          },
-          {
-            "id": 9900300400500100,
-            "definition": {
-              "title": "Cluster Phase (by status)",
-              "description": "Current number of AerospikeCluster resources grouped by phase, such as Completed, InProgress, and Error.",
-              "type": "toplist",
-              "requests": [
-                {
-                  "queries": [
-                    {
-                      "data_source": "metrics",
-                      "name": "query1",
-                      "query": "sum:aerospike_ako_aerospikecluster_phase{$database_id} by {phase}",
-                      "aggregator": "last"
-                    }
-                  ],
-                  "response_format": "scalar",
-                  "conditional_formats": [
-                    {
-                      "comparator": ">",
-                      "value": 0,
-                      "palette": "white_on_red"
-                    },
-                    {
-                      "comparator": "<=",
-                      "value": 0,
-                      "palette": "white_on_green"
-                    }
-                  ],
-                  "formulas": [
-                    {
-                      "formula": "query1"
-                    }
-                  ]
-                }
-              ],
-              "style": {
-                "display": {
-                  "type": "stacked"
-                },
-                "scaling": "relative"
-              }
-            },
-            "layout": {
-              "x": 0,
-              "y": 2,
               "width": 4,
               "height": 2
             }
@@ -207,32 +114,32 @@
               "type": "query_value",
               "requests": [
                 {
-                  "response_format": "scalar",
-                  "queries": [
-                    {
-                      "name": "query1",
-                      "data_source": "metrics",
-                      "query": "sum:kubernetes_state.pod.status_phase{pod_phase:running,kube_namespace:aerospike,$database_id,pod_name:aerospike-kubernetes-operator-*}",
-                      "aggregator": "last"
-                    }
-                  ],
                   "formulas": [
                     {
                       "formula": "query1"
                     }
-                  ]
+                  ],
+                  "queries": [
+                    {
+                      "name": "query1",
+                      "data_source": "metrics",
+                      "query": "sum:kubernetes_state.pod.status_phase{pod_phase:running,kube_namespace:aerospike ,$database_id}",
+                      "aggregator": "last"
+                    }
+                  ],
+                  "response_format": "scalar"
                 }
               ],
               "autoscale": true,
-              "precision": 0,
+              "precision": 2,
               "timeseries_background": {
-                "type": "bars"
+                "type": "area"
               }
             },
             "layout": {
-              "x": 4,
+              "x": 0,
               "y": 2,
-              "width": 2,
+              "width": 4,
               "height": 2
             }
           },
@@ -276,9 +183,9 @@
               }
             },
             "layout": {
-              "x": 6,
+              "x": 4,
               "y": 2,
-              "width": 2,
+              "width": 4,
               "height": 2
             }
           }
@@ -369,7 +276,7 @@
     {
       "id": 4400100200300401,
       "definition": {
-        "title": "AKO Cluster Phase & Eviction Webhook",
+        "title": "AKO Cluster Phase",
         "background_color": "blue",
         "show_title": true,
         "type": "group",
@@ -468,147 +375,6 @@
               "width": 6,
               "height": 2
             }
-          },
-          {
-            "id": 4400200300400503,
-            "definition": {
-              "title": "Eviction Webhook Latency (total) (seconds)",
-              "description": "Total processing latency recorded for `/validate-eviction` webhook requests during each interval. Higher values may result from increased request volume or slower processing.",
-              "show_legend": true,
-              "legend_layout": "auto",
-              "legend_columns": [
-                "avg",
-                "min",
-                "max",
-                "value",
-                "sum"
-              ],
-              "type": "timeseries",
-              "requests": [
-                {
-                  "response_format": "timeseries",
-                  "queries": [
-                    {
-                      "name": "query1",
-                      "data_source": "metrics",
-                      "query": "sum:controller_runtime_webhook_latency_seconds{webhook:validate-eviction,$database_id,$controller}"
-                    }
-                  ],
-                  "formulas": [
-                    {
-                      "formula": "query1"
-                    }
-                  ],
-                  "style": {
-                    "palette": "dog_classic",
-                    "order_by": "values",
-                    "line_type": "solid",
-                    "line_width": "normal"
-                  },
-                  "display_type": "line"
-                }
-              ]
-            },
-            "layout": {
-              "x": 0,
-              "y": 2,
-              "width": 4,
-              "height": 2
-            }
-          },
-          {
-            "id": 4400200300400502,
-            "definition": {
-              "title": "Eviction Webhook Requests (rate)",
-              "description": "Rate of requests to the /validate-eviction webhook grouped by HTTP response code. Metric: controller_runtime_webhook_requests.count (filtered by webhook:/validate-eviction, grouped by code).",
-              "show_legend": true,
-              "legend_layout": "auto",
-              "legend_columns": [
-                "avg",
-                "min",
-                "max",
-                "value",
-                "sum"
-              ],
-              "type": "timeseries",
-              "requests": [
-                {
-                  "response_format": "timeseries",
-                  "queries": [
-                    {
-                      "name": "query1",
-                      "data_source": "metrics",
-                      "query": "sum:controller_runtime_webhook_requests_total{webhook:validate-eviction*,$database_id,$controller} by {code}.as_rate()"
-                    }
-                  ],
-                  "formulas": [
-                    {
-                      "formula": "query1"
-                    }
-                  ],
-                  "style": {
-                    "palette": "dog_classic",
-                    "order_by": "values",
-                    "line_type": "solid",
-                    "line_width": "normal"
-                  },
-                  "display_type": "bars"
-                }
-              ]
-            },
-            "layout": {
-              "x": 4,
-              "y": 2,
-              "width": 4,
-              "height": 2
-            }
-          },
-          {
-            "id": 4400200300400504,
-            "definition": {
-              "title": "Eviction Webhook Requests In-Flight",
-              "description": "Number of concurrent eviction webhook requests being processed. Sustained high values may indicate a bottleneck. Metric: controller_runtime_webhook_requests_in_flight.",
-              "show_legend": true,
-              "legend_layout": "auto",
-              "legend_columns": [
-                "avg",
-                "min",
-                "max",
-                "value",
-                "sum"
-              ],
-              "type": "timeseries",
-              "requests": [
-                {
-                  "response_format": "timeseries",
-                  "queries": [
-                    {
-                      "name": "query1",
-                      "data_source": "metrics",
-                      "query": "sum:controller_runtime_webhook_requests_in_flight{webhook:validate-eviction*,$database_id,$controller}"
-                    }
-                  ],
-                  "formulas": [
-                    {
-                      "formula": "query1"
-                    }
-                  ],
-                  "style": {
-                    "palette": "dog_classic",
-                    "order_by": "values",
-                    "line_type": "solid",
-                    "line_width": "normal"
-                  },
-                  "display_type": "line"
-                }
-              ]
-            },
-            "layout": {
-              "x": 8,
-              "y": 2,
-              "width": 4,
-              "height": 2
-            }
           }
         ]
       },
@@ -633,16 +399,23 @@
             "definition": {
               "title": "Pods Running",
               "description": "Current count of running pods across Aerospike deployments. Metric: kubernetes.pods.running (filtered by kube_deployment:aerospike*).",
-              "type": "query_value",
+              "type": "toplist",
               "requests": [
                 {
-                  "response_format": "scalar",
                   "queries": [
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:kubernetes_state.pod.status_phase{pod_phase:running,kube_namespace:aerospike,$database_id,pod_name:aerospike-kubernetes-operator-*}",
+                      "query": "sum:kubernetes_state.pod.status_phase{pod_phase:running,kube_namespace:aerospike ,$database_id} by {kube_deployment}",
                       "aggregator": "last"
+                    }
+                  ],
+                  "response_format": "scalar",
+                  "conditional_formats": [
+                    {
+                      "comparator": ">=",
+                      "palette": "white_on_green",
+                      "value": 0
                     }
                   ],
                   "formulas": [
@@ -650,23 +423,30 @@
                       "formula": "query1"
                     }
                   ],
-                  "conditional_formats": [
-                    {
-                      "comparator": ">=",
-                      "palette": "white_on_green",
-                      "value": 0
-                    }
-                  ]
+                  "sort": {
+                    "count": 10,
+                    "order_by": [
+                      {
+                        "type": "formula",
+                        "index": 0,
+                        "order": "desc"
+                      }
+                    ]
+                  }
                 }
               ],
-              "autoscale": true,
-              "precision": 0
+              "style": {
+                "display": {
+                  "type": "stacked",
+                  "legend": "automatic"
+                }
+              }
             },
             "layout": {
               "x": 0,
               "y": 0,
               "width": 3,
-              "height": 1
+              "height": 2
             }
           },
           {
@@ -674,16 +454,23 @@
             "definition": {
               "title": "Containers Running by Pod",
               "description": "Number of currently running containers per Aerospike pod over time. A decrease may indicate a failed or unready container.",
-              "type": "query_value",
+              "type": "toplist",
               "requests": [
                 {
-                  "response_format": "scalar",
                   "queries": [
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:kubernetes_state.container.running{kube_namespace:aerospike*,$database_id} by {pod_name}",
+                      "query": "sum:kubernetes_state.container.running{kube_namespace:aerospike,$database_id} by {pod_name}",
                       "aggregator": "last"
+                    }
+                  ],
+                  "response_format": "scalar",
+                  "conditional_formats": [
+                    {
+                      "comparator": ">",
+                      "value": 0,
+                      "palette": "white_on_yellow"
                     }
                   ],
                   "formulas": [
@@ -691,29 +478,30 @@
                       "formula": "query1"
                     }
                   ],
-                  "conditional_formats": [
-                    {
-                      "comparator": ">",
-                      "value": 0,
-                      "palette": "white_on_yellow"
-                    }
-                  ]
+                  "sort": {
+                    "count": 500,
+                    "order_by": [
+                      {
+                        "type": "formula",
+                        "index": 0,
+                        "order": "desc"
+                      }
+                    ]
+                  }
                 }
               ],
-              "autoscale": true,
-              "precision": 0,
-              "timeseries_background": {
-                "yaxis": {
-                  "include_zero": false
-                },
-                "type": "area"
+              "style": {
+                "display": {
+                  "type": "stacked",
+                  "legend": "automatic"
+                }
               }
             },
             "layout": {
               "x": 3,
               "y": 0,
               "width": 3,
-              "height": 1
+              "height": 2
             }
           },
           {
@@ -721,35 +509,24 @@
             "definition": {
               "title": "CPU Utilization % (of Limits)",
               "description": "CPU utilization as a percentage of configured limits for Aerospike pods. Metrics: kubernetes.cpu.usage.total / kubernetes.cpu.limits (filtered by kube_deployment:aerospike*). (NOTE: Datadog reports cpu time in nano-seconds)",
-              "type": "query_value",
+              "type": "toplist",
               "requests": [
                 {
-                  "response_format": "scalar",
                   "queries": [
                     {
                       "name": "usage",
                       "data_source": "metrics",
-                      "query": "avg:kubernetes.cpu.usage.total{kube_namespace:aerospike,$database_id}",
+                      "query": "avg:kubernetes.cpu.usage.total{kube_namespace:aerospike,$database_id} by {pod_name}",
                       "aggregator": "last"
                     },
                     {
                       "name": "limits",
                       "data_source": "metrics",
-                      "query": "avg:kubernetes.cpu.limits{kube_namespace:aerospike,$database_id}",
+                      "query": "avg:kubernetes.cpu.limits{kube_namespace:aerospike,$database_id} by {pod_name}",
                       "aggregator": "last"
                     }
                   ],
-                  "formulas": [
-                    {
-                      "number_format": {
-                        "unit": {
-                          "type": "canonical_unit",
-                          "unit_name": "percent"
-                        }
-                      },
-                      "formula": "(usage / 1000000000 / limits) * 100"
-                    }
-                  ],
+                  "response_format": "scalar",
                   "conditional_formats": [
                     {
                       "comparator": ">",
@@ -766,17 +543,42 @@
                       "palette": "white_on_green",
                       "value": 70
                     }
-                  ]
+                  ],
+                  "formulas": [
+                    {
+                      "formula": "(usage / 1000000000 / limits) * 100",
+                      "number_format": {
+                        "unit": {
+                          "type": "canonical_unit",
+                          "unit_name": "percent"
+                        }
+                      }
+                    }
+                  ],
+                  "sort": {
+                    "count": 500,
+                    "order_by": [
+                      {
+                        "type": "formula",
+                        "index": 0,
+                        "order": "desc"
+                      }
+                    ]
+                  }
                 }
               ],
-              "autoscale": false,
-              "precision": 1
+              "style": {
+                "display": {
+                  "type": "stacked",
+                  "legend": "automatic"
+                }
+              }
             },
             "layout": {
               "x": 6,
               "y": 0,
               "width": 3,
-              "height": 1
+              "height": 2
             }
           },
           {
@@ -784,52 +586,66 @@
             "definition": {
               "title": "Memory Utilization % (of Limits)",
               "description": "Current memory usage as a percentage of configured memory limits for the selected Aerospike database.",
-              "type": "query_value",
+              "type": "toplist",
               "requests": [
                 {
-                  "response_format": "scalar",
                   "queries": [
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "avg:kubernetes.memory.usage{kube_namespace:aerospike,$database_id,pod_name:aerospike-kubernetes-operator-*}",
+                      "query": "avg:kubernetes.memory.usage{kube_namespace:aerospike,$database_id} by {pod_name}",
                       "aggregator": "last"
                     },
                     {
                       "name": "query2",
                       "data_source": "metrics",
-                      "query": "avg:kubernetes.memory.limits{kube_namespace:aerospike,$database_id,pod_name:aerospike-kubernetes-operator-*}",
+                      "query": "avg:kubernetes.memory.limits{kube_namespace:aerospike,$database_id} by {pod_name}",
                       "aggregator": "last"
                     }
                   ],
-                  "formulas": [
-                    {
-                      "number_format": {
-                        "unit": {
-                          "type": "canonical_unit",
-                          "unit_name": "percent"
-                        }
-                      },
-                      "formula": "(query1 / query2) * 100"
-                    }
-                  ],
+                  "response_format": "scalar",
                   "conditional_formats": [
                     {
                       "comparator": ">=",
                       "palette": "white_on_green",
                       "value": 0
                     }
-                  ]
+                  ],
+                  "formulas": [
+                    {
+                      "formula": "(query1 / query2) * 100",
+                      "number_format": {
+                        "unit": {
+                          "type": "canonical_unit",
+                          "unit_name": "percent"
+                        }
+                      }
+                    }
+                  ],
+                  "sort": {
+                    "count": 500,
+                    "order_by": [
+                      {
+                        "type": "formula",
+                        "index": 0,
+                        "order": "asc"
+                      }
+                    ]
+                  }
                 }
               ],
-              "autoscale": true,
-              "precision": 2
+              "style": {
+                "display": {
+                  "type": "stacked",
+                  "legend": "automatic"
+                }
+              }
             },
             "layout": {
               "x": 9,
               "y": 0,
               "width": 3,
-              "height": 1
+              "height": 2
             }
           },
           {
@@ -854,7 +670,7 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:kubernetes_state.pod.status_phase{pod_phase:running,kube_namespace:aerospike*,$database_id}"
+                      "query": "sum:kubernetes_state.pod.status_phase{pod_phase:running,kube_namespace:aerospike ,$database_id}"
                     }
                   ],
                   "formulas": [
@@ -874,112 +690,7 @@
             },
             "layout": {
               "x": 0,
-              "y": 1,
-              "width": 6,
-              "height": 2
-            }
-          },
-          {
-            "id": 5500200300400502,
-            "definition": {
-              "title": "Container Restarts",
-              "description": "Container restart trend over time for Aerospike deployments. Spikes indicate pod instability. Metric: kubernetes.containers.restarts (filtered by kube_deployment:aerospike*).",
-              "show_legend": true,
-              "legend_layout": "auto",
-              "legend_columns": [
-                "avg",
-                "min",
-                "max",
-                "value",
-                "sum"
-              ],
-              "type": "timeseries",
-              "requests": [
-                {
-                  "response_format": "timeseries",
-                  "queries": [
-                    {
-                      "name": "query1",
-                      "data_source": "metrics",
-                      "query": "sum:kubernetes_state.container.running{kube_namespace:aerospike*,$database_id} by {pod_name}"
-                    }
-                  ],
-                  "formulas": [
-                    {
-                      "formula": "query1"
-                    }
-                  ],
-                  "style": {
-                    "palette": "dog_classic",
-                    "order_by": "values",
-                    "line_type": "solid",
-                    "line_width": "normal"
-                  },
-                  "display_type": "line"
-                }
-              ]
-            },
-            "layout": {
-              "x": 6,
-              "y": 1,
-              "width": 6,
-              "height": 2
-            }
-          },
-          {
-            "id": 5500200300400503,
-            "definition": {
-              "title": "CPU Utilization % (by Pod)",
-              "description": "CPU usage as a percentage of the configured CPU limit for each Aerospike pod over time.",
-              "show_legend": true,
-              "legend_layout": "auto",
-              "legend_columns": [
-                "avg",
-                "min",
-                "max",
-                "value",
-                "sum"
-              ],
-              "type": "timeseries",
-              "requests": [
-                {
-                  "response_format": "timeseries",
-                  "queries": [
-                    {
-                      "name": "query1",
-                      "data_source": "metrics",
-                      "query": "sum:kubernetes.cpu.usage.total{kube_namespace:aerospike*,$database_id} by {pod_name}"
-                    },
-                    {
-                      "name": "query2",
-                      "data_source": "metrics",
-                      "query": "sum:kubernetes.cpu.limits{kube_namespace:aerospike*,$database_id} by {pod_name}"
-                    }
-                  ],
-                  "formulas": [
-                    {
-                      "number_format": {
-                        "unit": {
-                          "type": "canonical_unit",
-                          "unit_name": "percent"
-                        }
-                      },
-                      "formula": "(query1 / 1000000000 / query2) * 100"
-                    }
-                  ],
-                  "style": {
-                    "palette": "dog_classic",
-                    "order_by": "values",
-                    "line_type": "solid",
-                    "line_width": "normal"
-                  },
-                  "display_type": "line"
-                }
-              ]
-            },
-            "layout": {
-              "x": 0,
-              "y": 3,
+              "y": 2,
               "width": 6,
               "height": 2
             }
@@ -1006,23 +717,23 @@
                     {
                       "name": "query1",
                       "data_source": "metrics",
-                      "query": "sum:kubernetes.memory.usage{kube_namespace:aerospike*,$database_id} by {pod_name}"
+                      "query": "sum:kubernetes.memory.usage{kube_namespace:aerospike,$database_id} by {pod_name}"
                     },
                     {
                       "name": "query2",
                       "data_source": "metrics",
-                      "query": "sum:kubernetes.memory.limits{kube_namespace:aerospike*,$database_id} by {pod_name}"
+                      "query": "sum:kubernetes.memory.limits{kube_namespace:aerospike ,$database_id} by {pod_name}"
                     }
                   ],
                   "formulas": [
                     {
-                      "formula": "(query1 / query2) * 100",
                       "number_format": {
                         "unit": {
                           "type": "canonical_unit",
                           "unit_name": "percent"
                         }
-                      }
+                      },
+                      "formula": "(query1 / query2) * 100"
                     }
                   ],
                   "style": {
@@ -1037,7 +748,112 @@
             },
             "layout": {
               "x": 6,
-              "y": 3,
+              "y": 2,
+              "width": 6,
+              "height": 2
+            }
+          },
+          {
+            "id": 5500200300400503,
+            "definition": {
+              "title": "CPU Utilization % (by Pod)",
+              "description": "CPU usage as a percentage of the configured CPU limit for each Aerospike pod over time.",
+              "show_legend": true,
+              "legend_layout": "auto",
+              "legend_columns": [
+                "avg",
+                "min",
+                "max",
+                "value",
+                "sum"
+              ],
+              "type": "timeseries",
+              "requests": [
+                {
+                  "response_format": "timeseries",
+                  "queries": [
+                    {
+                      "name": "query1",
+                      "data_source": "metrics",
+                      "query": "sum:kubernetes.cpu.usage.total{kube_namespace:aerospike,$database_id} by {pod_name}"
+                    },
+                    {
+                      "name": "query2",
+                      "data_source": "metrics",
+                      "query": "sum:kubernetes.cpu.limits{kube_namespace:aerospike,$database_id} by {pod_name}"
+                    }
+                  ],
+                  "formulas": [
+                    {
+                      "number_format": {
+                        "unit": {
+                          "type": "canonical_unit",
+                          "unit_name": "percent"
+                        }
+                      },
+                      "formula": "(query1 / 1000000000 / query2) * 100"
+                    }
+                  ],
+                  "style": {
+                    "palette": "dog_classic",
+                    "order_by": "values",
+                    "line_type": "solid",
+                    "line_width": "normal"
+                  },
+                  "display_type": "line"
+                }
+              ]
+            },
+            "layout": {
+              "x": 0,
+              "y": 4,
+              "width": 6,
+              "height": 2
+            }
+          },
+          {
+            "id": 5500200300400502,
+            "definition": {
+              "title": "Container Restarts",
+              "description": "Container restart trend over time for Aerospike deployments. Spikes indicate pod instability. Metric: kubernetes.containers.restarts (filtered by kube_deployment:aerospike*).",
+              "show_legend": true,
+              "legend_layout": "auto",
+              "legend_columns": [
+                "avg",
+                "min",
+                "max",
+                "value",
+                "sum"
+              ],
+              "type": "timeseries",
+              "requests": [
+                {
+                  "response_format": "timeseries",
+                  "queries": [
+                    {
+                      "name": "query1",
+                      "data_source": "metrics",
+                      "query": "sum:kubernetes_state.container.restarts{kube_namespace:aerospike ,$database_id} by {pod_name}"
+                    }
+                  ],
+                  "formulas": [
+                    {
+                      "formula": "query1"
+                    }
+                  ],
+                  "style": {
+                    "palette": "dog_classic",
+                    "order_by": "values",
+                    "line_type": "solid",
+                    "line_width": "normal"
+                  },
+                  "display_type": "line"
+                }
+              ]
+            },
+            "layout": {
+              "x": 6,
+              "y": 4,
               "width": 6,
               "height": 2
             }
@@ -1062,6 +878,57 @@
         "widgets": [
           {
             "id": 4985374195961847,
+            "definition": {
+              "title": "Error Trend",
+              "title_size": "16",
+              "title_align": "left",
+              "show_legend": true,
+              "legend_layout": "auto",
+              "legend_columns": [
+                "avg",
+                "min",
+                "max",
+                "value",
+                "sum"
+              ],
+              "type": "timeseries",
+              "requests": [
+                {
+                  "queries": [
+                    {
+                      "data_source": "logs",
+                      "name": "query1",
+                      "search": {
+                        "query": "service:aerospike-kubernetes-operator database_id:$database_id.value @level:ERROR"
+                      },
+                      "indexes": [],
+                      "compute": {
+                        "aggregation": "count"
+                      },
+                      "group_by": [],
+                      "storage": "hot"
+                    }
+                  ],
+                  "response_format": "timeseries",
+                  "style": {
+                    "palette": "dog_classic",
+                    "order_by": "values",
+                    "line_type": "solid",
+                    "line_width": "normal"
+                  },
+                  "display_type": "line"
+                }
+              ]
+            },
+            "layout": {
+              "x": 0,
+              "y": 0,
+              "width": 12,
+              "height": 2
+            }
+          },
+          {
+            "id": 7855977809637327,
             "definition": {
               "title": "Error Log",
               "title_size": "16",
@@ -1095,7 +962,7 @@
             },
             "layout": {
               "x": 0,
-              "y": 0,
+              "y": 2,
               "width": 12,
               "height": 4
             }
