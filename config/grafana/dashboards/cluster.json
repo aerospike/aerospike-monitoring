@@ -468,7 +468,7 @@
         "type": "prometheus",
         "uid": "${DS_AEROSPIKE_PROMETHEUS}"
       },
-      "description": "Suggests if checkpoint-save operation is issues on any node in this cluster in given timeframe",
+      "description": "Number of nodes in this cluster with a checkpoint-save operation in progress or completed (cp_status copying or done) in the given timeframe",
       "fieldConfig": {
         "defaults": {
           "noValue": "Check-point N/A",
@@ -524,9 +524,9 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "count(group by (service) (aerospike_node_stats_checkpoint_status{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\"}>0)) ",
+          "expr": "count(group by (service) (aerospike_node_stats_checkpoint_is_parked{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\", cp_status!=\"none\"}))",
           "instant": false,
-          "legendFormat": "Checkpoint Status",
+          "legendFormat": "Nodes In Checkpoint",
           "range": true,
           "refId": "checkpoint"
         }
@@ -1892,7 +1892,6 @@
               "refId": "roster_observed_nodes"
             }
           ],
-          "title": "",
           "type": "timeseries"
         }
       ],
@@ -3713,8 +3712,6 @@
             "mode": "html"
           },
           "pluginVersion": "9.3.2",
-          "targets": [],
-          "title": "",
           "type": "text"
         }
       ],
@@ -3855,6 +3852,6 @@
   "timezone": "browser",
   "title": "Cluster Overview",
   "uid": "dR0dDRHWz",
-  "version": 7,
+  "version": 1,
   "weekStart": ""
 }
