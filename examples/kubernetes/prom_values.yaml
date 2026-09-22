@@ -1,0 +1,29 @@
+  additionalServiceMonitors: 
+  - name: "asdev1-servicemonitor"
+    namespace: aerospike
+    jobLabel: "aerospike"
+    namespaceSelector:
+      matchNames:
+        - aerospike
+        - sales_as_cluster
+    podTargetLabels:
+      - app
+      - aerospike.com/cr
+      - domain
+      - controller-revision-hash
+      - aerospike.com/rack-id
+      - statefulset.kubernetes.io/pod-name    
+    selector: 
+      matchExpressions:
+        - key: app
+          operator: In
+          values:
+            - aerospike-cluster    
+    endpoints:
+    - interval: 15s
+      path: /metrics
+      scheme: http
+      targetPort: 9145
+      tlsConfig:
+        insecureSkipVerify: true
+      honorLabels: true  
