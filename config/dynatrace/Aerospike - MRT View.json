@@ -1,0 +1,458 @@
+{
+  "version": 21,
+  "variables": [
+    {
+      "version": 2,
+      "key": "cluster",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(aerospike_namespace_mrt_roll_forward_success), by: { cluster_name }\n| fields cluster_name",
+      "multiple": false
+    },
+    {
+      "version": 2,
+      "key": "node",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(aerospike_namespace_mrt_roll_forward_success, filter: { cluster_name == $cluster }), by: { service }\n| fields service",
+      "multiple": true,
+      "defaultValue": "3420b2ac-f1cf-4b24-b62d-61ba1ba8ed05*"
+    },
+    {
+      "version": 2,
+      "key": "namespace",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(aerospike_namespace_mrt_roll_forward_success, filter: { cluster_name == $cluster and in(service, array($node)) }), by: { ns }\n| fields ns",
+      "multiple": true,
+      "defaultValue": "3420b2ac-f1cf-4b24-b62d-61ba1ba8ed05*"
+    }
+  ],
+  "tiles": {
+    "0": {
+      "type": "markdown",
+      "content": "**MRT View**: Multi-record transactions: commits, rollbacks, errors and timeouts, the monitor set. A tile's description shows its equivalent Prometheus query."
+    },
+    "1": {
+      "type": "markdown",
+      "content": "## Overview"
+    },
+    "2": {
+      "type": "data",
+      "title": "Success (total) (rate)",
+      "query": "timeseries a0 = avg(aerospike_namespace_mrt_roll_forward_success, filter: { cluster_name == $cluster }), by: { cluster_name, ns, service, storage_engine }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd value = a0[]\n| fieldsRemove a0\n| summarize value = sum(value[]), by: { timeframe, interval }\n| fieldsRename commit = value\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_roll_back_success, filter: { cluster_name == $cluster }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval }\n  | fieldsRename rollback = value\n]\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_monitor_roll_forward_success, filter: { cluster_name == $cluster }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval }\n  | fieldsRename monitor_commit = value\n]\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_monitor_roll_back_success, filter: { cluster_name == $cluster }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval }\n  | fieldsRename monitor_rollback = value\n]\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_verify_read_success, filter: { cluster_name == $cluster }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval }\n  | fieldsRename verify_read = value\n]\n| fields commit = coalesce(commit[-2], arrayLast(commit)), rollback = coalesce(rollback[-2], arrayLast(rollback)), monitor_commit = coalesce(monitor_commit[-2], arrayLast(monitor_commit)), monitor_rollback = coalesce(monitor_rollback[-2], arrayLast(monitor_rollback)), verify_read = coalesce(verify_read[-2], arrayLast(verify_read))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(rate(aerospike_namespace_mrt_roll_forward_success{job=\"$job_name\", cluster_name=~\"$cluster\",}[$__rate_interval]))\nsum(rate(aerospike_namespace_mrt_roll_back_success{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]))\nsum(\n    rate(aerospike_namespace_mrt_monitor_roll_forward_success{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval])\n)\nsum(rate(aerospike_namespace_mrt_monitor_roll_back_success{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]))\nsum(rate(aerospike_namespace_mrt_verify_read_success{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]))"
+    },
+    "3": {
+      "type": "data",
+      "title": "Error/Timeout - (total) (rate)",
+      "query": "timeseries a0 = avg(aerospike_namespace_mrt_roll_forward_error, filter: { cluster_name == $cluster }), a1 = avg(aerospike_namespace_mrt_roll_back_error, filter: { cluster_name == $cluster }), a2 = avg(aerospike_namespace_mrt_verify_read_error, filter: { cluster_name == $cluster }), a3 = avg(aerospike_namespace_mrt_monitor_roll_forward_error, filter: { cluster_name == $cluster }), a4 = avg(aerospike_namespace_mrt_monitor_roll_back_error, filter: { cluster_name == $cluster }), by: { cluster_name, ns, service, storage_engine }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd a1 = arrayDelta(a1)\n| fieldsAdd a1 = a1[] / (interval / 1s)\n| fieldsAdd a2 = arrayDelta(a2)\n| fieldsAdd a2 = a2[] / (interval / 1s)\n| fieldsAdd a3 = arrayDelta(a3)\n| fieldsAdd a3 = a3[] / (interval / 1s)\n| fieldsAdd a4 = arrayDelta(a4)\n| fieldsAdd a4 = a4[] / (interval / 1s)\n| fieldsAdd value = ((((a0[] + a1[]) + a2[]) + a3[]) + a4[])\n| fieldsRemove a0, a1, a2, a3, a4\n| summarize value = sum(value[]), by: { timeframe, interval }\n| fieldsRename error = value\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_roll_forward_timeout, filter: { cluster_name == $cluster }), a1 = avg(aerospike_namespace_mrt_roll_back_timeout, filter: { cluster_name == $cluster }), a2 = avg(aerospike_namespace_mrt_verify_read_timeout, filter: { cluster_name == $cluster }), a3 = avg(aerospike_namespace_mrt_monitor_roll_forward_timeout, filter: { cluster_name == $cluster }), a4 = avg(aerospike_namespace_mrt_monitor_roll_back_timeout, filter: { cluster_name == $cluster }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd a1 = arrayDelta(a1)\n  | fieldsAdd a1 = a1[] / (interval / 1s)\n  | fieldsAdd a2 = arrayDelta(a2)\n  | fieldsAdd a2 = a2[] / (interval / 1s)\n  | fieldsAdd a3 = arrayDelta(a3)\n  | fieldsAdd a3 = a3[] / (interval / 1s)\n  | fieldsAdd a4 = arrayDelta(a4)\n  | fieldsAdd a4 = a4[] / (interval / 1s)\n  | fieldsAdd value = ((((a0[] + a1[]) + a2[]) + a3[]) + a4[])\n  | fieldsRemove a0, a1, a2, a3, a4\n  | summarize value = sum(value[]), by: { timeframe, interval }\n  | fieldsRename timeout = value\n]\n| fields error = coalesce(error[-2], arrayLast(error)), timeout = coalesce(timeout[-2], arrayLast(timeout))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(\n    rate(aerospike_namespace_mrt_roll_forward_error{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval])\n+\n    rate(aerospike_namespace_mrt_roll_back_error{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval])\n+\n    rate(aerospike_namespace_mrt_verify_read_error{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval])\n+\n    rate(aerospike_namespace_mrt_monitor_roll_forward_error{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval])\n+\n    rate(aerospike_namespace_mrt_monitor_roll_back_error{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval])\n)\n\n\n\nsum(\n    rate(aerospike_namespace_mrt_roll_forward_timeout{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval])\n+\n    rate(aerospike_namespace_mrt_roll_back_timeout{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval])\n+\n    rate(aerospike_namespace_mrt_verify_read_timeout{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval])\n+\n    rate(aerospike_"
+    },
+    "4": {
+      "type": "data",
+      "title": "Monitors Active (total)",
+      "query": "timeseries value = sum(aerospike_namespace_mrt_monitors_active, filter: { cluster_name == $cluster }, rollup: avg)\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(aerospike_namespace_mrt_monitors_active{job=\"$job_name\", cluster_name=~\"$cluster\"})"
+    },
+    "5": {
+      "type": "data",
+      "title": "Provisionals (total)",
+      "query": "timeseries value = sum(aerospike_namespace_mrt_provisionals, filter: { cluster_name == $cluster }, rollup: avg)\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(aerospike_namespace_mrt_provisionals{job=\"$job_name\", cluster_name=~\"$cluster\"})"
+    },
+    "6": {
+      "type": "markdown",
+      "content": "## Monitor Set Overview"
+    },
+    "7": {
+      "type": "data",
+      "title": "Data Used (bytes)",
+      "query": "timeseries value = sum(aerospike_sets_data_used_bytes, filter: { cluster_name == $cluster and in(ns, array($namespace)) and `set` == \"<ERO~MRT\" }, rollup: avg)\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(aerospike_sets_data_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", set=~\"<ERO~MRT\"} )\n"
+    },
+    "8": {
+      "type": "data",
+      "title": "Objects (Ongoing MRTs)",
+      "query": "timeseries value = sum(aerospike_sets_objects, filter: { cluster_name == $cluster and in(ns, array($namespace)) and `set` == \"<ERO~MRT\" }, rollup: avg)\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(aerospike_sets_objects{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", set=~\"<ERO~MRT\"} )"
+    },
+    "9": {
+      "type": "data",
+      "title": "Tombstones (total)",
+      "query": "timeseries value = sum(aerospike_sets_tombstones, filter: { cluster_name == $cluster and in(ns, array($namespace)) and `set` == \"<ERO~MRT\" }, rollup: avg)\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(aerospike_sets_tombstones{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", set=~\"<ERO~MRT\"} )"
+    },
+    "10": {
+      "type": "markdown",
+      "content": "### Stop Writes Size (Unique values)\n\n_Not available in Dynatrace yet (count_values()). The equivalent Prometheus query:_\n\n```promql\ncount_values(\"stop_write_size\", aerospike_sets_stop_writes_size{job=\"$job_name\", cluster_name=~\"$cluster|$^\", ns=~\"$namespace\", set=~\"<ERO~MRT\",} or on() vector(-1))\n```\n"
+    },
+    "11": {
+      "type": "markdown",
+      "content": "### Stop Writes Count (Unique values)\n\n_Not available in Dynatrace yet (count_values()). The equivalent Prometheus query:_\n\n```promql\ncount_values(\"stop_write_cnt\",aerospike_sets_stop_writes_count{job=\"$job_name\", cluster_name=~\"$cluster|$^\",  service=~\"$node|$^\", ns=~\"$namespace\", set=~\"$set\",}>0)\n```\n"
+    },
+    "12": {
+      "type": "data",
+      "title": "Data Used (bytes)",
+      "query": "timeseries value = sum(aerospike_sets_data_used_bytes, filter: { cluster_name == $cluster and in(ns, array($namespace)) and `set` == \"<ERO~MRT\" }, rollup: avg), by: { service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum by (service) (aerospike_sets_data_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", set=~\"<ERO~MRT\"} )\n"
+    },
+    "13": {
+      "type": "data",
+      "title": "Objects (Ongoing MRTs)",
+      "query": "timeseries value = sum(aerospike_sets_objects, filter: { cluster_name == $cluster and in(ns, array($namespace)) and `set` == \"<ERO~MRT\" }, rollup: avg), by: { service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum by (service) (aerospike_sets_objects{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", set=~\"<ERO~MRT\"} )"
+    },
+    "14": {
+      "type": "markdown",
+      "content": "## $node"
+    },
+    "15": {
+      "type": "data",
+      "title": "Success (total) (rate)",
+      "query": "timeseries a0 = avg(aerospike_namespace_mrt_roll_forward_success, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd value = a0[]\n| fieldsRemove a0\n| summarize value = sum(value[]), by: { timeframe, interval }\n| fieldsRename commit = value\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_roll_back_success, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval }\n  | fieldsRename rollback = value\n]\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_monitor_roll_forward_success, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval }\n  | fieldsRename monitor_commit = value\n]\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_monitor_roll_back_success, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval }\n  | fieldsRename monitor_rollback = value\n]\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_verify_read_success, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval }\n  | fieldsRename verify_read = value\n]\n| fields commit = coalesce(commit[-2], arrayLast(commit)), rollback = coalesce(rollback[-2], arrayLast(rollback)), monitor_commit = coalesce(monitor_commit[-2], arrayLast(monitor_commit)), monitor_rollback = coalesce(monitor_rollback[-2], arrayLast(monitor_rollback)), verify_read = coalesce(verify_read[-2], arrayLast(verify_read))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(rate(aerospike_namespace_mrt_roll_forward_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))\nsum(rate(aerospike_namespace_mrt_roll_back_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))\nsum(\n    rate(aerospike_namespace_mrt_monitor_roll_forward_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval])\n)\nsum(rate(aerospike_namespace_mrt_monitor_roll_back_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))\nsum(rate(aerospike_namespace_mrt_verify_read_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))"
+    },
+    "16": {
+      "type": "data",
+      "title": "Error/Timeout (rate)",
+      "query": "timeseries a0 = avg(aerospike_namespace_mrt_roll_forward_error, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), a1 = avg(aerospike_namespace_mrt_roll_back_error, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), a2 = avg(aerospike_namespace_mrt_verify_read_error, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), a3 = avg(aerospike_namespace_mrt_monitor_roll_forward_error, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), a4 = avg(aerospike_namespace_mrt_monitor_roll_back_error, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd a1 = arrayDelta(a1)\n| fieldsAdd a1 = a1[] / (interval / 1s)\n| fieldsAdd a2 = arrayDelta(a2)\n| fieldsAdd a2 = a2[] / (interval / 1s)\n| fieldsAdd a3 = arrayDelta(a3)\n| fieldsAdd a3 = a3[] / (interval / 1s)\n| fieldsAdd a4 = arrayDelta(a4)\n| fieldsAdd a4 = a4[] / (interval / 1s)\n| fieldsAdd value = ((((a0[] + a1[]) + a2[]) + a3[]) + a4[])\n| fieldsRemove a0, a1, a2, a3, a4\n| summarize value = sum(value[]), by: { timeframe, interval }\n| fieldsRename error = value\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_roll_forward_timeout, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), a1 = avg(aerospike_namespace_mrt_roll_back_timeout, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), a2 = avg(aerospike_namespace_mrt_verify_read_timeout, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), a3 = avg(aerospike_namespace_mrt_monitor_roll_forward_timeout, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), a4 = avg(aerospike_namespace_mrt_monitor_roll_back_timeout, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd a1 = arrayDelta(a1)\n  | fieldsAdd a1 = a1[] / (interval / 1s)\n  | fieldsAdd a2 = arrayDelta(a2)\n  | fieldsAdd a2 = a2[] / (interval / 1s)\n  | fieldsAdd a3 = arrayDelta(a3)\n  | fieldsAdd a3 = a3[] / (interval / 1s)\n  | fieldsAdd a4 = arrayDelta(a4)\n  | fieldsAdd a4 = a4[] / (interval / 1s)\n  | fieldsAdd value = ((((a0[] + a1[]) + a2[]) + a3[]) + a4[])\n  | fieldsRemove a0, a1, a2, a3, a4\n  | summarize value = sum(value[]), by: { timeframe, interval }\n  | fieldsRename timeout = value\n]\n| fields error = coalesce(error[-2], arrayLast(error)), timeout = coalesce(timeout[-2], arrayLast(timeout))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(\n    rate(aerospike_namespace_mrt_roll_forward_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval])\n+\n    rate(aerospike_namespace_mrt_roll_back_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval])\n+\n    rate(aerospike_namespace_mrt_verify_read_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval])\n+\n    rate(aerospike_namespace_mrt_monitor_roll_forward_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval])\n+\n    rate(aerospike_namespace_mrt_monitor_roll_back_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval])\n)\n\n\n\nsum(\n    rate(aerospike_namespace_mrt_roll_forward_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval])\n+"
+    },
+    "17": {
+      "type": "data",
+      "title": "Monitors Active (total)",
+      "query": "timeseries value = sum(aerospike_namespace_mrt_monitors_active, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }, rollup: avg)\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(aerospike_namespace_mrt_monitors_active{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})"
+    },
+    "18": {
+      "type": "data",
+      "title": "Provisionals (total)",
+      "query": "timeseries value = sum(aerospike_namespace_mrt_provisionals, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }, rollup: avg)\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(aerospike_namespace_mrt_provisionals{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})"
+    },
+    "19": {
+      "type": "data",
+      "title": "Commit (total) (rate)",
+      "query": "timeseries a0 = avg(aerospike_namespace_mrt_roll_forward_success, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd value = a0[]\n| fieldsRemove a0\n| summarize value = sum(value[]), by: { timeframe, interval, ns }\n| fieldsRename success = value\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_roll_forward_error, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval, ns }\n  | fieldsRename error = value\n]\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_roll_forward_timeout, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval, ns }\n  | fieldsRename timeout = value\n]",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum by (ns) (rate(aerospike_namespace_mrt_roll_forward_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))\nsum by (ns) (rate(aerospike_namespace_mrt_roll_forward_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))\nsum by (ns) (rate(aerospike_namespace_mrt_roll_forward_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))"
+    },
+    "20": {
+      "type": "data",
+      "title": "Rollback (total) (rate)",
+      "query": "timeseries a0 = avg(aerospike_namespace_mrt_roll_back_success, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd value = a0[]\n| fieldsRemove a0\n| summarize value = sum(value[]), by: { timeframe, interval, ns }\n| fieldsRename success = value\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_roll_back_error, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval, ns }\n  | fieldsRename error = value\n]\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_roll_back_timeout, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval, ns }\n  | fieldsRename timeout = value\n]",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum by (ns) (rate(aerospike_namespace_mrt_roll_back_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))\nsum by (ns) (rate(aerospike_namespace_mrt_roll_back_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))\nsum by (ns) (rate(aerospike_namespace_mrt_roll_back_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))"
+    },
+    "21": {
+      "type": "data",
+      "title": "Monitor Commit (total) (rate)",
+      "query": "timeseries a0 = avg(aerospike_namespace_mrt_monitor_roll_forward_success, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd value = a0[]\n| fieldsRemove a0\n| summarize value = sum(value[]), by: { timeframe, interval, ns }\n| fieldsRename success = value\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_monitor_roll_forward_error, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval, ns }\n  | fieldsRename error = value\n]\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_monitor_roll_forward_timeout, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval, ns }\n  | fieldsRename timeout = value\n]",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum by (ns) (rate(aerospike_namespace_mrt_monitor_roll_forward_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))\nsum by (ns) (rate(aerospike_namespace_mrt_monitor_roll_forward_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))\nsum by (ns) (rate(aerospike_namespace_mrt_monitor_roll_forward_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))"
+    },
+    "22": {
+      "type": "data",
+      "title": "Monitor Rollback (total) (rate)",
+      "query": "timeseries a0 = avg(aerospike_namespace_mrt_monitor_roll_back_success, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd value = a0[]\n| fieldsRemove a0\n| summarize value = sum(value[]), by: { timeframe, interval, ns }\n| fieldsRename success = value\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_monitor_roll_back_error, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval, ns }\n  | fieldsRename error = value\n]\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_monitor_roll_back_timeout, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval, ns }\n  | fieldsRename timeout = value\n]",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum by (ns) (rate(aerospike_namespace_mrt_monitor_roll_back_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))\nsum by (ns) (rate(aerospike_namespace_mrt_monitor_roll_back_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))\nsum by (ns) (rate(aerospike_namespace_mrt_monitor_roll_back_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))"
+    },
+    "23": {
+      "type": "data",
+      "title": "Verify Read (total) (rate)",
+      "query": "timeseries a0 = avg(aerospike_namespace_mrt_verify_read_success, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd value = a0[]\n| fieldsRemove a0\n| summarize value = sum(value[]), by: { timeframe, interval, ns }\n| fieldsRename success = value\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_verify_read_error, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval, ns }\n  | fieldsRename error = value\n]\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_verify_read_timeout, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval, ns }\n  | fieldsRename timeout = value\n]",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum by (ns) (rate(aerospike_namespace_mrt_verify_read_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))\nsum by (ns) (rate(aerospike_namespace_mrt_verify_read_error{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))\nsum by (ns) (rate(aerospike_namespace_mrt_verify_read_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))"
+    },
+    "24": {
+      "type": "data",
+      "title": "Error (total) (rate)",
+      "query": "timeseries a0 = avg(aerospike_namespace_mrt_roll_forward_error, filter: { cluster_name == $cluster }), by: { cluster_name, ns, service, storage_engine }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd value = a0[]\n| fieldsRemove a0\n| summarize value = sum(value[]), by: { timeframe, interval, ns }\n| fieldsRename forward = value\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_roll_back_error, filter: { cluster_name == $cluster }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval, ns }\n  | fieldsRename rollback = value\n]\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_verify_read_error, filter: { cluster_name == $cluster }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval, ns }\n  | fieldsRename verify_read = value\n]\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_monitor_roll_forward_error, filter: { cluster_name == $cluster }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval, ns }\n  | fieldsRename roll_forward = value\n]\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_monitor_roll_back_error, filter: { cluster_name == $cluster }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval, ns }\n  | fieldsRename monitor_rollback = value\n]",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum by (ns) (rate(aerospike_namespace_mrt_roll_forward_error{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]))\nsum by (ns) (rate(aerospike_namespace_mrt_roll_back_error{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]))\nsum by (ns) (rate(aerospike_namespace_mrt_verify_read_error{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]))\nsum by (ns)(rate(aerospike_namespace_mrt_monitor_roll_forward_error{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]))\n\n\n\nsum by (ns) (rate(aerospike_namespace_mrt_monitor_roll_back_error{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]))"
+    },
+    "25": {
+      "type": "data",
+      "title": "Timeout (total) (rate)",
+      "query": "timeseries a0 = avg(aerospike_namespace_mrt_roll_forward_timeout, filter: { cluster_name == $cluster }), by: { cluster_name, ns, service, storage_engine }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd value = a0[]\n| fieldsRemove a0\n| summarize value = sum(value[]), by: { timeframe, interval, ns }\n| fieldsRename roll_forward = value\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_roll_back_timeout, filter: { cluster_name == $cluster }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval, ns }\n  | fieldsRename rollback = value\n]\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_verify_read_timeout, filter: { cluster_name == $cluster }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval, ns }\n  | fieldsRename verify_read = value\n]\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_monitor_roll_forward_timeout, filter: { cluster_name == $cluster }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval, ns }\n  | fieldsRename monitor_roll_forward = value\n]\n| append [\n  timeseries a0 = avg(aerospike_namespace_mrt_monitor_roll_back_timeout, filter: { cluster_name == $cluster }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval, ns }\n  | fieldsRename monitor_rollback = value\n]",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum by (ns) (rate(aerospike_namespace_mrt_roll_forward_timeout{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]))\nsum by (ns) (rate(aerospike_namespace_mrt_roll_back_timeout{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]))\nsum by (ns) (rate(aerospike_namespace_mrt_verify_read_timeout{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]))\nsum by (ns) (rate(aerospike_namespace_mrt_monitor_roll_forward_timeout{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]))\nsum by (ns) (rate(aerospike_namespace_mrt_monitor_roll_back_timeout{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]))"
+    },
+    "26": {
+      "type": "data",
+      "title": "Blocked / Mistmatch (total) (rate)",
+      "query": "timeseries a0 = avg(aerospike_namespace_fail_mrt_blocked, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd value = a0[]\n| fieldsRemove a0\n| summarize value = sum(value[]), by: { timeframe, interval, ns }\n| fieldsRename blocked = value\n| append [\n  timeseries a0 = avg(aerospike_namespace_fail_mrt_version_mismatch, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n  | fieldsAdd a0 = arrayDelta(a0)\n  | fieldsAdd a0 = a0[] / (interval / 1s)\n  | fieldsAdd value = a0[]\n  | fieldsRemove a0\n  | summarize value = sum(value[]), by: { timeframe, interval, ns }\n  | fieldsRename version_mismatch = value\n]",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum by (ns) (rate(aerospike_namespace_fail_mrt_blocked{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))\nsum by (ns) (rate(aerospike_namespace_fail_mrt_version_mismatch{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))"
+    },
+    "27": {
+      "type": "data",
+      "title": "Monitors Active ",
+      "query": "timeseries value = avg(aerospike_namespace_mrt_monitors_active, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\n(aerospike_namespace_mrt_monitors_active{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})"
+    },
+    "28": {
+      "type": "data",
+      "title": "Monitor Tombstone Creates (total) (rate)",
+      "query": "timeseries a0 = avg(aerospike_namespace_mrt_monitor_roll_tombstone_creates, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd value = a0[]\n| fieldsRemove a0\n| summarize value = sum(value[]), by: { timeframe, interval, ns }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum by (ns) (rate(aerospike_namespace_mrt_monitor_roll_tombstone_creates{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"}[$__rate_interval]))"
+    },
+    "29": {
+      "type": "data",
+      "title": "Provisionals",
+      "query": "timeseries value = avg(aerospike_namespace_mrt_provisionals, filter: { cluster_name == $cluster and in(service, array($node)) and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\n(aerospike_namespace_mrt_provisionals{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", ns=~\"$namespace|$^\"})"
+    }
+  },
+  "layouts": {
+    "0": {
+      "x": 0,
+      "y": 0,
+      "w": 24,
+      "h": 2
+    },
+    "1": {
+      "x": 0,
+      "y": 2,
+      "w": 24,
+      "h": 1
+    },
+    "2": {
+      "x": 0,
+      "y": 3,
+      "w": 13,
+      "h": 4
+    },
+    "3": {
+      "x": 13,
+      "y": 3,
+      "w": 5,
+      "h": 4
+    },
+    "4": {
+      "x": 18,
+      "y": 3,
+      "w": 3,
+      "h": 4
+    },
+    "5": {
+      "x": 21,
+      "y": 3,
+      "w": 3,
+      "h": 4
+    },
+    "6": {
+      "x": 0,
+      "y": 7,
+      "w": 24,
+      "h": 1
+    },
+    "7": {
+      "x": 0,
+      "y": 8,
+      "w": 5,
+      "h": 3
+    },
+    "8": {
+      "x": 5,
+      "y": 8,
+      "w": 5,
+      "h": 3
+    },
+    "9": {
+      "x": 10,
+      "y": 8,
+      "w": 5,
+      "h": 3
+    },
+    "10": {
+      "x": 15,
+      "y": 8,
+      "w": 5,
+      "h": 3
+    },
+    "11": {
+      "x": 20,
+      "y": 8,
+      "w": 4,
+      "h": 3
+    },
+    "12": {
+      "x": 0,
+      "y": 11,
+      "w": 12,
+      "h": 4
+    },
+    "13": {
+      "x": 12,
+      "y": 11,
+      "w": 12,
+      "h": 4
+    },
+    "14": {
+      "x": 0,
+      "y": 15,
+      "w": 24,
+      "h": 1
+    },
+    "15": {
+      "x": 0,
+      "y": 16,
+      "w": 13,
+      "h": 4
+    },
+    "16": {
+      "x": 13,
+      "y": 16,
+      "w": 5,
+      "h": 4
+    },
+    "17": {
+      "x": 18,
+      "y": 16,
+      "w": 3,
+      "h": 4
+    },
+    "18": {
+      "x": 21,
+      "y": 16,
+      "w": 3,
+      "h": 4
+    },
+    "19": {
+      "x": 0,
+      "y": 20,
+      "w": 12,
+      "h": 5
+    },
+    "20": {
+      "x": 12,
+      "y": 20,
+      "w": 12,
+      "h": 5
+    },
+    "21": {
+      "x": 0,
+      "y": 25,
+      "w": 8,
+      "h": 5
+    },
+    "22": {
+      "x": 8,
+      "y": 25,
+      "w": 8,
+      "h": 5
+    },
+    "23": {
+      "x": 16,
+      "y": 25,
+      "w": 8,
+      "h": 5
+    },
+    "24": {
+      "x": 0,
+      "y": 30,
+      "w": 12,
+      "h": 5
+    },
+    "25": {
+      "x": 12,
+      "y": 30,
+      "w": 12,
+      "h": 5
+    },
+    "26": {
+      "x": 0,
+      "y": 35,
+      "w": 12,
+      "h": 5
+    },
+    "27": {
+      "x": 12,
+      "y": 35,
+      "w": 12,
+      "h": 5
+    },
+    "28": {
+      "x": 0,
+      "y": 40,
+      "w": 12,
+      "h": 5
+    },
+    "29": {
+      "x": 12,
+      "y": 40,
+      "w": 12,
+      "h": 5
+    }
+  }
+}

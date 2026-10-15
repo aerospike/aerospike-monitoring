@@ -1,0 +1,183 @@
+{
+  "version": 21,
+  "variables": [
+    {
+      "version": 2,
+      "key": "user",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(aerospike_users_conns_in_use), by: { user }\n| fields user",
+      "multiple": true,
+      "defaultValue": "3420b2ac-f1cf-4b24-b62d-61ba1ba8ed05*"
+    },
+    {
+      "version": 2,
+      "key": "cluster",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(aerospike_node_stats_uptime), by: { cluster_name }\n| fields cluster_name",
+      "multiple": false
+    },
+    {
+      "version": 2,
+      "key": "node",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(aerospike_node_stats_uptime, filter: { cluster_name == $cluster }), by: { service }\n| fields service",
+      "multiple": true,
+      "defaultValue": "3420b2ac-f1cf-4b24-b62d-61ba1ba8ed05*"
+    }
+  ],
+  "tiles": {
+    "0": {
+      "type": "markdown",
+      "content": "**Users View**: Per-user connections, TPS and quotas. Empty unless security is enabled with users configured. A tile's description shows its equivalent Prometheus query.\n\n**Why it may be empty:** the Aerospike exporter publishes the per-user metrics this dashboard reads (`aerospike_users_*`) only for clusters with security enabled and users configured; without them every tile and the user picker stay empty."
+    },
+    "1": {
+      "type": "data",
+      "title": "Connections",
+      "query": "timeseries value = sum(aerospike_users_conns_in_use, filter: { cluster_name == $cluster and in(service, array($node)) and in(user, array($user)) }, rollup: avg), by: { user }\n| fields user, value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "table",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(aerospike_users_conns_in_use{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", user=~\"$user\"}) by (user)"
+    },
+    "2": {
+      "type": "data",
+      "title": "Read Single Record TPS",
+      "query": "timeseries value = sum(aerospike_users_read_single_record_tps, filter: { cluster_name == $cluster and in(service, array($node)) and in(user, array($user)) }, rollup: avg), by: { user }\n| fields user, value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "table",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(aerospike_users_read_single_record_tps{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", user=~\"$user\"}) by (user)"
+    },
+    "3": {
+      "type": "data",
+      "title": "Write Single Record TPS",
+      "query": "timeseries value = sum(aerospike_users_write_single_record_tps, filter: { cluster_name == $cluster and in(service, array($node)) and in(user, array($user)) }, rollup: avg), by: { user }\n| fields user, value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "table",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(aerospike_users_write_single_record_tps{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", user=~\"$user\"}) by (user)"
+    },
+    "4": {
+      "type": "data",
+      "title": "Read Scan RPS",
+      "query": "timeseries value = sum(aerospike_users_read_scan_query_rps, filter: { cluster_name == $cluster and in(service, array($node)) and in(user, array($user)) }, rollup: avg), by: { user }\n| fields user, value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "table",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(aerospike_users_read_scan_query_rps{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", user=~\"$user\"}) by (user)"
+    },
+    "5": {
+      "type": "data",
+      "title": "Write Scan RPS",
+      "query": "timeseries value = sum(aerospike_users_write_scan_query_rps, filter: { cluster_name == $cluster and in(service, array($node)) and in(user, array($user)) }, rollup: avg), by: { user }\n| fields user, value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "table",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(aerospike_users_write_scan_query_rps{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", user=~\"$user\"}) by (user)"
+    },
+    "6": {
+      "type": "data",
+      "title": "Limitless Read Scan/Query",
+      "query": "timeseries value = sum(aerospike_users_limitless_read_scan_query, filter: { cluster_name == $cluster and in(service, array($node)) and in(user, array($user)) }, rollup: avg), by: { user }\n| fields user, value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "table",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(aerospike_users_limitless_read_scan_query{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", user=~\"$user\"}) by (user)"
+    },
+    "7": {
+      "type": "data",
+      "title": "Limitless Write Scan/Query",
+      "query": "timeseries value = sum(aerospike_users_limitless_write_scan_query, filter: { cluster_name == $cluster and in(service, array($node)) and in(user, array($user)) }, rollup: avg), by: { user }\n| fields user, value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "table",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(aerospike_users_limitless_write_scan_query{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", user=~\"$user\"}) by (user)"
+    },
+    "8": {
+      "type": "data",
+      "title": "Read Quota",
+      "query": "timeseries value = sum(aerospike_users_read_quota, filter: { cluster_name == $cluster and in(service, array($node)) and in(user, array($user)) }, rollup: avg), by: { user }\n| fields user, value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "table",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(aerospike_users_read_quota{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", user=~\"$user\"}) by (user)"
+    },
+    "9": {
+      "type": "data",
+      "title": "Write Quota",
+      "query": "timeseries value = sum(aerospike_users_write_quota, filter: { cluster_name == $cluster and in(service, array($node)) and in(user, array($user)) }, rollup: avg), by: { user }\n| fields user, value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "table",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(aerospike_users_write_quota{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", user=~\"$user\"}) by (user)"
+    }
+  },
+  "layouts": {
+    "0": {
+      "x": 0,
+      "y": 0,
+      "w": 24,
+      "h": 4
+    },
+    "1": {
+      "x": 0,
+      "y": 4,
+      "w": 24,
+      "h": 10
+    },
+    "2": {
+      "x": 0,
+      "y": 14,
+      "w": 12,
+      "h": 10
+    },
+    "3": {
+      "x": 12,
+      "y": 14,
+      "w": 12,
+      "h": 10
+    },
+    "4": {
+      "x": 0,
+      "y": 24,
+      "w": 12,
+      "h": 10
+    },
+    "5": {
+      "x": 12,
+      "y": 24,
+      "w": 12,
+      "h": 10
+    },
+    "6": {
+      "x": 0,
+      "y": 34,
+      "w": 12,
+      "h": 10
+    },
+    "7": {
+      "x": 12,
+      "y": 34,
+      "w": 12,
+      "h": 10
+    },
+    "8": {
+      "x": 0,
+      "y": 44,
+      "w": 12,
+      "h": 5
+    },
+    "9": {
+      "x": 12,
+      "y": 44,
+      "w": 12,
+      "h": 5
+    }
+  }
+}

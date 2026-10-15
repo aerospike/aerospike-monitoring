@@ -1,0 +1,163 @@
+{
+  "version": 21,
+  "variables": [
+    {
+      "version": 2,
+      "key": "cluster",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(aerospike_node_stats_uptime), by: { cluster_name }\n| fields cluster_name",
+      "multiple": false
+    },
+    {
+      "version": 2,
+      "key": "node",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(aerospike_node_stats_uptime, filter: { cluster_name == $cluster }), by: { service }\n| fields service",
+      "multiple": true,
+      "defaultValue": "3420b2ac-f1cf-4b24-b62d-61ba1ba8ed05*"
+    },
+    {
+      "version": 2,
+      "key": "namespace",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(aerospike_namespace_objects, filter: { cluster_name == $cluster and in(service, array($node)) }), by: { ns }\n| fields ns",
+      "multiple": true,
+      "defaultValue": "3420b2ac-f1cf-4b24-b62d-61ba1ba8ed05*"
+    }
+  ],
+  "tiles": {
+    "0": {
+      "type": "markdown",
+      "content": "**Unique Data Usage**: Unique data size per namespace. A tile's description shows its equivalent Prometheus query."
+    },
+    "1": {
+      "type": "markdown",
+      "content": "## All Clusters - Summary "
+    },
+    "2": {
+      "type": "markdown",
+      "content": "### All Cluster - Master Objects (total)"
+    },
+    "3": {
+      "type": "markdown",
+      "content": "### All Clusters - Unique Data Bytes (total)"
+    },
+    "4": {
+      "type": "markdown",
+      "content": "### Clusters wise - Historical - Usage Bytes"
+    },
+    "5": {
+      "type": "markdown",
+      "content": "## Cluster - $cluster"
+    },
+    "6": {
+      "type": "markdown",
+      "content": "### Cluster - All Master Objects"
+    },
+    "7": {
+      "type": "markdown",
+      "content": "### Cluster - Unique Data Bytes "
+    },
+    "8": {
+      "type": "markdown",
+      "content": "## Historical - Usage Bytes - $cluster"
+    },
+    "9": {
+      "type": "markdown",
+      "content": "### Historical - Usage Bytes"
+    },
+    "10": {
+      "type": "markdown",
+      "content": "## Namespace - $cluster"
+    },
+    "11": {
+      "type": "data",
+      "title": "Namespace - $namespace",
+      "query": "timeseries master_objects = sum(aerospike_namespace_master_objects, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rollup: avg), by: { ns }\n| append [\n  timeseries a0 = sum(aerospike_namespace_data_used_bytes, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rollup: avg), a1 = sum(aerospike_namespace_data_compression_ratio, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rollup: avg), a2 = sum(aerospike_namespace_effective_replication_factor, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rollup: avg), by: { service, ns }\n  | fieldsAdd value = ((a0[] / a1[]) / a2[])\n  | fieldsRemove a0, a1, a2\n  | summarize value = sum(value[]), by: { timeframe, interval, ns }\n  | summarize value = sum(value[]), by: { timeframe, interval }\n  | fieldsRename unique_bytes = value\n]\n| fields ns, master_objects = coalesce(master_objects[-2], arrayLast(master_objects)), unique_bytes = coalesce(unique_bytes[-2], arrayLast(unique_bytes))",
+      "visualization": "table",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\n(sum (aerospike_namespace_master_objects{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}) by (ns) )  \n(sum((sum((sum ( (((aerospike_namespace_data_used_bytes {job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"} ) /\naerospike_namespace_data_compression_ratio {job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}\n) \n/aerospike_namespace_effective_replication_factor {job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}\n) \n) by (service, ns))  ) by (ns))) \n\n) # end paranthesis for whole sum"
+    }
+  },
+  "layouts": {
+    "0": {
+      "x": 0,
+      "y": 0,
+      "w": 24,
+      "h": 2
+    },
+    "1": {
+      "x": 0,
+      "y": 2,
+      "w": 24,
+      "h": 1
+    },
+    "2": {
+      "x": 0,
+      "y": 3,
+      "w": 12,
+      "h": 4
+    },
+    "3": {
+      "x": 12,
+      "y": 3,
+      "w": 12,
+      "h": 4
+    },
+    "4": {
+      "x": 0,
+      "y": 7,
+      "w": 24,
+      "h": 7
+    },
+    "5": {
+      "x": 0,
+      "y": 14,
+      "w": 24,
+      "h": 1
+    },
+    "6": {
+      "x": 0,
+      "y": 15,
+      "w": 12,
+      "h": 5
+    },
+    "7": {
+      "x": 12,
+      "y": 15,
+      "w": 12,
+      "h": 5
+    },
+    "8": {
+      "x": 0,
+      "y": 20,
+      "w": 24,
+      "h": 1
+    },
+    "9": {
+      "x": 0,
+      "y": 21,
+      "w": 24,
+      "h": 11
+    },
+    "10": {
+      "x": 0,
+      "y": 32,
+      "w": 24,
+      "h": 1
+    },
+    "11": {
+      "x": 0,
+      "y": 33,
+      "w": 24,
+      "h": 3
+    }
+  }
+}

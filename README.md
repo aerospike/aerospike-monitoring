@@ -39,6 +39,14 @@ See [documentation](examples/docker/).
 New Relic, or Cloudwatch. See the [OTEL reference architecture](examples/otel/) for
 more details. 
 
+### Dynatrace
+
+[Dashboards for Dynatrace](config/dynatrace/): the same dashboards, built for
+Dynatrace's Dashboards app (DQL on Grail), reading the exporters' metrics
+shipped by an OpenTelemetry Collector. A guided installer creates and shares
+them, with a launchpad that says which dashboard to open when. See
+[its guide](config/dynatrace/README.md).
+
 ### AeroLab
 
 Deploy monitoring stack using [AeroLab](https://github.com/aerospike/aerolab).  See [documentation](examples/aerolab/).

@@ -1,0 +1,433 @@
+{
+  "version": 21,
+  "variables": [
+    {
+      "version": 2,
+      "key": "cluster",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(aerospike_node_stats_uptime), by: { cluster_name }\n| fields cluster_name",
+      "multiple": false
+    },
+    {
+      "version": 2,
+      "key": "namespace",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(aerospike_sindex_entries, filter: { cluster_name == $cluster }), by: { ns }\n| fields ns",
+      "multiple": true,
+      "defaultValue": "3420b2ac-f1cf-4b24-b62d-61ba1ba8ed05*"
+    }
+  ],
+  "tiles": {
+    "0": {
+      "type": "markdown",
+      "content": "**Secondary Index Summary**: All secondary indexes of a namespace: entries, memory, garbage collection, queries. A tile's description shows its equivalent Prometheus query."
+    },
+    "1": {
+      "type": "markdown",
+      "content": "## Cluster Overview"
+    },
+    "2": {
+      "type": "data",
+      "title": "Sindex Count (total)",
+      "query": "timeseries value = avg(aerospike_sindex_entries, filter: { cluster_name == $cluster }), by: { cluster_name, service, sindex }\n| summarize value = count(), by: { sindex } | fieldsAdd value = 1\n| summarize value = count()",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\ncount(group by (sindex) (aerospike_sindex_entries{job=\"$job_name\", cluster_name=~\"$cluster\"}))"
+    },
+    "3": {
+      "type": "data",
+      "title": "Memory Used (total) (bytes)",
+      "query": "timeseries value = sum(aerospike_namespace_sindex_used_bytes, filter: { cluster_name == $cluster }, rollup: avg)\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum (aerospike_namespace_sindex_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\"})"
+    },
+    "4": {
+      "type": "data",
+      "title": "Memory Used (bytes)",
+      "query": "timeseries value = min(aerospike_sindex_used_bytes, filter: { cluster_name == $cluster })\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "categoricalBarChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nmin (aerospike_sindex_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\"})\navg (aerospike_sindex_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\"})\nmax (aerospike_sindex_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\"})"
+    },
+    "5": {
+      "type": "data",
+      "title": "Garbage Collected (total)  (rate)",
+      "query": "timeseries value = sum(aerospike_namespace_sindex_gc_cleaned, filter: { cluster_name == $cluster }, rate: 1s)\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum (rate(aerospike_namespace_sindex_gc_cleaned{job=\"$job_name\", cluster_name=~\"$cluster\"}[$__rate_interval]))"
+    },
+    "6": {
+      "type": "data",
+      "title": "Long Queries (max) (rate / one hour)",
+      "query": "timeseries a0 = max(aerospike_namespace_si_query_long_basic_complete, filter: { cluster_name == $cluster }, rate: 1s), a1 = max(aerospike_namespace_si_query_long_basic_abort, filter: { cluster_name == $cluster }, rate: 1s), a2 = max(aerospike_namespace_si_query_long_basic_error, filter: { cluster_name == $cluster }, rate: 1s)\n| fieldsAdd completed = a0[], aborted = a1[], errors = a2[]\n| fieldsRemove a0, a1, a2\n| fields completed = coalesce(completed[-2], arrayLast(completed)), aborted = coalesce(aborted[-2], arrayLast(aborted)), errors = coalesce(errors[-2], arrayLast(errors))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nmax (rate(aerospike_namespace_si_query_long_basic_complete{job=\"$job_name\", cluster_name=~\"$cluster\"}[1h]))\nmax (rate(aerospike_namespace_si_query_long_basic_abort{job=\"$job_name\", cluster_name=~\"$cluster\"}[1h]))\nmax (rate(aerospike_namespace_si_query_long_basic_error{job=\"$job_name\", cluster_name=~\"$cluster\"}[1h]))"
+    },
+    "7": {
+      "type": "data",
+      "title": "Short Queries (max) (rate / one hour)",
+      "query": "timeseries a0 = max(aerospike_namespace_si_query_short_basic_complete, filter: { cluster_name == $cluster }, rate: 1s), a1 = max(aerospike_namespace_si_query_short_basic_timeout, filter: { cluster_name == $cluster }, rate: 1s), a2 = max(aerospike_namespace_si_query_short_basic_error, filter: { cluster_name == $cluster }, rate: 1s)\n| fieldsAdd completed = a0[], timeout = a1[], errors = a2[]\n| fieldsRemove a0, a1, a2\n| fields completed = coalesce(completed[-2], arrayLast(completed)), timeout = coalesce(timeout[-2], arrayLast(timeout)), errors = coalesce(errors[-2], arrayLast(errors))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nmax (rate(aerospike_namespace_si_query_short_basic_complete{job=\"$job_name\", cluster_name=~\"$cluster\"}[1h]))\nmax (rate(aerospike_namespace_si_query_short_basic_timeout{job=\"$job_name\", cluster_name=~\"$cluster\"}[1h]))\nmax (rate(aerospike_namespace_si_query_short_basic_error{job=\"$job_name\", cluster_name=~\"$cluster\"}[1h]))"
+    },
+    "8": {
+      "type": "data",
+      "title": "UDF Queries (max) (rate / one hour)",
+      "query": "timeseries a0 = max(aerospike_namespace_si_query_udf_bg_complete, filter: { cluster_name == $cluster }, rate: 1s), a1 = max(aerospike_namespace_si_query_udf_bg_abort, filter: { cluster_name == $cluster }, rate: 1s), a2 = max(aerospike_namespace_si_query_udf_bg_error, filter: { cluster_name == $cluster }, rate: 1s)\n| fieldsAdd completed = a0[], aborted = a1[], errors = a2[]\n| fieldsRemove a0, a1, a2\n| fields completed = coalesce(completed[-2], arrayLast(completed)), aborted = coalesce(aborted[-2], arrayLast(aborted)), errors = coalesce(errors[-2], arrayLast(errors))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nmax (rate(aerospike_namespace_si_query_udf_bg_complete{job=\"$job_name\", cluster_name=~\"$cluster\"}[1h]))\nmax (rate(aerospike_namespace_si_query_udf_bg_abort{job=\"$job_name\", cluster_name=~\"$cluster\"}[1h]))\nmax (rate(aerospike_namespace_si_query_udf_bg_error{job=\"$job_name\", cluster_name=~\"$cluster\"}[1h]))"
+    },
+    "9": {
+      "type": "data",
+      "title": "Query Aggregations (max) (rate / one hour)",
+      "query": "timeseries a0 = max(aerospike_namespace_si_query_aggr_complete, filter: { cluster_name == $cluster }, rate: 1s), a1 = max(aerospike_namespace_si_query_aggr_abort, filter: { cluster_name == $cluster }, rate: 1s), a2 = max(aerospike_namespace_si_query_aggr_error, filter: { cluster_name == $cluster }, rate: 1s)\n| fieldsAdd completed = a0[], aborted = a1[], errors = a2[]\n| fieldsRemove a0, a1, a2\n| fields completed = coalesce(completed[-2], arrayLast(completed)), aborted = coalesce(aborted[-2], arrayLast(aborted)), errors = coalesce(errors[-2], arrayLast(errors))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nmax (rate(aerospike_namespace_si_query_aggr_complete{job=\"$job_name\", cluster_name=~\"$cluster\"}[1h]))\nmax (rate(aerospike_namespace_si_query_aggr_abort{job=\"$job_name\", cluster_name=~\"$cluster\"}[1h]))\nmax (rate(aerospike_namespace_si_query_aggr_error{job=\"$job_name\", cluster_name=~\"$cluster\"}[1h]))"
+    },
+    "10": {
+      "type": "data",
+      "title": "Ops Background Queries (max) (rate / one hour)",
+      "query": "timeseries a0 = max(aerospike_namespace_si_query_ops_bg_complete, filter: { cluster_name == $cluster }, rate: 1s), a1 = max(aerospike_namespace_si_query_ops_bg_abort, filter: { cluster_name == $cluster }, rate: 1s), a2 = max(aerospike_namespace_si_query_ops_bg_error, filter: { cluster_name == $cluster }, rate: 1s)\n| fieldsAdd completed = a0[], aborted = a1[], errors = a2[]\n| fieldsRemove a0, a1, a2\n| fields completed = coalesce(completed[-2], arrayLast(completed)), aborted = coalesce(aborted[-2], arrayLast(aborted)), errors = coalesce(errors[-2], arrayLast(errors))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nmax (rate(aerospike_namespace_si_query_ops_bg_complete{job=\"$job_name\", cluster_name=~\"$cluster\"}[1h]))\nmax (rate(aerospike_namespace_si_query_ops_bg_abort{job=\"$job_name\", cluster_name=~\"$cluster\"}[1h]))\nmax (rate(aerospike_namespace_si_query_ops_bg_error{job=\"$job_name\", cluster_name=~\"$cluster\"}[1h]))"
+    },
+    "11": {
+      "type": "markdown",
+      "content": "## Namespace - $namespace"
+    },
+    "12": {
+      "type": "data",
+      "title": "Sindex Count",
+      "query": "timeseries value = avg(aerospike_namespace_sindex_used_bytes, filter: { cluster_name == $cluster and in(ns, array($namespace)) and storage_engine == \"pmem\" }), by: { cluster_name, ns, service, sindex, storage_engine }\n| summarize value = count(), by: { sindex } | fieldsAdd value = 1\n| summarize value = count()\n| fieldsRename pmem = value\n| append [\n  timeseries value = avg(aerospike_namespace_sindex_used_bytes, filter: { cluster_name == $cluster and in(ns, array($namespace)) and storage_engine == \"device\" }), by: { cluster_name, ns, service, sindex, storage_engine }\n  | summarize value = count(), by: { sindex } | fieldsAdd value = 1\n  | summarize value = count()\n  | fieldsRename device = value\n]\n| append [\n  timeseries value = avg(aerospike_namespace_sindex_used_bytes, filter: { cluster_name == $cluster and in(ns, array($namespace)) and storage_engine == \"memory\" }), by: { cluster_name, ns, service, sindex, storage_engine }\n  | summarize value = count(), by: { sindex } | fieldsAdd value = 1\n  | summarize value = count()\n  | fieldsRename memory = value\n]",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\ncount (group by (sindex)(aerospike_namespace_sindex_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", storage_engine=\"pmem\"}))\ncount (group by (sindex)(aerospike_namespace_sindex_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", storage_engine=\"device\"}))\ncount (group by (sindex)(aerospike_namespace_sindex_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", storage_engine=\"memory\"}))"
+    },
+    "13": {
+      "type": "data",
+      "title": "Memory Used (bytes)",
+      "query": "timeseries value = sum(aerospike_namespace_sindex_used_bytes, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rollup: avg)\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(aerospike_namespace_sindex_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})"
+    },
+    "14": {
+      "type": "data",
+      "title": "% Memory Used ",
+      "query": "timeseries value = avg(aerospike_namespace_sindex_mounts_used_pct, filter: { cluster_name == $cluster })\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\navg (aerospike_namespace_sindex_mounts_used_pct{job=\"$job_name\", cluster_name=~\"$cluster\"})"
+    },
+    "15": {
+      "type": "data",
+      "title": "Budget (bytes)",
+      "query": "timeseries value = sum(aerospike_namespace_sindex_type_mounts_budget, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rollup: avg)\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum (aerospike_namespace_sindex_type_mounts_budget{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})\nsum (aerospike_namespace_sindex_type_mounts_size_limit{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})"
+    },
+    "16": {
+      "type": "data",
+      "title": "Garbage Collected (rate)",
+      "query": "timeseries value = sum(aerospike_namespace_sindex_gc_cleaned, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rate: 1s), by: { ns }\n| fields ns, value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "table",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum by (ns) (rate(aerospike_namespace_sindex_gc_cleaned{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}[$__rate_interval]))"
+    },
+    "17": {
+      "type": "data",
+      "title": "Memory Used (bytes)",
+      "query": "timeseries value = avg(aerospike_namespace_sindex_used_bytes, filter: { cluster_name == $cluster and in(ns, array($namespace)) }), by: { cluster_name, ns, service, storage_engine }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\naerospike_namespace_sindex_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}"
+    },
+    "18": {
+      "type": "data",
+      "title": "Budget (bytes)",
+      "query": "timeseries value = avg(aerospike_namespace_sindex_type_mounts_budget, filter: { cluster_name == $cluster and in(ns, array($namespace)) }), by: { cluster_name, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\n(aerospike_namespace_sindex_type_mounts_budget{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})\n(aerospike_namespace_sindex_type_mounts_size_limit{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})"
+    },
+    "19": {
+      "type": "data",
+      "title": "Entries",
+      "query": "timeseries value = avg(aerospike_sindex_entries, filter: { cluster_name == $cluster and in(ns, array($namespace)) }), by: { cluster_name, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\naerospike_sindex_entries{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}"
+    },
+    "20": {
+      "type": "data",
+      "title": "Entries Per Record",
+      "query": "timeseries value = avg(aerospike_sindex_entries_per_rec, filter: { cluster_name == $cluster and in(ns, array($namespace)) }), by: { cluster_name, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\naerospike_sindex_entries_per_rec{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}"
+    },
+    "21": {
+      "type": "data",
+      "title": "Entries Per Bin",
+      "query": "timeseries value = avg(aerospike_sindex_entries_per_bval, filter: { cluster_name == $cluster and in(ns, array($namespace)) }), by: { cluster_name, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\naerospike_sindex_entries_per_bval{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}"
+    },
+    "22": {
+      "type": "data",
+      "title": "Garbage Collected (rate)",
+      "query": "timeseries value = sum(aerospike_namespace_sindex_gc_cleaned, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rate: 1s), by: { cluster_name, ns, service, storage_engine }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nrate(aerospike_namespace_sindex_gc_cleaned{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}[$__rate_interval])"
+    },
+    "23": {
+      "type": "data",
+      "title": "Long Queries (rate)",
+      "query": "timeseries a0 = sum(aerospike_namespace_si_query_long_basic_complete, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rate: 1s), a1 = sum(aerospike_namespace_si_query_long_basic_abort, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rate: 1s), a2 = sum(aerospike_namespace_si_query_long_basic_error, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rate: 1s), by: { cluster_name, ns, service, storage_engine }\n| fieldsAdd completed = a0[], aborted = a1[], errors = a2[]\n| fieldsRemove a0, a1, a2",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nrate(aerospike_namespace_si_query_long_basic_complete{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}[$__rate_interval])\nrate(aerospike_namespace_si_query_long_basic_abort{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}[$__rate_interval])\nrate(aerospike_namespace_si_query_long_basic_error{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}[$__rate_interval])"
+    },
+    "24": {
+      "type": "data",
+      "title": "Short Queries (rate)",
+      "query": "timeseries a0 = sum(aerospike_namespace_si_query_short_basic_complete, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rate: 1s), a1 = sum(aerospike_namespace_si_query_short_basic_timeout, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rate: 1s), a2 = sum(aerospike_namespace_si_query_short_basic_error, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rate: 1s), by: { cluster_name, ns, service, storage_engine }\n| fieldsAdd completed = a0[], timeout = a1[], errors = a2[]\n| fieldsRemove a0, a1, a2",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nrate(aerospike_namespace_si_query_short_basic_complete{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}[$__rate_interval])\nrate(aerospike_namespace_si_query_short_basic_timeout{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}[$__rate_interval])\nrate(aerospike_namespace_si_query_short_basic_error{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}[$__rate_interval])"
+    },
+    "25": {
+      "type": "data",
+      "title": "Ops Background Queries (rate)",
+      "query": "timeseries a0 = sum(aerospike_namespace_si_query_ops_bg_complete, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rate: 1s), a1 = sum(aerospike_namespace_si_query_ops_bg_abort, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rate: 1s), a2 = sum(aerospike_namespace_si_query_ops_bg_error, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rate: 1s), by: { cluster_name, ns, service, storage_engine }\n| fieldsAdd completed = a0[], aborted = a1[], errors = a2[]\n| fieldsRemove a0, a1, a2",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nrate(aerospike_namespace_si_query_ops_bg_complete{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}[$__rate_interval])\nrate(aerospike_namespace_si_query_ops_bg_abort{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}[$__rate_interval])\nrate(aerospike_namespace_si_query_ops_bg_error{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}[$__rate_interval])"
+    },
+    "26": {
+      "type": "data",
+      "title": "UDF Queries (rate)",
+      "query": "timeseries a0 = sum(aerospike_namespace_si_query_udf_bg_complete, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rate: 1s), a1 = sum(aerospike_namespace_si_query_udf_bg_abort, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rate: 1s), a2 = sum(aerospike_namespace_si_query_udf_bg_error, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rate: 1s), by: { cluster_name, ns, service, storage_engine }\n| fieldsAdd completed = a0[], aborted = a1[], errors = a2[]\n| fieldsRemove a0, a1, a2",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nrate(aerospike_namespace_si_query_udf_bg_complete{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}[$__rate_interval])\nrate(aerospike_namespace_si_query_udf_bg_abort{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}[$__rate_interval])\nrate(aerospike_namespace_si_query_udf_bg_error{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}[$__rate_interval])"
+    },
+    "27": {
+      "type": "data",
+      "title": "Query Aggregations (rate)",
+      "query": "timeseries a0 = sum(aerospike_namespace_si_query_aggr_complete, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rate: 1s), a1 = sum(aerospike_namespace_si_query_aggr_abort, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rate: 1s), a2 = sum(aerospike_namespace_si_query_aggr_error, filter: { cluster_name == $cluster and in(ns, array($namespace)) }, rate: 1s), by: { cluster_name, ns, service, storage_engine }\n| fieldsAdd completed = a0[], aborted = a1[], errors = a2[]\n| fieldsRemove a0, a1, a2",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nrate(aerospike_namespace_si_query_aggr_complete{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}[$__rate_interval])\nrate(aerospike_namespace_si_query_aggr_abort{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}[$__rate_interval])\nrate(aerospike_namespace_si_query_aggr_error{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"}[$__rate_interval])"
+    }
+  },
+  "layouts": {
+    "0": {
+      "x": 0,
+      "y": 0,
+      "w": 24,
+      "h": 2
+    },
+    "1": {
+      "x": 0,
+      "y": 2,
+      "w": 24,
+      "h": 1
+    },
+    "2": {
+      "x": 0,
+      "y": 3,
+      "w": 8,
+      "h": 4
+    },
+    "3": {
+      "x": 8,
+      "y": 3,
+      "w": 5,
+      "h": 4
+    },
+    "4": {
+      "x": 13,
+      "y": 3,
+      "w": 6,
+      "h": 4
+    },
+    "5": {
+      "x": 19,
+      "y": 3,
+      "w": 5,
+      "h": 4
+    },
+    "6": {
+      "x": 0,
+      "y": 7,
+      "w": 8,
+      "h": 4
+    },
+    "7": {
+      "x": 8,
+      "y": 7,
+      "w": 8,
+      "h": 4
+    },
+    "8": {
+      "x": 16,
+      "y": 7,
+      "w": 8,
+      "h": 4
+    },
+    "9": {
+      "x": 0,
+      "y": 11,
+      "w": 8,
+      "h": 4
+    },
+    "10": {
+      "x": 8,
+      "y": 11,
+      "w": 8,
+      "h": 4
+    },
+    "11": {
+      "x": 0,
+      "y": 15,
+      "w": 24,
+      "h": 1
+    },
+    "12": {
+      "x": 0,
+      "y": 16,
+      "w": 5,
+      "h": 4
+    },
+    "13": {
+      "x": 5,
+      "y": 16,
+      "w": 5,
+      "h": 4
+    },
+    "14": {
+      "x": 10,
+      "y": 16,
+      "w": 5,
+      "h": 4
+    },
+    "15": {
+      "x": 15,
+      "y": 16,
+      "w": 5,
+      "h": 4
+    },
+    "16": {
+      "x": 20,
+      "y": 16,
+      "w": 4,
+      "h": 4
+    },
+    "17": {
+      "x": 0,
+      "y": 20,
+      "w": 12,
+      "h": 4
+    },
+    "18": {
+      "x": 12,
+      "y": 20,
+      "w": 12,
+      "h": 4
+    },
+    "19": {
+      "x": 0,
+      "y": 24,
+      "w": 12,
+      "h": 4
+    },
+    "20": {
+      "x": 12,
+      "y": 24,
+      "w": 12,
+      "h": 4
+    },
+    "21": {
+      "x": 0,
+      "y": 28,
+      "w": 12,
+      "h": 4
+    },
+    "22": {
+      "x": 12,
+      "y": 28,
+      "w": 12,
+      "h": 4
+    },
+    "23": {
+      "x": 0,
+      "y": 32,
+      "w": 12,
+      "h": 4
+    },
+    "24": {
+      "x": 12,
+      "y": 32,
+      "w": 12,
+      "h": 4
+    },
+    "25": {
+      "x": 0,
+      "y": 36,
+      "w": 12,
+      "h": 4
+    },
+    "26": {
+      "x": 12,
+      "y": 36,
+      "w": 12,
+      "h": 4
+    },
+    "27": {
+      "x": 0,
+      "y": 40,
+      "w": 12,
+      "h": 4
+    }
+  }
+}
