@@ -45,7 +45,8 @@ names stay as the exporters publish them (`aerospike_namespace_objects`...),
 and the exporters' labels (`cluster_name`, `service`, `ns`, `set`, `dc`...)
 become the attributes the dashboards filter on.
 
-A minimal collector configuration:
+A minimal collector configuration. The lines marked `CHANGE` are the ones
+to set for your own installation; the rest can stay as they are.
 
 <!-- prettier-ignore -->
 ```yaml
@@ -56,11 +57,19 @@ receivers:
         - job_name: aerospike
           scrape_interval: 30s
           static_configs:
+            # CHANGE: every Aerospike node's address, with the Aerospike
+            # Prometheus Exporter's port (9145 unless you changed it). The
+            # collector must be able to reach each one.
             - targets: ["10.0.0.11:9145", "10.0.0.12:9145", "10.0.0.13:9145"]
-        - job_name: node # only for the Host View
+        - job_name: node # only for the Host View; remove if not needed
           scrape_interval: 30s
           static_configs:
+            # CHANGE: the same nodes, with the Node Exporter's port (9100
+            # unless you changed it).
             - targets: ["10.0.0.11:9100", "10.0.0.12:9100", "10.0.0.13:9100"]
+              # CHANGE: the cluster's name exactly as Aerospike reports it
+              # (cluster-name in aerospike.conf). For several clusters, add
+              # one static_configs entry per cluster, each with its nodes.
               labels: { cluster_name: "<the Aerospike cluster's name>" }
 
 processors:
@@ -79,10 +88,15 @@ processors:
 
 exporters:
   otlphttp/dynatrace:
+    # CHANGE: your environment's id (the first part of its address, for
+    # example abc12345). Note live.dynatrace.com, not apps.dynatrace.com.
     endpoint: "https://<environment-id>.live.dynatrace.com/api/v2/otlp"
     headers:
-      # an access token with metrics.ingest: "Api-Token <token>"
-      # a platform token with openpipeline:metrics:ingest: "Bearer <token>"
+      # CHANGE: the scheme matching your token, and set the DT_API_TOKEN
+      # environment variable for the collector (keep the token out of
+      # this file):
+      #   an access token with metrics.ingest: "Api-Token <token>"
+      #   a platform token with openpipeline:metrics:ingest: "Bearer <token>"
       Authorization: "Api-Token ${env:DT_API_TOKEN}"
     compression: gzip
 
@@ -94,7 +108,7 @@ service:
       exporters: [otlphttp/dynatrace]
 ```
 
-Two things matter for the dashboards:
+Three things matter for the dashboards:
 
 - **`cumulativetodelta` must be there.** Without it Dynatrace rejects the
   counters, and every rate on the dashboards stays empty.
