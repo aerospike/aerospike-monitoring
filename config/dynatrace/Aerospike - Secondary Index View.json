@@ -1,0 +1,171 @@
+{
+  "version": 21,
+  "variables": [
+    {
+      "version": 2,
+      "key": "cluster",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(aerospike_node_stats_uptime), by: { cluster_name }\n| fields cluster_name",
+      "multiple": false
+    },
+    {
+      "version": 2,
+      "key": "namespace",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(aerospike_namespace_objects, filter: { cluster_name == $cluster }), by: { ns }\n| fields ns",
+      "multiple": false
+    },
+    {
+      "version": 2,
+      "key": "sindex",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(aerospike_sindex_entries, filter: { cluster_name == $cluster and ns == $namespace }), by: { sindex }\n| fields sindex",
+      "multiple": false
+    }
+  ],
+  "tiles": {
+    "0": {
+      "type": "markdown",
+      "content": "**Secondary Index View**: One secondary index in detail: entries, memory, garbage collection, load time. A tile's description shows its equivalent Prometheus query."
+    },
+    "1": {
+      "type": "markdown",
+      "content": "## Summary"
+    },
+    "2": {
+      "type": "markdown",
+      "content": "# $sindex"
+    },
+    "3": {
+      "type": "data",
+      "title": "Memory Used",
+      "query": "timeseries value = avg(aerospike_sindex_memory_used, filter: { cluster_name == $cluster and ns == $namespace and sindex == $sindex })\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\navg(aerospike_sindex_memory_used{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", sindex=~\"$sindex\"})\nor \navg(aerospike_sindex_used_bytes{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", sindex=~\"$sindex\"})"
+    },
+    "4": {
+      "type": "data",
+      "title": "Entries/Bins",
+      "query": "timeseries value = sum(aerospike_sindex_entries_per_bval, filter: { cluster_name == $cluster and ns == $namespace and sindex == $sindex }, rollup: avg)\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(aerospike_sindex_entries_per_bval{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", sindex=~\"$sindex\"})"
+    },
+    "5": {
+      "type": "data",
+      "title": "Garbage collection",
+      "query": "timeseries a0 = avg(aerospike_sindex_stat_gc_recs, filter: { cluster_name == $cluster and ns == $namespace and sindex == $sindex }), by: { cluster_name, service }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd value = a0[]\n| fieldsRemove a0\n| summarize value = sum(value[]), by: { timeframe, interval }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(increase(aerospike_sindex_stat_gc_recs{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", sindex=~\"$sindex\"}[5m]))"
+    },
+    "6": {
+      "type": "data",
+      "title": "Load percentage",
+      "query": "timeseries value = min(aerospike_sindex_load_pct, filter: { cluster_name == $cluster and ns == $namespace and sindex == $sindex })\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "gauge",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nmin(aerospike_sindex_load_pct{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", sindex=~\"$sindex\"})"
+    },
+    "7": {
+      "type": "data",
+      "title": "Max Load Time",
+      "query": "timeseries value = max(aerospike_sindex_load_time, filter: { cluster_name == $cluster and ns == $namespace and sindex == $sindex })\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nmax(aerospike_sindex_load_time{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", sindex=~\"$sindex\"})"
+    },
+    "8": {
+      "type": "data",
+      "title": "Entries",
+      "query": "timeseries a0 = sum(aerospike_sindex_entries, filter: { cluster_name == $cluster and ns == $namespace and sindex == $sindex }, rollup: avg), a1 = max(aerospike_namespace_effective_replication_factor, filter: { cluster_name == $cluster and ns == $namespace })\n| fieldsAdd value = (a0[] / a1[])\n| fieldsRemove a0, a1\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(aerospike_sindex_entries{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", sindex=~\"$sindex\"}) / max(aerospike_namespace_effective_replication_factor{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\"})"
+    },
+    "9": {
+      "type": "data",
+      "title": "Entries/Records",
+      "query": "timeseries value = sum(aerospike_sindex_entries_per_rec, filter: { cluster_name == $cluster and ns == $namespace and sindex == $sindex }, rollup: avg)\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(aerospike_sindex_entries_per_rec{job=\"$job_name\", cluster_name=~\"$cluster\", ns=~\"$namespace|$^\", sindex=~\"$sindex\"})"
+    }
+  },
+  "layouts": {
+    "0": {
+      "x": 0,
+      "y": 0,
+      "w": 24,
+      "h": 2
+    },
+    "1": {
+      "x": 0,
+      "y": 2,
+      "w": 24,
+      "h": 1
+    },
+    "2": {
+      "x": 0,
+      "y": 3,
+      "w": 8,
+      "h": 4
+    },
+    "3": {
+      "x": 8,
+      "y": 3,
+      "w": 4,
+      "h": 4
+    },
+    "4": {
+      "x": 12,
+      "y": 3,
+      "w": 4,
+      "h": 4
+    },
+    "5": {
+      "x": 16,
+      "y": 3,
+      "w": 8,
+      "h": 8
+    },
+    "6": {
+      "x": 0,
+      "y": 7,
+      "w": 4,
+      "h": 4
+    },
+    "7": {
+      "x": 4,
+      "y": 7,
+      "w": 4,
+      "h": 4
+    },
+    "8": {
+      "x": 8,
+      "y": 7,
+      "w": 4,
+      "h": 4
+    },
+    "9": {
+      "x": 12,
+      "y": 7,
+      "w": 4,
+      "h": 4
+    }
+  }
+}

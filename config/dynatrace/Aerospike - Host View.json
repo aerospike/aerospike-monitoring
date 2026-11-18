@@ -1,0 +1,658 @@
+{
+  "version": 21,
+  "variables": [
+    {
+      "version": 2,
+      "key": "cluster_name",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(node_uname_info), by: { cluster_name }\n| fields cluster_name",
+      "multiple": false
+    },
+    {
+      "version": 2,
+      "key": "node",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(node_uname_info, filter: { cluster_name == $cluster_name }), by: { `service.instance.id` }\n| fields `service.instance.id`",
+      "multiple": true,
+      "defaultValue": "3420b2ac-f1cf-4b24-b62d-61ba1ba8ed05*"
+    },
+    {
+      "version": 2,
+      "key": "diskdevices",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(node_disk_io_time_seconds_total), by: { device }\n| fields device",
+      "multiple": true,
+      "defaultValue": "3420b2ac-f1cf-4b24-b62d-61ba1ba8ed05*"
+    }
+  ],
+  "tiles": {
+    "0": {
+      "type": "markdown",
+      "content": "**Host View**: The operating system alone: CPU, memory, disk I/O and network per host. A tile's description shows its equivalent Prometheus query."
+    },
+    "1": {
+      "type": "markdown",
+      "content": "## Overview "
+    },
+    "2": {
+      "type": "data",
+      "title": "Node Exporter UP (total)",
+      "query": "timeseries value = avg(node_exporter_build_info, filter: { cluster_name == $cluster_name }), by: { branch, cluster_name, goarch, goos, goversion, revision, `service.instance.id`, tags, version }\n| summarize value = count(), by: { `service.instance.id` } | fieldsAdd value = 1\n| summarize value = sum(value)",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\n sum(group by (instance) (node_exporter_build_info{job=\"$job\",cluster_name=\"$cluster_name\"}))"
+    },
+    "3": {
+      "type": "data",
+      "title": "CPU Cores (total)",
+      "query": "timeseries value = sum(node_cpu_seconds_total, filter: { cluster_name == $cluster_name }), by: { cluster_name, cpu, mode, `service.instance.id` }\n| summarize value = count(), by: { cpu, `service.instance.id` }\n| summarize value = count(), by: { `service.instance.id` }\n| summarize value = sum(value)",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum( count by (instance) (count by (cpu, instance) (node_cpu_seconds_total{job=\"$job\",cluster_name=\"$cluster_name\"}) ))"
+    },
+    "4": {
+      "type": "data",
+      "title": "CPU Cores ",
+      "query": "timeseries value = sum(node_cpu_seconds_total), by: { cluster_name, cpu, mode, `service.instance.id` }\n| summarize value = count(), by: { cpu, `service.instance.id` }\n| summarize value = count(), by: { `service.instance.id` }\n| summarize value = min(value)\n| fieldsRename min = value\n| append [\n  timeseries value = sum(node_cpu_seconds_total), by: { cluster_name, cpu, mode, `service.instance.id` }\n  | summarize value = count(), by: { cpu, `service.instance.id` }\n  | summarize value = count(), by: { `service.instance.id` }\n  | summarize value = avg(value)\n  | fieldsRename avg = value\n]\n| append [\n  timeseries value = sum(node_cpu_seconds_total), by: { cluster_name, cpu, mode, `service.instance.id` }\n  | summarize value = count(), by: { cpu, `service.instance.id` }\n  | summarize value = count(), by: { `service.instance.id` }\n  | summarize value = max(value)\n  | fieldsRename max = value\n]",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\n min(count by (instance) (count by (cpu, instance) (node_cpu_seconds_total{}) ))\n avg(count by (instance) (count by (cpu, instance) (node_cpu_seconds_total{}) ))\n max(count by (instance) (count by (cpu, instance) (node_cpu_seconds_total{}) ))"
+    },
+    "5": {
+      "type": "data",
+      "title": "Total Memory (bytes) ",
+      "query": "timeseries a0 = min(node_memory_MemTotal_bytes, filter: { cluster_name == $cluster_name }), a1 = avg(node_memory_MemTotal_bytes, filter: { cluster_name == $cluster_name }), a2 = max(node_memory_MemTotal_bytes, filter: { cluster_name == $cluster_name })\n| fieldsAdd min = a0[], avg = a1[], max = a2[]\n| fieldsRemove a0, a1, a2\n| fields min = coalesce(min[-2], arrayLast(min)), avg = coalesce(avg[-2], arrayLast(avg)), max = coalesce(max[-2], arrayLast(max))",
+      "visualization": "categoricalBarChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nmin  (node_memory_MemTotal_bytes{job=\"$job\",cluster_name=\"$cluster_name\"})\navg(node_memory_MemTotal_bytes{job=\"$job\",cluster_name=\"$cluster_name\"})\nmax(node_memory_MemTotal_bytes{job=\"$job\",cluster_name=\"$cluster_name\"})"
+    },
+    "6": {
+      "type": "data",
+      "title": "File Descriptor (allocated)",
+      "query": "timeseries a0 = min(node_filefd_allocated, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), a1 = avg(node_filefd_allocated, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), a2 = max(node_filefd_allocated, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name })\n| fieldsAdd min = a0[], avg = a1[], max = a2[]\n| fieldsRemove a0, a1, a2\n| fields min = coalesce(min[-2], arrayLast(min)), avg = coalesce(avg[-2], arrayLast(avg)), max = coalesce(max[-2], arrayLast(max))",
+      "visualization": "categoricalBarChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\n min(node_filefd_allocated{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"})\n avg(node_filefd_allocated{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"})\n max(node_filefd_allocated{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"})"
+    },
+    "7": {
+      "type": "markdown",
+      "content": "### % CPU Utilization (rate)\n\n_Not available in Dynatrace yet (arithmetic between series grouped differently (a join)). The equivalent Prometheus query:_\n\n```promql\n min(sum by( instance) (irate(node_cpu_seconds_total{job=\"$job\", cluster_name=\"$cluster_name\",instance=~\"$node\", mode!=\"idle\"}[$__rate_interval])) / scalar(sum ( irate(node_cpu_seconds_total{job=\"$job\", cluster_name=\"$cluster_name\",instance=~\"$node\", }[$__rate_interval]) ))*100 ) \n avg(sum by( instance) (irate(node_cpu_seconds_total{job=\"$job\", cluster_name=\"$cluster_name\",instance=~\"$node\", mode!=\"idle\"}[$__rate_interval])) / scalar(sum ( irate(node_cpu_seconds_total{job=\"$job\", cluster_name=\"$cluster_name\",instance=~\"$node\", }[$__rate_interval]) ))*100 ) \n max(sum by( instance) (irate(node_cpu_seconds_total{job=\"$job\", cluster_name=\"$cluster_name\",instance=~\"$node\", mode!=\"idle\"}[$__rate_interval])) / scalar(sum ( irate(node_cpu_seconds_total{job=\"$job\", cluster_name=\"$cluster_name\",instance=~\"$node\", }[$__rate_interval]) ))*100 ) \n```\n"
+    },
+    "8": {
+      "type": "data",
+      "title": "Memory (total ) (bytes) ",
+      "query": "timeseries value = sum(node_memory_MemTotal_bytes, filter: { cluster_name == $cluster_name }, rollup: avg)\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(node_memory_MemTotal_bytes{job=\"$job\",cluster_name=\"$cluster_name\"})"
+    },
+    "9": {
+      "type": "data",
+      "title": "Memory (Unused ) (bytes) ",
+      "query": "timeseries value = sum(node_memory_MemFree_bytes, filter: { cluster_name == $cluster_name }, rollup: avg)\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(node_memory_MemFree_bytes{job=\"$job\",cluster_name=\"$cluster_name\"})"
+    },
+    "10": {
+      "type": "data",
+      "title": "Memory (Unused ) (bytes) ",
+      "query": "timeseries a0 = min(node_memory_MemFree_bytes, filter: { cluster_name == $cluster_name }), a1 = avg(node_memory_MemFree_bytes, filter: { cluster_name == $cluster_name }), a2 = max(node_memory_MemFree_bytes, filter: { cluster_name == $cluster_name })\n| fieldsAdd min = a0[], avg = a1[], max = a2[]\n| fieldsRemove a0, a1, a2\n| fields min = coalesce(min[-2], arrayLast(min)), avg = coalesce(avg[-2], arrayLast(avg)), max = coalesce(max[-2], arrayLast(max))",
+      "visualization": "categoricalBarChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nmin (node_memory_MemFree_bytes{job=\"$job\",cluster_name=\"$cluster_name\"})\navg (node_memory_MemFree_bytes{job=\"$job\",cluster_name=\"$cluster_name\"})\nmax (node_memory_MemFree_bytes{job=\"$job\",cluster_name=\"$cluster_name\"})"
+    },
+    "11": {
+      "type": "data",
+      "title": "Network Traffic - retransmit (packets) (total) (rate)",
+      "query": "timeseries a0 = avg(node_netstat_Tcp_RetransSegs, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), by: { cluster_name, `service.instance.id` }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd value = a0[]\n| fieldsRemove a0\n| summarize value = sum(value[]), by: { timeframe, interval }\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum (irate(node_netstat_Tcp_RetransSegs{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval] ))"
+    },
+    "12": {
+      "type": "data",
+      "title": "Network Traffic - Received (bytes) (rate)",
+      "query": "timeseries value = sum(node_network_receive_bytes_total, filter: { cluster_name == $cluster_name and in(`service.instance.id`, array($node)) }, rate: 1s), by: { device }\n| fields device, value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "table",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum by (device) (irate(node_network_receive_bytes_total{job=\"$job\",cluster_name=\"$cluster_name\", instance=~\"$node\",}[$__rate_interval]))"
+    },
+    "13": {
+      "type": "data",
+      "title": "Network Traffic -Transmit (bytes) (rate)",
+      "query": "timeseries value = sum(node_network_transmit_bytes_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), by: { device }\n| fields device, value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "table",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum by (device) (irate(node_network_transmit_bytes_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval]))"
+    },
+    "14": {
+      "type": "data",
+      "title": "Network Traffic - drop (packets) (rate)",
+      "query": "timeseries value = sum(node_network_transmit_drop_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), by: { device }\n| fields device, value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "table",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum by (device) (irate(node_network_transmit_drop_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval] ))"
+    },
+    "15": {
+      "type": "markdown",
+      "content": "## $node"
+    },
+    "16": {
+      "type": "data",
+      "title": "CPU Cores (total)",
+      "query": "timeseries value = sum(node_cpu_seconds_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), by: { cluster_name, cpu, mode, `service.instance.id` }\n| summarize value = count(), by: { cpu }\n| summarize value = count()",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\ncount(count by (cpu) (node_cpu_seconds_total{job=\"$job\", instance=~\"$node\",cluster_name=\"$cluster_name\"}) )"
+    },
+    "17": {
+      "type": "data",
+      "title": "Memory (Unused ) (bytes) ",
+      "query": "timeseries value = avg(node_memory_MemFree_bytes, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), by: { cluster_name, `service.instance.id` }\n| fields cluster_name, `service.instance.id`, value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "table",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\n(node_memory_MemFree_bytes{job=\"$job\",instance=~\"$node\",cluster_name=\"$cluster_name\"})"
+    },
+    "18": {
+      "type": "data",
+      "title": "Memory (total ) (bytes) ",
+      "query": "timeseries value = avg(node_memory_MemTotal_bytes, filter: { cluster_name == $cluster_name and in(`service.instance.id`, array($node)) }), by: { cluster_name, `service.instance.id` }\n| fields cluster_name, `service.instance.id`, value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "table",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\n(node_memory_MemTotal_bytes{job=\"$job\",cluster_name=\"$cluster_name\", instance=~\"$node\"})"
+    },
+    "19": {
+      "type": "data",
+      "title": "File Descriptor ",
+      "query": "timeseries a0 = avg(node_filefd_maximum, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), a1 = avg(node_filefd_allocated, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), by: { cluster_name, `service.instance.id` }\n| fieldsAdd maximum = a0[], allocated = a1[]\n| fieldsRemove a0, a1\n| fields cluster_name, `service.instance.id`, maximum = coalesce(maximum[-2], arrayLast(maximum)), allocated = coalesce(allocated[-2], arrayLast(allocated))",
+      "visualization": "table",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nnode_filefd_maximum{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}\nnode_filefd_allocated{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}"
+    },
+    "20": {
+      "type": "markdown",
+      "content": "### % CPU Utilization (topk) (rate)\n\n_Not available in Dynatrace yet (arithmetic between series grouped differently (a join)). The equivalent Prometheus query:_\n\n```promql\ntopk($topk_limit, (sum by(cpu, instance) (irate(node_cpu_seconds_total{instance=~\"$node\",job=\"$job\", mode!=\"idle\",cluster_name=\"$cluster_name\"}[$__rate_interval])) / on(instance) group_left sum by (instance)((irate(node_cpu_seconds_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])))) * 100)\n```\n"
+    },
+    "21": {
+      "type": "data",
+      "title": "CPU Info (%) (rate)",
+      "query": "timeseries a0 = sum(node_cpu_seconds_total, filter: { in(`service.instance.id`, array($node)) and mode == \"system\" and cluster_name == $cluster_name }, rate: 1s), a1 = sum(node_cpu_seconds_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), a2 = sum(node_cpu_seconds_total, filter: { in(`service.instance.id`, array($node)) and mode == \"user\" and cluster_name == $cluster_name }, rate: 1s), a3 = sum(node_cpu_seconds_total, filter: { in(`service.instance.id`, array($node)) and mode == \"iowait\" and cluster_name == $cluster_name }, rate: 1s), a4 = sum(node_cpu_seconds_total, filter: { in(`service.instance.id`, array($node)) and endsWith(mode, \"irq\") and cluster_name == $cluster_name }, rate: 1s), a5 = sum(node_cpu_seconds_total, filter: { in(`service.instance.id`, array($node)) and mode != \"idle\" and mode != \"user\" and mode != \"system\" and mode != \"iowait\" and mode != \"irq\" and mode != \"softirq\" and cluster_name == $cluster_name }, rate: 1s), a6 = sum(node_cpu_seconds_total, filter: { in(`service.instance.id`, array($node)) and mode == \"idle\" and cluster_name == $cluster_name }, rate: 1s), by: { `service.instance.id` }\n| fieldsAdd busy_system = (a0[] / a1[]), busy_user = (a2[] / a1[]), busy_iowait = (a3[] / a1[]), busy_irqs = (a4[] / a1[]), busy_other = (a5[] / a1[]), idle = (a6[] / a1[])\n| fieldsRemove a0, a1, a2, a3, a4, a5, a6",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum by(instance) (irate(node_cpu_seconds_total{instance=\"$node\",job=\"$job\", mode=\"system\", cluster_name=\"$cluster_name\"}[$__rate_interval])) / on(instance) group_left sum by (instance)((irate(node_cpu_seconds_total{instance=\"$node\",job=\"$job\" ,cluster_name=\"$cluster_name\"}[$__rate_interval])))\nsum by(instance) (irate(node_cpu_seconds_total{instance=\"$node\",job=\"$job\", mode=\"user\",cluster_name=\"$cluster_name\"}[$__rate_interval])) / on(instance) group_left sum by (instance)((irate(node_cpu_seconds_total{instance=\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])))\nsum by(instance) (irate(node_cpu_seconds_total{instance=~\"$node\",job=\"$job\", mode=\"iowait\",cluster_name=\"$cluster_name\"}[$__rate_interval])) / on(instance) group_left sum by (instance)((irate(node_cpu_seconds_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])))\nsum by(instance) (irate(node_cpu_seconds_total{instance=~\"$node\",job=\"$job\", mode=~\".*irq\""
+    },
+    "22": {
+      "type": "data",
+      "title": "Memory Details (Bytes)",
+      "query": "timeseries a0 = avg(node_memory_MemTotal_bytes, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), a1 = avg(node_memory_MemFree_bytes, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), a2 = avg(node_memory_MemTotal_bytes), by: { cluster_name, `service.instance.id` }\n| fieldsAdd total = a0[], unused = a1[], used = (a2[] - a1[])\n| fieldsRemove a0, a1, a2",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\n(node_memory_MemTotal_bytes{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"})\n(node_memory_MemFree_bytes{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"})\n(node_memory_MemTotal_bytes - node_memory_MemFree_bytes{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"})"
+    },
+    "23": {
+      "type": "data",
+      "title": "Memory Page Faults (rate)",
+      "query": "timeseries a0 = avg(node_vmstat_pgfault, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), a1 = avg(node_vmstat_pgmajfault, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), a2 = avg(node_vmstat_pgfault, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), a3 = avg(node_vmstat_pgmajfault, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), by: { cluster_name, `service.instance.id` }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd a1 = arrayDelta(a1)\n| fieldsAdd a1 = a1[] / (interval / 1s)\n| fieldsAdd a2 = arrayDelta(a2)\n| fieldsAdd a2 = a2[] / (interval / 1s)\n| fieldsAdd a3 = arrayDelta(a3)\n| fieldsAdd a3 = a3[] / (interval / 1s)\n| fieldsAdd pgfault = a0[], pgmajfault = a1[], pgminfault = (a2[] - a3[])\n| fieldsRemove a0, a1, a2, a3",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nirate(node_vmstat_pgfault{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])\nirate(node_vmstat_pgmajfault{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])\nirate(node_vmstat_pgfault{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])  - irate(node_vmstat_pgmajfault{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])"
+    },
+    "24": {
+      "type": "data",
+      "title": "Memory Stack (Bytes)",
+      "query": "timeseries a0 = avg(node_memory_MemTotal_bytes, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), a1 = avg(node_memory_MemFree_bytes, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), a2 = avg(node_memory_Buffers_bytes, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), a3 = avg(node_memory_Cached_bytes, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), a4 = avg(node_memory_Slab_bytes, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), a5 = avg(node_memory_PageTables_bytes, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), a6 = avg(node_memory_SwapCached_bytes, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), a7 = avg(node_memory_SwapTotal_bytes, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), a8 = avg(node_memory_SwapFree_bytes, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), a9 = avg(node_memory_HardwareCorrupted_bytes, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), by: { cluster_name, `service.instance.id` }\n| fieldsAdd apps = ((((((a0[] - a1[]) - a2[]) - a3[]) - a4[]) - a5[]) - a6[]), pagetables = a5[], swapcache = a6[], slab = a4[], cache = a3[], buffers = a2[], unused = a1[], swap = (a7[] - a8[]), hardware_corrupted = a9[]\n| fieldsRemove a0, a1, a2, a3, a4, a5, a6, a7, a8, a9",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nnode_memory_MemTotal_bytes{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"} - node_memory_MemFree_bytes{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"} - node_memory_Buffers_bytes{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"} - node_memory_Cached_bytes{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"} - node_memory_Slab_bytes{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"} - node_memory_PageTables_bytes{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"} - node_memory_SwapCached_bytes{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}\nnode_memory_PageTables_bytes{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}\nnode_memory_SwapCached_bytes{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}\nnode_memory_Slab_bytes{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}\nnode_memory_Cached_bytes{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}\nnode_memory_Buffers"
+    },
+    "25": {
+      "type": "data",
+      "title": "Memory Pages In / Out (rate)",
+      "query": "timeseries a0 = avg(node_vmstat_pgpgin, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), a1 = avg(node_vmstat_pgpgout, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), by: { cluster_name, `service.instance.id` }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd a1 = arrayDelta(a1)\n| fieldsAdd a1 = a1[] / (interval / 1s)\n| fieldsAdd pagesin = a0[], pagesout = a1[]\n| fieldsRemove a0, a1",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nirate(node_vmstat_pgpgin{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])\nirate(node_vmstat_pgpgout{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])"
+    },
+    "26": {
+      "type": "data",
+      "title": "Memory Pages Swap In / Out (rate)",
+      "query": "timeseries a0 = avg(node_vmstat_pswpin, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), a1 = avg(node_vmstat_pswpout, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), by: { cluster_name, `service.instance.id` }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd a1 = arrayDelta(a1)\n| fieldsAdd a1 = a1[] / (interval / 1s)\n| fieldsAdd pgswapin = a0[], pgswapout = a1[]\n| fieldsRemove a0, a1",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nirate(node_vmstat_pswpin{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])\nirate(node_vmstat_pswpout{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])"
+    },
+    "27": {
+      "type": "data",
+      "title": "Disk IOps Completed (rate)",
+      "query": "timeseries a0 = sum(node_disk_reads_completed_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), a1 = sum(node_disk_writes_completed_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), by: { cluster_name, device, `service.instance.id` }\n| fieldsAdd reads = a0[], writes = a1[]\n| fieldsRemove a0, a1",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nirate(node_disk_reads_completed_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])\nirate(node_disk_writes_completed_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])"
+    },
+    "28": {
+      "type": "data",
+      "title": "Disk R/W Data (Bytes) (rate)",
+      "query": "timeseries a0 = sum(node_disk_read_bytes_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), a1 = sum(node_disk_written_bytes_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), by: { cluster_name, device, `service.instance.id` }\n| fieldsAdd read = a0[], written = a1[]\n| fieldsRemove a0, a1",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nirate(node_disk_read_bytes_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])\nirate(node_disk_written_bytes_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])"
+    },
+    "29": {
+      "type": "data",
+      "title": "Disk Average Wait Time (seconds) (rate)",
+      "query": "timeseries a0 = sum(node_disk_read_time_seconds_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), a1 = sum(node_disk_reads_completed_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), a2 = sum(node_disk_write_time_seconds_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), a3 = sum(node_disk_writes_completed_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), by: { cluster_name, device, `service.instance.id` }\n| fieldsAdd read = (a0[] / a1[]), write = (a2[] / a3[])\n| fieldsRemove a0, a1, a2, a3",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nirate(node_disk_read_time_seconds_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval]) / irate(node_disk_reads_completed_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])\nirate(node_disk_write_time_seconds_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval]) / irate(node_disk_writes_completed_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])"
+    },
+    "30": {
+      "type": "data",
+      "title": "Disk - Average Queue Size (rate)",
+      "query": "timeseries value = sum(node_disk_io_time_weighted_seconds_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), by: { cluster_name, device, `service.instance.id` }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nirate(node_disk_io_time_weighted_seconds_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])"
+    },
+    "31": {
+      "type": "data",
+      "title": "Disk - I/O Utilization (%) (rate)",
+      "query": "timeseries value = sum(node_disk_io_time_seconds_total, filter: { in(`service.instance.id`, array($node)) and in(device, array($diskdevices)) and cluster_name == $cluster_name }, rate: 1s), by: { cluster_name, device, `service.instance.id` }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nirate(node_disk_io_time_seconds_total{instance=~\"$node\",job=\"$job\",device=~\"$diskdevices\",cluster_name=\"$cluster_name\"} [$__rate_interval])"
+    },
+    "32": {
+      "type": "data",
+      "title": "Disk - Time Spent Doing I/Os (%) (rate)",
+      "query": "timeseries a0 = sum(node_disk_io_time_seconds_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), a1 = sum(node_disk_discard_time_seconds_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), by: { cluster_name, device, `service.instance.id` }\n| fieldsAdd io = a0[], discard = a1[]\n| fieldsRemove a0, a1",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nirate(node_disk_io_time_seconds_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])\nirate(node_disk_discard_time_seconds_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])"
+    },
+    "33": {
+      "type": "data",
+      "title": "Filesystem space available (Bytes)",
+      "query": "timeseries value = avg(node_filesystem_avail_bytes, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name and not(device == \"rootfs\") }), by: { cluster_name, device, fstype, mountpoint, `service.instance.id` }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nnode_filesystem_avail_bytes{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\",device!~'rootfs'}"
+    },
+    "34": {
+      "type": "data",
+      "title": "File Descriptor",
+      "query": "timeseries a0 = avg(node_filefd_maximum, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), a1 = avg(node_filefd_allocated, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), by: { cluster_name, `service.instance.id` }\n| fieldsAdd max = a0[], open_files = a1[]\n| fieldsRemove a0, a1",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nnode_filefd_maximum{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}\nnode_filefd_allocated{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}"
+    },
+    "35": {
+      "type": "data",
+      "title": "TCP In / Out (rate)",
+      "query": "timeseries a0 = avg(node_netstat_Tcp_InSegs, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), a1 = avg(node_netstat_Tcp_OutSegs, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), by: { cluster_name, `service.instance.id` }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd a1 = arrayDelta(a1)\n| fieldsAdd a1 = a1[] / (interval / 1s)\n| fieldsAdd insegs = a0[], outsegs = a1[]\n| fieldsRemove a0, a1",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nirate(node_netstat_Tcp_InSegs{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])\nirate(node_netstat_Tcp_OutSegs{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])"
+    },
+    "36": {
+      "type": "data",
+      "title": "TCP Connections",
+      "query": "timeseries value = avg(node_netstat_Tcp_CurrEstab, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), by: { cluster_name, `service.instance.id` }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nnode_netstat_Tcp_CurrEstab{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}\nnode_netstat_Tcp_MaxConn{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}"
+    },
+    "37": {
+      "type": "data",
+      "title": "Network Traffic (packets) (rate)",
+      "query": "timeseries a0 = sum(node_network_receive_packets_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), a1 = sum(node_network_transmit_packets_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), by: { cluster_name, device, `service.instance.id` }\n| fieldsAdd receive = a0[], transmit = a1[]\n| fieldsRemove a0, a1",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nirate(node_network_receive_packets_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])\nirate(node_network_transmit_packets_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])"
+    },
+    "38": {
+      "type": "data",
+      "title": "Network Traffic by Bytes (rate)",
+      "query": "timeseries a0 = sum(node_network_receive_bytes_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), a1 = sum(node_network_transmit_bytes_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), by: { cluster_name, device, `service.instance.id` }\n| fieldsAdd receive = a0[], transmit = a1[]\n| fieldsRemove a0, a1",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nirate(node_network_receive_bytes_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])\nirate(node_network_transmit_bytes_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])"
+    },
+    "39": {
+      "type": "data",
+      "title": "Network Traffic Multicast (packets) (rate)",
+      "query": "timeseries value = sum(node_network_receive_multicast_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), by: { cluster_name, device, `service.instance.id` }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nirate(node_network_receive_multicast_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])"
+    },
+    "40": {
+      "type": "data",
+      "title": "Network Traffic Errors (packets) (rate)",
+      "query": "timeseries a0 = sum(node_network_receive_errs_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), a1 = sum(node_network_transmit_errs_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), by: { cluster_name, device, `service.instance.id` }\n| fieldsAdd receive = a0[], transmit = a1[]\n| fieldsRemove a0, a1",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nirate(node_network_receive_errs_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])\nirate(node_network_transmit_errs_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])"
+    },
+    "41": {
+      "type": "data",
+      "title": "Network Traffic Drop (packets) (rate)",
+      "query": "timeseries a0 = sum(node_network_receive_drop_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), a1 = sum(node_network_transmit_drop_total, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }, rate: 1s), by: { cluster_name, device, `service.instance.id` }\n| fieldsAdd receive = a0[], transmit = a1[]\n| fieldsRemove a0, a1",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nirate(node_network_receive_drop_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])\nirate(node_network_transmit_drop_total{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval])"
+    },
+    "42": {
+      "type": "data",
+      "title": "Network Traffic Retransmit (packets) (rate)",
+      "query": "timeseries a0 = avg(node_netstat_Tcp_RetransSegs, filter: { in(`service.instance.id`, array($node)) and cluster_name == $cluster_name }), by: { cluster_name, `service.instance.id` }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd value = a0[]\n| fieldsRemove a0",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\n (irate(node_netstat_Tcp_RetransSegs{instance=~\"$node\",job=\"$job\",cluster_name=\"$cluster_name\"}[$__rate_interval] ))"
+    }
+  },
+  "layouts": {
+    "0": {
+      "x": 0,
+      "y": 0,
+      "w": 24,
+      "h": 2
+    },
+    "1": {
+      "x": 0,
+      "y": 2,
+      "w": 24,
+      "h": 1
+    },
+    "2": {
+      "x": 0,
+      "y": 3,
+      "w": 4,
+      "h": 4
+    },
+    "3": {
+      "x": 4,
+      "y": 3,
+      "w": 5,
+      "h": 4
+    },
+    "4": {
+      "x": 9,
+      "y": 3,
+      "w": 5,
+      "h": 4
+    },
+    "5": {
+      "x": 14,
+      "y": 3,
+      "w": 6,
+      "h": 4
+    },
+    "6": {
+      "x": 20,
+      "y": 3,
+      "w": 4,
+      "h": 4
+    },
+    "7": {
+      "x": 0,
+      "y": 7,
+      "w": 9,
+      "h": 8
+    },
+    "8": {
+      "x": 9,
+      "y": 7,
+      "w": 5,
+      "h": 4
+    },
+    "9": {
+      "x": 14,
+      "y": 7,
+      "w": 4,
+      "h": 4
+    },
+    "10": {
+      "x": 18,
+      "y": 7,
+      "w": 6,
+      "h": 4
+    },
+    "11": {
+      "x": 18,
+      "y": 11,
+      "w": 6,
+      "h": 4
+    },
+    "12": {
+      "x": 0,
+      "y": 15,
+      "w": 24,
+      "h": 3
+    },
+    "13": {
+      "x": 0,
+      "y": 18,
+      "w": 24,
+      "h": 3
+    },
+    "14": {
+      "x": 0,
+      "y": 21,
+      "w": 24,
+      "h": 3
+    },
+    "15": {
+      "x": 0,
+      "y": 24,
+      "w": 24,
+      "h": 1
+    },
+    "16": {
+      "x": 0,
+      "y": 25,
+      "w": 5,
+      "h": 5
+    },
+    "17": {
+      "x": 5,
+      "y": 25,
+      "w": 5,
+      "h": 5
+    },
+    "18": {
+      "x": 10,
+      "y": 25,
+      "w": 5,
+      "h": 5
+    },
+    "19": {
+      "x": 15,
+      "y": 25,
+      "w": 7,
+      "h": 5
+    },
+    "20": {
+      "x": 0,
+      "y": 30,
+      "w": 24,
+      "h": 5
+    },
+    "21": {
+      "x": 0,
+      "y": 35,
+      "w": 12,
+      "h": 6
+    },
+    "22": {
+      "x": 12,
+      "y": 35,
+      "w": 12,
+      "h": 6
+    },
+    "23": {
+      "x": 0,
+      "y": 41,
+      "w": 12,
+      "h": 6
+    },
+    "24": {
+      "x": 12,
+      "y": 41,
+      "w": 12,
+      "h": 6
+    },
+    "25": {
+      "x": 0,
+      "y": 47,
+      "w": 12,
+      "h": 6
+    },
+    "26": {
+      "x": 12,
+      "y": 47,
+      "w": 12,
+      "h": 6
+    },
+    "27": {
+      "x": 0,
+      "y": 53,
+      "w": 12,
+      "h": 6
+    },
+    "28": {
+      "x": 12,
+      "y": 53,
+      "w": 12,
+      "h": 6
+    },
+    "29": {
+      "x": 0,
+      "y": 59,
+      "w": 12,
+      "h": 6
+    },
+    "30": {
+      "x": 12,
+      "y": 59,
+      "w": 12,
+      "h": 6
+    },
+    "31": {
+      "x": 0,
+      "y": 65,
+      "w": 12,
+      "h": 6
+    },
+    "32": {
+      "x": 12,
+      "y": 65,
+      "w": 12,
+      "h": 6
+    },
+    "33": {
+      "x": 0,
+      "y": 71,
+      "w": 12,
+      "h": 6
+    },
+    "34": {
+      "x": 12,
+      "y": 71,
+      "w": 12,
+      "h": 6
+    },
+    "35": {
+      "x": 0,
+      "y": 77,
+      "w": 12,
+      "h": 6
+    },
+    "36": {
+      "x": 12,
+      "y": 77,
+      "w": 12,
+      "h": 6
+    },
+    "37": {
+      "x": 0,
+      "y": 83,
+      "w": 12,
+      "h": 6
+    },
+    "38": {
+      "x": 12,
+      "y": 83,
+      "w": 12,
+      "h": 6
+    },
+    "39": {
+      "x": 0,
+      "y": 89,
+      "w": 12,
+      "h": 6
+    },
+    "40": {
+      "x": 12,
+      "y": 89,
+      "w": 12,
+      "h": 6
+    },
+    "41": {
+      "x": 0,
+      "y": 95,
+      "w": 12,
+      "h": 6
+    },
+    "42": {
+      "x": 12,
+      "y": 95,
+      "w": 12,
+      "h": 6
+    }
+  }
+}

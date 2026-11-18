@@ -1,0 +1,179 @@
+{
+  "version": 21,
+  "variables": [
+    {
+      "version": 2,
+      "key": "cluster",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(aerospike_node_stats_uptime), by: { cluster_name }\n| fields cluster_name",
+      "multiple": true,
+      "defaultValue": "3420b2ac-f1cf-4b24-b62d-61ba1ba8ed05*"
+    },
+    {
+      "version": 2,
+      "key": "node",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(aerospike_node_stats_uptime, filter: { in(cluster_name, array($cluster)) }), by: { service }\n| fields service",
+      "multiple": true,
+      "defaultValue": "3420b2ac-f1cf-4b24-b62d-61ba1ba8ed05*"
+    },
+    {
+      "version": 2,
+      "key": "severity",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(ALERTS, filter: { in(cluster_name, array($cluster)) }), by: { severity }\n| fields severity",
+      "multiple": true,
+      "defaultValue": "3420b2ac-f1cf-4b24-b62d-61ba1ba8ed05*"
+    },
+    {
+      "version": 2,
+      "key": "state",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(ALERTS, filter: { in(cluster_name, array($cluster)) }), by: { alertstate }\n| fields alertstate",
+      "multiple": true,
+      "defaultValue": "3420b2ac-f1cf-4b24-b62d-61ba1ba8ed05*"
+    }
+  ],
+  "tiles": {
+    "0": {
+      "type": "markdown",
+      "content": "**Alerts View**: Alerts by severity. Not available in Dynatrace yet: the alerts are Prometheus rules, not Dynatrace ones. A tile's description shows its equivalent Prometheus query."
+    },
+    "1": {
+      "type": "markdown",
+      "content": "### Critical\n\n_Not available in Dynatrace yet (Prometheus alert state (ALERTS) -- alerts are not in Dynatrace). The equivalent Prometheus query:_\n\n```promql\ncount(ALERTS{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", severity=~\"critical\", alertstate=~\"$state|$^\"}) \n```\n"
+    },
+    "2": {
+      "type": "markdown",
+      "content": "### Error\n\n_Not available in Dynatrace yet (Prometheus alert state (ALERTS) -- alerts are not in Dynatrace). The equivalent Prometheus query:_\n\n```promql\ncount(ALERTS{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", severity=~\"error\", alertstate=~\"$state\"}) \n```\n"
+    },
+    "3": {
+      "type": "markdown",
+      "content": "### Warnings\n\n_Not available in Dynatrace yet (Prometheus alert state (ALERTS) -- alerts are not in Dynatrace). The equivalent Prometheus query:_\n\n```promql\ncount(ALERTS{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", severity=~\"warn\", alertstate=~\"$state\"}) \n```\n"
+    },
+    "4": {
+      "type": "markdown",
+      "content": "### Info\n\n_Not available in Dynatrace yet (Prometheus alert state (ALERTS) -- alerts are not in Dynatrace). The equivalent Prometheus query:_\n\n```promql\ncount(ALERTS{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", severity=~\"info\", alertstate=~\"$state\"}) \n```\n"
+    },
+    "5": {
+      "type": "markdown",
+      "content": "## Critical"
+    },
+    "6": {
+      "type": "markdown",
+      "content": "### \n\n_Not available in Dynatrace yet (Prometheus alert state (ALERTS) -- alerts are not in Dynatrace). The equivalent Prometheus query:_\n\n```promql\nALERTS{job=\"$job_name\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\", severity=~\"critical\", alertstate=~\"$state|$^\",}\n```\n"
+    },
+    "7": {
+      "type": "markdown",
+      "content": "## Errors"
+    },
+    "8": {
+      "type": "markdown",
+      "content": "### \n\n_Not available in Dynatrace yet (Prometheus alert state (ALERTS) -- alerts are not in Dynatrace). The equivalent Prometheus query:_\n\n```promql\nALERTS{job=\"$job_name\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\", severity=\"error\", alertstate=~\"$state|$^\",}\n```\n"
+    },
+    "9": {
+      "type": "markdown",
+      "content": "## Warnings"
+    },
+    "10": {
+      "type": "markdown",
+      "content": "### \n\n_Not available in Dynatrace yet (Prometheus alert state (ALERTS) -- alerts are not in Dynatrace). The equivalent Prometheus query:_\n\n```promql\nALERTS{job=\"$job_name\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\", severity=\"warn\", alertstate=~\"$state|$^\",}\n```\n"
+    },
+    "11": {
+      "type": "markdown",
+      "content": "## Info"
+    },
+    "12": {
+      "type": "markdown",
+      "content": "### \n\n_Not available in Dynatrace yet (Prometheus alert state (ALERTS) -- alerts are not in Dynatrace). The equivalent Prometheus query:_\n\n```promql\nALERTS{job=\"$job_name\", cluster_name=~\"$cluster|$^\", service=~\"$node|$^\", severity=~\"info\", alertstate=~\"$state|$^\"}\n```\n"
+    }
+  },
+  "layouts": {
+    "0": {
+      "x": 0,
+      "y": 0,
+      "w": 24,
+      "h": 2
+    },
+    "1": {
+      "x": 0,
+      "y": 2,
+      "w": 6,
+      "h": 5
+    },
+    "2": {
+      "x": 6,
+      "y": 2,
+      "w": 6,
+      "h": 5
+    },
+    "3": {
+      "x": 12,
+      "y": 2,
+      "w": 6,
+      "h": 5
+    },
+    "4": {
+      "x": 18,
+      "y": 2,
+      "w": 6,
+      "h": 5
+    },
+    "5": {
+      "x": 0,
+      "y": 7,
+      "w": 24,
+      "h": 1
+    },
+    "6": {
+      "x": 0,
+      "y": 8,
+      "w": 24,
+      "h": 5
+    },
+    "7": {
+      "x": 0,
+      "y": 13,
+      "w": 24,
+      "h": 1
+    },
+    "8": {
+      "x": 0,
+      "y": 14,
+      "w": 24,
+      "h": 5
+    },
+    "9": {
+      "x": 0,
+      "y": 19,
+      "w": 24,
+      "h": 1
+    },
+    "10": {
+      "x": 0,
+      "y": 20,
+      "w": 24,
+      "h": 5
+    },
+    "11": {
+      "x": 0,
+      "y": 25,
+      "w": 24,
+      "h": 1
+    },
+    "12": {
+      "x": 0,
+      "y": 26,
+      "w": 24,
+      "h": 7
+    }
+  }
+}

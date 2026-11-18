@@ -1,0 +1,483 @@
+{
+  "version": 21,
+  "variables": [
+    {
+      "version": 2,
+      "key": "cluster",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(aerospike_node_stats_uptime), by: { cluster_name }\n| fields cluster_name",
+      "multiple": false
+    },
+    {
+      "version": 2,
+      "key": "node",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(aerospike_node_stats_uptime, filter: { cluster_name == $cluster }), by: { service }\n| fields service",
+      "multiple": true,
+      "defaultValue": "3420b2ac-f1cf-4b24-b62d-61ba1ba8ed05*"
+    },
+    {
+      "version": 2,
+      "key": "dc",
+      "type": "query",
+      "visible": true,
+      "editable": true,
+      "input": "timeseries avg(aerospike_xdr_lap_us, filter: { cluster_name == $cluster and in(service, array($node)) }), by: { dc }\n| fields dc",
+      "multiple": true,
+      "defaultValue": "3420b2ac-f1cf-4b24-b62d-61ba1ba8ed05*"
+    }
+  ],
+  "tiles": {
+    "0": {
+      "type": "markdown",
+      "content": "**XDR View**: Per destination: lag, throughput, retries, errors. Open it when lag grows or a site falls behind. A tile's description shows its equivalent Prometheus query."
+    },
+    "1": {
+      "type": "markdown",
+      "content": "## Overview"
+    },
+    "2": {
+      "type": "data",
+      "title": "XDR Statistics Summary",
+      "query": "timeseries a0 = sum(aerospike_xdr_throughput, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }, rollup: avg), a1 = avg(aerospike_xdr_lag, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }), a2 = avg(aerospike_xdr_latency_ms, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }), a3 = avg(aerospike_xdr_lap_us, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }), a4 = sum(aerospike_xdr_recoveries_pending, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }, rollup: avg), a5 = sum(aerospike_xdr_in_progress, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }, rollup: avg), a6 = sum(aerospike_xdr_in_queue, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }, rollup: avg), a7 = sum(aerospike_xdr_bytes_shipped, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }, rate: 1s)\n| fieldsAdd total_throughput = a0[], avg_lag = a1[], avg_ship_latency = a2[], avg_lap_us = a3[], total_recoveries_pending = a4[], total_in_progress = a5[], total_in_queue = a6[], total_bytes_shipped = a7[]\n| fieldsRemove a0, a1, a2, a3, a4, a5, a6, a7\n| fields total_throughput = coalesce(total_throughput[-2], arrayLast(total_throughput)), avg_lag = coalesce(avg_lag[-2], arrayLast(avg_lag)), avg_ship_latency = coalesce(avg_ship_latency[-2], arrayLast(avg_ship_latency)), avg_lap_us = coalesce(avg_lap_us[-2], arrayLast(avg_lap_us)), total_recoveries_pending = coalesce(total_recoveries_pending[-2], arrayLast(total_recoveries_pending)), total_in_progress = coalesce(total_in_progress[-2], arrayLast(total_in_progress)), total_in_queue = coalesce(total_in_queue[-2], arrayLast(total_in_queue)), total_bytes_shipped = coalesce(total_bytes_shipped[-2], arrayLast(total_bytes_shipped))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum(aerospike_xdr_throughput{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"})\navg(aerospike_xdr_lag{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"})\navg(aerospike_xdr_latency_ms{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"})\navg(aerospike_xdr_lap_us{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"})\nsum(aerospike_xdr_recoveries_pending{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"})\nsum(aerospike_xdr_in_progress{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"})\nsum(aerospike_xdr_in_queue{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"})\nsum(rate(aerospike_xdr_bytes_shipped{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[1m]))"
+    },
+    "3": {
+      "type": "data",
+      "title": "DC Nodes",
+      "query": "timeseries value = avg(aerospike_xdr_nodes, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }), by: { dc }\n| fields dc, value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "table",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\navg(aerospike_xdr_nodes{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\", dc=~\"$dc\"}) by (dc)"
+    },
+    "4": {
+      "type": "data",
+      "title": "Host TCP Connections (total)",
+      "query": "timeseries value = sum(aerospike_sysinfo_netstat_tcp_activeopens, filter: { cluster_name == $cluster and in(service, array($node)) }, rollup: avg)\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum (aerospike_sysinfo_netstat_tcp_activeopens{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"})\nsum (aerospike_sysinfo_netstat_tcp_currestab{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"})"
+    },
+    "5": {
+      "type": "data",
+      "title": "Host Network Traffic - retransmit (packets) (total) (rate)",
+      "query": "timeseries a0 = avg(aerospike_sysinfo_netstat_tcp_retranssegs, filter: { cluster_name == $cluster and in(service, array($node)) }), by: { cluster_name, service }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd value = a0[]\n| fieldsRemove a0\n| summarize value = sum(value[]), by: { timeframe, interval }\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum (irate(aerospike_sysinfo_netstat_tcp_retranssegs{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}[$__rate_interval] ))"
+    },
+    "6": {
+      "type": "data",
+      "title": "Host Network Traffic (bytes) (total) (rate)",
+      "query": "timeseries a0 = avg(aerospike_sysinfo_network_receive_bytes_total, filter: { cluster_name == $cluster and in(service, array($node)) }), by: { cluster_name, service }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd value = a0[]\n| fieldsRemove a0\n| summarize value = sum(value[]), by: { timeframe, interval }\n| fields value = coalesce(value[-2], arrayLast(value))",
+      "visualization": "singleValue",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum (irate(aerospike_sysinfo_network_receive_bytes_total{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\", }[$__rate_interval]))\nsum (irate(aerospike_sysinfo_network_transfer_bytes_total{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\", }[$__rate_interval]))"
+    },
+    "7": {
+      "type": "markdown",
+      "content": "## Detailed Statistics"
+    },
+    "8": {
+      "type": "data",
+      "title": "Throughput",
+      "query": "timeseries value = avg(aerospike_xdr_throughput, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }), by: { cluster_name, dc, ns, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\naerospike_xdr_throughput{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}"
+    },
+    "9": {
+      "type": "data",
+      "title": "Success",
+      "query": "timeseries value = sum(aerospike_xdr_success, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }, rate: 1s), by: { cluster_name, dc, ns, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nrate(aerospike_xdr_success{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[1m])"
+    },
+    "10": {
+      "type": "data",
+      "title": "Abandoned (rate)",
+      "query": "timeseries value = sum(aerospike_xdr_abandoned, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }, rate: 1s), by: { cluster_name, dc, ns, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nrate(aerospike_xdr_abandoned{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[$__rate_interval])"
+    },
+    "11": {
+      "type": "data",
+      "title": "Not Found (rate)",
+      "query": "timeseries value = sum(aerospike_xdr_not_found, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }, rate: 1s), by: { cluster_name, dc, ns, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nrate(aerospike_xdr_not_found{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[$__rate_interval])"
+    },
+    "12": {
+      "type": "data",
+      "title": "Filtered Out (rate)",
+      "query": "timeseries value = sum(aerospike_xdr_filtered_out, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }, rate: 1s), by: { cluster_name, dc, ns, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nrate(aerospike_xdr_filtered_out{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[$__rate_interval])"
+    },
+    "13": {
+      "type": "data",
+      "title": "Retry Connection Reset (rate)",
+      "query": "timeseries value = sum(aerospike_xdr_retry_conn_reset, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }, rate: 1s), by: { cluster_name, dc, ns, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nrate(aerospike_xdr_retry_conn_reset{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[$__rate_interval])"
+    },
+    "14": {
+      "type": "data",
+      "title": "Retry Destination (rate)",
+      "query": "timeseries value = sum(aerospike_xdr_retry_dest, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }, rate: 1s), by: { cluster_name, dc, ns, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nrate(aerospike_xdr_retry_dest{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[$__rate_interval])"
+    },
+    "15": {
+      "type": "data",
+      "title": "Hot Keys (rate)",
+      "query": "timeseries value = sum(aerospike_xdr_hot_keys, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }, rate: 1s), by: { cluster_name, dc, ns, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nrate(aerospike_xdr_hot_keys{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[$__rate_interval])"
+    },
+    "16": {
+      "type": "data",
+      "title": "In Progress",
+      "query": "timeseries value = avg(aerospike_xdr_in_progress, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }), by: { cluster_name, dc, ns, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\naerospike_xdr_in_progress{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}"
+    },
+    "17": {
+      "type": "data",
+      "title": "In Queue",
+      "query": "timeseries value = avg(aerospike_xdr_in_queue, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }), by: { cluster_name, dc, ns, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\naerospike_xdr_in_queue{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}"
+    },
+    "18": {
+      "type": "data",
+      "title": "Lag",
+      "query": "timeseries value = avg(aerospike_xdr_lag, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }), by: { cluster_name, dc, ns, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\naerospike_xdr_lag{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}"
+    },
+    "19": {
+      "type": "data",
+      "title": "Lap \u03bcs",
+      "query": "timeseries value = avg(aerospike_xdr_lap_us, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }), by: { cluster_name, dc, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\naerospike_xdr_lap_us{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}"
+    },
+    "20": {
+      "type": "data",
+      "title": "Recoveries (rate)",
+      "query": "timeseries value = sum(aerospike_xdr_recoveries, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }, rate: 1s), by: { cluster_name, dc, ns, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nrate(aerospike_xdr_recoveries{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[$__rate_interval])"
+    },
+    "21": {
+      "type": "data",
+      "title": "Recoveries Pending",
+      "query": "timeseries value = avg(aerospike_xdr_recoveries_pending, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }), by: { cluster_name, dc, ns, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\naerospike_xdr_recoveries_pending{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}"
+    },
+    "22": {
+      "type": "data",
+      "title": "Latency ms",
+      "query": "timeseries value = avg(aerospike_xdr_latency_ms, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }), by: { cluster_name, dc, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\naerospike_xdr_latency_ms{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}"
+    },
+    "23": {
+      "type": "data",
+      "title": "Avg Compression Ratio",
+      "query": "timeseries value = avg(aerospike_xdr_compression_ratio, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }), by: { cluster_name, dc, ns, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\naerospike_xdr_compression_ratio{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}"
+    },
+    "24": {
+      "type": "data",
+      "title": "Uncompressed Pct",
+      "query": "timeseries value = avg(aerospike_xdr_uncompressed_pct, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }), by: { cluster_name, dc, ns, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\naerospike_xdr_uncompressed_pct{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}"
+    },
+    "25": {
+      "type": "data",
+      "title": "Bytes Shipped (rate)",
+      "query": "timeseries value = sum(aerospike_xdr_bytes_shipped, filter: { cluster_name == $cluster and in(service, array($node)) and in(dc, array($dc)) }, rate: 1s), by: { cluster_name, dc, ns, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nrate(aerospike_xdr_bytes_shipped{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\", dc=~\"$dc|$^\"}[$__rate_interval])"
+    },
+    "26": {
+      "type": "markdown",
+      "content": "## Resources - Network"
+    },
+    "27": {
+      "type": "data",
+      "title": "Host TCP Connections",
+      "query": "timeseries value = avg(aerospike_sysinfo_netstat_tcp_activeopens, filter: { cluster_name == $cluster and in(service, array($node)) }), by: { cluster_name, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\n (aerospike_sysinfo_netstat_tcp_activeopens{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"})\n (aerospike_sysinfo_netstat_tcp_currestab{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"})"
+    },
+    "28": {
+      "type": "data",
+      "title": "Host Network Traffic - retransmit (packets)  (rate)",
+      "query": "timeseries a0 = avg(aerospike_sysinfo_netstat_tcp_retranssegs, filter: { cluster_name == $cluster and in(service, array($node)) }), by: { cluster_name, service }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd value = a0[]\n| fieldsRemove a0",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\n (irate(aerospike_sysinfo_netstat_tcp_retranssegs{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node|$^\"}[$__rate_interval] ))"
+    },
+    "29": {
+      "type": "data",
+      "title": "Host Network Traffic - Received (bytes) (rate)",
+      "query": "timeseries a0 = avg(aerospike_sysinfo_network_receive_bytes_total, filter: { cluster_name == $cluster and in(service, array($node)) }), by: { cluster_name, service }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd value = a0[]\n| fieldsRemove a0\n| summarize value = sum(value[]), by: { timeframe, interval, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum by (service) (irate(aerospike_sysinfo_network_receive_bytes_total{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\", }[$__rate_interval]))"
+    },
+    "30": {
+      "type": "data",
+      "title": "Host Network Traffic - Transmitted (bytes) (rate)",
+      "query": "timeseries a0 = avg(aerospike_sysinfo_network_transfer_bytes_total, filter: { cluster_name == $cluster and in(service, array($node)) }), by: { cluster_name, service }\n| fieldsAdd a0 = arrayDelta(a0)\n| fieldsAdd a0 = a0[] / (interval / 1s)\n| fieldsAdd value = a0[]\n| fieldsRemove a0\n| summarize value = sum(value[]), by: { timeframe, interval, service }",
+      "visualization": "lineChart",
+      "visualizationSettings": {},
+      "querySettings": {},
+      "description": "Equivalent Prometheus query:\nsum by (service) (irate(aerospike_sysinfo_network_transfer_bytes_total{job=\"$job_name\", cluster_name=~\"$cluster\", service=~\"$node\", }[$__rate_interval]))"
+    }
+  },
+  "layouts": {
+    "0": {
+      "x": 0,
+      "y": 0,
+      "w": 24,
+      "h": 2
+    },
+    "1": {
+      "x": 0,
+      "y": 2,
+      "w": 24,
+      "h": 1
+    },
+    "2": {
+      "x": 0,
+      "y": 3,
+      "w": 24,
+      "h": 4
+    },
+    "3": {
+      "x": 0,
+      "y": 7,
+      "w": 24,
+      "h": 4
+    },
+    "4": {
+      "x": 0,
+      "y": 11,
+      "w": 6,
+      "h": 5
+    },
+    "5": {
+      "x": 6,
+      "y": 11,
+      "w": 7,
+      "h": 5
+    },
+    "6": {
+      "x": 13,
+      "y": 11,
+      "w": 11,
+      "h": 5
+    },
+    "7": {
+      "x": 0,
+      "y": 16,
+      "w": 24,
+      "h": 1
+    },
+    "8": {
+      "x": 0,
+      "y": 17,
+      "w": 12,
+      "h": 8
+    },
+    "9": {
+      "x": 12,
+      "y": 17,
+      "w": 12,
+      "h": 8
+    },
+    "10": {
+      "x": 0,
+      "y": 25,
+      "w": 12,
+      "h": 8
+    },
+    "11": {
+      "x": 12,
+      "y": 25,
+      "w": 12,
+      "h": 8
+    },
+    "12": {
+      "x": 0,
+      "y": 33,
+      "w": 12,
+      "h": 8
+    },
+    "13": {
+      "x": 12,
+      "y": 33,
+      "w": 12,
+      "h": 8
+    },
+    "14": {
+      "x": 0,
+      "y": 41,
+      "w": 12,
+      "h": 8
+    },
+    "15": {
+      "x": 12,
+      "y": 41,
+      "w": 12,
+      "h": 8
+    },
+    "16": {
+      "x": 0,
+      "y": 49,
+      "w": 12,
+      "h": 8
+    },
+    "17": {
+      "x": 12,
+      "y": 49,
+      "w": 12,
+      "h": 8
+    },
+    "18": {
+      "x": 0,
+      "y": 57,
+      "w": 12,
+      "h": 8
+    },
+    "19": {
+      "x": 12,
+      "y": 57,
+      "w": 12,
+      "h": 8
+    },
+    "20": {
+      "x": 0,
+      "y": 65,
+      "w": 12,
+      "h": 8
+    },
+    "21": {
+      "x": 12,
+      "y": 65,
+      "w": 12,
+      "h": 8
+    },
+    "22": {
+      "x": 0,
+      "y": 73,
+      "w": 12,
+      "h": 8
+    },
+    "23": {
+      "x": 12,
+      "y": 73,
+      "w": 12,
+      "h": 8
+    },
+    "24": {
+      "x": 0,
+      "y": 81,
+      "w": 12,
+      "h": 8
+    },
+    "25": {
+      "x": 12,
+      "y": 81,
+      "w": 12,
+      "h": 8
+    },
+    "26": {
+      "x": 0,
+      "y": 89,
+      "w": 24,
+      "h": 1
+    },
+    "27": {
+      "x": 0,
+      "y": 90,
+      "w": 12,
+      "h": 5
+    },
+    "28": {
+      "x": 12,
+      "y": 90,
+      "w": 12,
+      "h": 5
+    },
+    "29": {
+      "x": 0,
+      "y": 95,
+      "w": 12,
+      "h": 5
+    },
+    "30": {
+      "x": 12,
+      "y": 95,
+      "w": 12,
+      "h": 5
+    }
+  }
+}
